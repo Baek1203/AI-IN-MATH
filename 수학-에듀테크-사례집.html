@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>수학 에듀테크 사례집 · 중1–공통수학2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --num:#2E63DE; --rel:#0C9B87; --geo:#CE3F86; --data:#DC7223;
+  --ink:#151A2B; --ink-2:#4A5268; --ink-3:#7C859C; --ink-4:#A6AEC2;
+  --line:#E3E8F1; --line-2:#EFF2F8;
+  --paper:#FFFFFF; --bg:#F7F9FC; --bg-2:#EEF2F9;
+  --sh-s:0 1px 2px rgba(21,26,43,.05),0 1px 3px rgba(21,26,43,.04);
+  --sh-m:0 4px 14px rgba(21,26,43,.07),0 1px 3px rgba(21,26,43,.05);
+  --sh-l:0 18px 48px rgba(21,26,43,.15),0 4px 12px rgba(21,26,43,.07);
+  --sans:'Pretendard','Pretendard Variable',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,'D2Coding',monospace;
+  --sidebar:288px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow:hidden}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none;padding:0}
+a{color:var(--num)}
+:focus-visible{outline:2.5px solid #2E63DE;outline-offset:2px;border-radius:6px}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#D3DAE7;border-radius:99px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#BCC5D6;background-clip:content-box}
+
+/* ══ shell ══ */
+.app{display:flex;flex-direction:column;height:100dvh}
+.top{flex:none;background:var(--paper);border-bottom:1px solid var(--line);z-index:50}
+.top-in{padding:0 18px;height:60px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:34px;height:34px;border-radius:10px;flex:none;background:linear-gradient(140deg,#2E63DE,#0C9B87 50%,#CE3F86);display:grid;place-items:center;box-shadow:var(--sh-m)}
+.brand h1{margin:0;font-size:15.5px;font-weight:800;letter-spacing:-.035em;white-space:nowrap}
+.brand p{margin:0;font-size:10.5px;color:var(--ink-3);font-weight:600;letter-spacing:-.01em}
+.tabs{display:flex;gap:2px;background:var(--bg-2);padding:3px;border-radius:11px;margin-left:6px}
+.tab{padding:6px 15px;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:-.02em;color:var(--ink-3);transition:.15s}
+.tab[aria-selected="true"]{background:var(--paper);color:var(--ink);box-shadow:var(--sh-s)}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:7px}
+.stat{display:flex;align-items:baseline;gap:5px;padding:5px 11px;border-radius:99px;background:var(--bg-2)}
+.stat b{font-family:var(--mono);font-size:13px;font-weight:600}
+.stat span{font-size:11px;color:var(--ink-3);font-weight:650}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--paper);font-size:13px;font-weight:650;letter-spacing:-.015em;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:#C9D3E6;background:var(--bg)}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.primary:hover{background:#252B44}
+.btn.live{background:#0C9B87;border-color:#0C9B87;color:#fff}
+.btn.live:hover{background:#0A8878}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--bg-2);border-color:transparent}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:8px;gap:4px}
+.btn.danger{color:#C2333B;border-color:#F0D4D6}
+.btn.danger:hover{background:#FDF2F3;border-color:#E8BFC2}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.main{flex:1;display:flex;min-height:0}
+
+/* ══ sidebar ══ */
+.side{width:var(--sidebar);flex:none;border-right:1px solid var(--line);background:var(--paper);display:flex;flex-direction:column;min-height:0}
+.side-top{flex:none;padding:13px 14px 10px;border-bottom:1px solid var(--line-2)}
+.search{position:relative}
+.search input{width:100%;padding:8px 11px 8px 33px;border-radius:9px;border:1px solid var(--line);background:var(--bg);font-size:13px;font-weight:500}
+.search input::placeholder{color:var(--ink-4)}
+.search input:focus{outline:none;background:var(--paper);border-color:#2E63DE;box-shadow:0 0 0 3px rgba(46,99,222,.12)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-4)}
+.fchips{display:flex;gap:4px;flex-wrap:wrap;margin-top:9px}
+.fchip{padding:4px 9px;border-radius:99px;border:1px solid var(--line);background:var(--paper);font-size:11px;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:5px;transition:.14s}
+.fchip .d{width:6px;height:6px;border-radius:99px;background:currentColor}
+.fchip:hover{border-color:#C9D3E6}
+.fchip[aria-pressed="true"]{color:#fff;border-color:transparent}
+
+.tree{flex:1;overflow-y:auto;padding:8px 8px 40px;overscroll-behavior:contain}
+.gsec{margin-bottom:3px}
+.ghead{width:100%;display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;text-align:left}
+.ghead:hover{background:var(--bg)}
+.ghead .cv{color:var(--ink-4);transition:transform .18s;flex:none}
+.gsec.open .ghead .cv{transform:rotate(90deg)}
+.ghead b{font-size:12.5px;font-weight:800;letter-spacing:-.03em;flex:1}
+.ghead .n{font-family:var(--mono);font-size:10px;color:var(--ink-3);font-weight:600}
+.glist{display:none;padding:2px 0 6px 6px}
+.gsec.open .glist{display:block}
+
+.usec{margin:1px 0}
+.uhead{width:100%;display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:8px;text-align:left}
+.uhead:hover{background:var(--bg)}
+.uhead .bar{width:3px;height:15px;border-radius:99px;flex:none}
+.uhead .rn{font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--ink-3);flex:none;width:16px}
+.uhead .t{flex:1;font-size:12.5px;font-weight:700;letter-spacing:-.03em;line-height:1.35;min-width:0}
+.uhead .cv{color:var(--ink-4);transition:transform .18s;flex:none}
+.usec.open .uhead .cv{transform:rotate(90deg)}
+.uhead .badge{font-family:var(--mono);font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:99px;flex:none}
+.ulist{display:none;padding:1px 0 5px 22px}
+.usec.open .ulist{display:block}
+.midlbl{font-size:10px;font-weight:800;color:var(--ink-4);letter-spacing:.03em;padding:6px 8px 3px}
+
+.srow{width:100%;display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:8px;text-align:left;transition:.12s}
+.srow:hover{background:var(--bg)}
+.srow .t{flex:1;font-size:12.5px;font-weight:600;letter-spacing:-.025em;line-height:1.35;color:var(--ink-2);min-width:0}
+.srow .c{font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--ink-4);flex:none}
+.srow .c.has{color:#fff;padding:1px 6px;border-radius:99px}
+.srow[aria-current="true"]{background:var(--selbg)}
+.srow[aria-current="true"] .t{color:var(--selc);font-weight:750}
+.hidden{display:none!important}
+.noresult{padding:26px 14px;text-align:center;font-size:12px;color:var(--ink-3);font-weight:600}
+
+/* ══ content ══ */
+.content{flex:1;overflow-y:auto;min-width:0;position:relative}
+.wrap{max-width:840px;margin:0 auto;padding:26px 30px 90px}
+
+.crumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;font-weight:650;color:var(--ink-3);margin-bottom:11px}
+.crumb .sep{color:var(--ink-4)}
+.crumb .ac{padding:2px 8px;border-radius:99px;font-weight:750}
+h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-height:1.22}
+.subttl{margin:7px 0 0;font-size:13px;color:var(--ink-3);font-weight:600;letter-spacing:-.02em}
+
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-s);margin-top:18px;overflow:hidden}
+.panel > .ph{display:flex;align-items:center;gap:9px;padding:12px 16px;border-bottom:1px solid var(--line-2)}
+.panel > .ph h3{margin:0;font-size:11px;font-weight:800;letter-spacing:.09em;color:var(--ink-3);text-transform:uppercase}
+.panel > .ph .n{font-family:var(--mono);font-size:10px;background:var(--bg-2);padding:1px 7px;border-radius:99px;color:var(--ink-2);font-weight:600}
+.panel > .pb{padding:14px 16px}
+.foldbtn{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px}
+.foldbtn:hover{color:var(--ink)}
+.foldbtn svg{transition:transform .18s}
+.panel.closed .pb{display:none}
+.panel.closed .foldbtn svg{transform:rotate(-90deg)}
+
+.std{display:flex;gap:9px;padding:8px 0}
+.std:first-child{padding-top:0}
+.std:last-child{padding-bottom:0}
+.std .code{font-family:var(--mono);font-size:10px;font-weight:600;flex:none;margin-top:2px;padding:2px 7px;border-radius:6px;background:var(--ink);color:#fff}
+.std p{margin:0;font-size:13.5px;line-height:1.62;color:var(--ink-2);font-weight:500;letter-spacing:-.02em}
+.newbadge{font-size:10px;font-weight:750;color:#B4651A;background:#FDF3E7;border:1px solid #F6DDBE;padding:1px 7px;border-radius:99px;margin-left:7px;vertical-align:middle}
+
+.terms{display:flex;gap:5px;flex-wrap:wrap}
+.term{font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:7px;background:var(--bg);border:1px solid var(--line);color:var(--ink-2)}
+.term.sym{font-family:var(--mono);font-size:11px}
+.linkrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.linkrow .lbl{font-size:11px;font-weight:750;color:var(--ink-3);margin-right:2px}
+.jump{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:650;letter-spacing:-.02em;padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:var(--paper);transition:.14s}
+.jump:hover{transform:translateY(-1px);box-shadow:var(--sh-s)}
+.jump .sq{width:6px;height:6px;border-radius:2px;flex:none}
+.jump .gr{font-family:var(--mono);font-size:9.5px;color:var(--ink-3)}
+.nolink{font-size:11.5px;color:var(--ink-4);font-weight:600}
+
+/* ══ cases ══ */
+.casehead{display:flex;align-items:center;gap:10px;margin:30px 0 12px}
+.casehead h3{margin:0;font-size:16px;font-weight:800;letter-spacing:-.04em}
+.casehead .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);font-weight:600;background:var(--bg-2);padding:2px 8px;border-radius:99px}
+.casehead .sp{margin-left:auto}
+
+.case{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-s);margin-bottom:14px;overflow:hidden}
+.case > .ch{display:flex;align-items:flex-start;gap:11px;padding:15px 18px 13px;border-bottom:1px solid var(--line-2)}
+.case .tool{font-size:11.5px;font-weight:800;letter-spacing:-.02em;color:#fff;padding:4px 10px;border-radius:8px;flex:none;margin-top:2px}
+.case .hh{flex:1;min-width:0}
+.case .hh h4{margin:0;font-size:17px;font-weight:750;letter-spacing:-.04em;line-height:1.35}
+.case .who{margin:5px 0 0;font-size:11px;color:var(--ink-3);font-weight:600}
+.case .who b{color:var(--ink-2);font-weight:750}
+.case .acts{display:flex;gap:5px;flex:none}
+.case .tags{display:flex;gap:4px;flex-wrap:wrap;padding:0 18px 12px}
+.case .tg{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--ink-2)}
+.case .cb{padding:4px 18px 18px}
+
+/* rendered blocks */
+.rb{font-size:14.5px;line-height:1.75;letter-spacing:-.02em;color:var(--ink-2);font-weight:450}
+.rb h5{margin:20px 0 8px;font-size:17px;font-weight:800;letter-spacing:-.04em;color:var(--ink);line-height:1.35}
+.rb h6{margin:16px 0 6px;font-size:14px;font-weight:750;letter-spacing:-.03em;color:var(--ink)}
+.rb > *:first-child{margin-top:6px}
+.rb p{margin:0 0 10px;white-space:pre-wrap}
+.rb ul{margin:0 0 12px;padding-left:20px}
+.rb li{margin:0 0 4px}
+.rb blockquote{margin:0 0 12px;padding:9px 14px;border-left:3px solid var(--qc);background:var(--bg);border-radius:0 8px 8px 0;font-weight:500;color:var(--ink-2)}
+.rb hr{border:none;border-top:1px solid var(--line);margin:18px 0}
+.rb figure{margin:0 0 14px}
+.rb figure img{width:100%;display:block;border-radius:10px;border:1px solid var(--line)}
+.rb figure iframe{width:100%;border:1px solid var(--line);border-radius:10px;display:block;background:var(--bg)}
+.rb figcaption{margin-top:6px;font-size:11.5px;color:var(--ink-3);font-weight:600;text-align:center}
+.rb a{font-weight:600}
+
+.empty{border:1px dashed var(--line);border-radius:14px;padding:34px 20px;text-align:center;background:var(--paper)}
+.empty .em{font-size:24px;margin-bottom:8px;opacity:.5}
+.empty p{margin:0;font-size:13.5px;color:var(--ink-2);font-weight:650;letter-spacing:-.02em}
+.empty span{display:block;font-size:12px;color:var(--ink-3);font-weight:550;margin-top:5px}
+.empty .btn{margin-top:14px}
+
+/* ══ editor ══ */
+.editor{background:var(--paper);border:2px solid #0C9B87;border-radius:14px;box-shadow:var(--sh-m);margin-bottom:16px;overflow:hidden}
+.editor .eh{padding:13px 16px;background:#E9F7F4;border-bottom:1px solid #C6E9E2;display:flex;align-items:center;gap:8px}
+.editor .eh b{font-size:12.5px;font-weight:800;letter-spacing:-.03em;color:#0A6E60}
+.editor .eh .sp{margin-left:auto;font-size:11px;color:#0A8878;font-weight:650}
+.eb{padding:16px}
+.fl{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase;margin:0 0 6px}
+.fld{margin-bottom:13px}
+.inp{width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg);font-size:14px;font-weight:500;letter-spacing:-.02em}
+.inp:focus{outline:none;background:var(--paper);border-color:#0C9B87;box-shadow:0 0 0 3px rgba(12,155,135,.13)}
+.inp.big{font-size:17px;font-weight:700;letter-spacing:-.035em}
+.tagpick{display:flex;gap:5px;flex-wrap:wrap}
+.tsel{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);transition:.14s}
+.tsel[aria-pressed="true"]{background:#0C9B87;border-color:#0C9B87;color:#fff}
+
+.blocks{border:1px solid var(--line);border-radius:11px;background:var(--bg);padding:9px}
+.blk{background:var(--paper);border:1px solid var(--line);border-radius:9px;margin-bottom:7px;overflow:hidden}
+.blk:last-child{margin-bottom:0}
+.blk .bh{display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--bg);border-bottom:1px solid var(--line-2)}
+.blk .bt{font-size:10px;font-weight:800;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase}
+.blk .bctl{margin-left:auto;display:flex;gap:2px}
+.ib{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:var(--ink-3);transition:.12s}
+.ib:hover{background:var(--bg-2);color:var(--ink)}
+.ib.del:hover{background:#FDF2F3;color:#C2333B}
+.blk .bd{padding:8px 10px}
+.ta{width:100%;border:none;background:transparent;resize:none;font-size:14px;line-height:1.65;letter-spacing:-.02em;font-weight:450;padding:2px 0;overflow:hidden}
+.ta:focus{outline:none}
+.ta.h2{font-size:17.5px;font-weight:800;letter-spacing:-.04em}
+.ta.h3{font-size:15px;font-weight:750;letter-spacing:-.03em}
+.ta.code{font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--bg);border-radius:7px;padding:8px;font-weight:400}
+.blk .hintline{font-size:10.5px;color:var(--ink-4);font-weight:600;margin-top:5px}
+.blk .prev{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.blk .prev img{width:100%;border-radius:8px;display:block;border:1px solid var(--line)}
+.blk .prev iframe{width:100%;border:1px solid var(--line);border-radius:8px;display:block;background:var(--bg)}
+.miniinp{padding:6px 9px;border-radius:7px;border:1px solid var(--line);background:var(--bg);font-size:12.5px;font-weight:500;width:100%}
+.miniinp:focus{outline:none;background:var(--paper);border-color:#0C9B87}
+.row2{display:flex;gap:7px;align-items:center;margin-top:7px;flex-wrap:wrap}
+.row2 .miniinp{flex:1;min-width:120px}
+.addbar{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
+.addb{font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);transition:.14s;display:inline-flex;align-items:center;gap:4px}
+.addb:hover{border-color:#0C9B87;color:#0A8878;background:#F2FBF9}
+.efoot{display:flex;gap:7px;justify-content:flex-end;align-items:center;margin-top:15px;padding-top:14px;border-top:1px solid var(--line-2)}
+.efoot .warn{margin-right:auto;font-size:11px;font-weight:650;color:#B4651A}
+
+/* ══ map ══ */
+.mapview{flex:1;overflow:auto;min-width:0;padding:22px 24px 60px}
+.mapwrap{max-width:1500px;margin:0 auto}
+.mapintro{margin:0 0 16px}
+.mapintro h2{margin:0 0 5px;font-size:22px;font-weight:800;letter-spacing:-.045em}
+.mapintro p{margin:0;font-size:12.5px;color:var(--ink-3);font-weight:600;letter-spacing:-.02em}
+.map{position:relative;min-width:1240px;display:grid;grid-template-columns:104px repeat(5,minmax(198px,1fr));gap:0 14px;align-items:start}
+#links{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
+#links path{fill:none;stroke:#BCC6D9;stroke-width:1.6;opacity:.5;transition:opacity .2s,stroke-width .2s}
+#links path.cross{stroke-dasharray:4 5}
+#links path.on{stroke-width:2.6;opacity:1}
+#links path.off{opacity:.1}
+.ch2{position:relative;z-index:1;padding-bottom:12px}
+.ch2 .stg{font-size:9.5px;font-weight:800;letter-spacing:.11em;color:var(--ink-4);text-transform:uppercase;margin-bottom:5px}
+.ch2 .g{border-radius:10px;padding:8px 11px;border:1px solid var(--line);background:var(--paper);box-shadow:var(--sh-s)}
+.ch2 .g b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.035em}
+.ch2 .g span{display:block;font-size:10px;color:var(--ink-3);margin-top:1px;font-weight:600}
+.arow{grid-column:1/-1;height:1px;background:var(--line-2);position:relative;z-index:1;margin:0}
+.alab{position:relative;z-index:1;padding:16px 8px 16px 0}
+.alab .bar{width:4px;border-radius:99px;height:24px;margin-bottom:8px}
+.alab b{font-size:13px;font-weight:800;letter-spacing:-.035em;line-height:1.3;display:block}
+.alab span{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);margin-top:4px;display:block}
+.mcell{position:relative;z-index:1;padding:16px 0;display:flex;flex-direction:column;gap:8px;min-height:70px}
+.mblank{border:1px dashed var(--line);border-radius:11px;padding:12px;text-align:center;font-size:11px;color:var(--ink-4);font-weight:600;background:rgba(255,255,255,.45)}
+.unit{position:relative;text-align:left;width:100%;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:10px 11px 10px 14px;box-shadow:var(--sh-s);transition:transform .16s,box-shadow .16s,border-color .16s,opacity .16s;overflow:hidden}
+.unit::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.unit:hover{transform:translateY(-2px);box-shadow:var(--sh-m)}
+.unit .rn{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--c)}
+.unit .tt{display:block;font-size:13px;font-weight:750;letter-spacing:-.035em;line-height:1.35;margin-top:1px}
+.unit .mt{display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap}
+.unit .cn{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);font-weight:600}
+.unit .cs{font-family:var(--mono);font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:99px}
+.unit[aria-current="true"]{border-color:var(--c);box-shadow:0 0 0 3px var(--csoft),var(--sh-m)}
+.unit.dim{opacity:.26}
+
+.pop{position:absolute;z-index:5;width:262px;background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh-l);padding:13px;animation:pf .18s ease}
+@keyframes pf{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.pop .pt{font-size:13.5px;font-weight:800;letter-spacing:-.035em;margin-bottom:3px}
+.pop .ps{font-size:10.5px;color:var(--ink-3);font-weight:650;margin-bottom:9px}
+.pop .sl{display:flex;flex-direction:column;gap:2px;max-height:190px;overflow-y:auto;margin-bottom:10px}
+.pop .sl button{display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:7px;text-align:left;font-size:11.5px;font-weight:600;color:var(--ink-2)}
+.pop .sl button:hover{background:var(--bg)}
+.pop .sl .i{font-family:var(--mono);font-size:9px;color:var(--ink-4);width:12px;flex:none}
+.pop .sl .t{flex:1;min-width:0;letter-spacing:-.02em}
+.pop .sl .c{font-family:var(--mono);font-size:9px;font-weight:700;flex:none;padding:1px 5px;border-radius:99px}
+.pop .close{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:var(--ink-4)}
+.pop .close:hover{background:var(--bg-2);color:var(--ink)}
+.maplegend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--ink-3);font-weight:650;margin-top:18px}
+.maplegend .lk{display:inline-flex;align-items:center;gap:6px}
+
+/* ══ modal / toast ══ */
+.modal{position:fixed;inset:0;z-index:150;display:none;place-items:center;padding:20px;background:rgba(21,26,43,.44);backdrop-filter:blur(3px)}
+.modal.on{display:grid}
+.mbox{background:var(--paper);border-radius:16px;box-shadow:var(--sh-l);width:min(400px,100%);padding:24px}
+.mbox h3{margin:0 0 6px;font-size:18px;font-weight:800;letter-spacing:-.04em}
+.mbox p{margin:0 0 16px;font-size:12.5px;color:var(--ink-2);line-height:1.6;font-weight:500}
+.mbox .fld{margin-bottom:11px}
+.mbox .err{font-size:11.5px;color:#C2333B;font-weight:650;min-height:16px}
+.mbox .frow{display:flex;gap:7px;justify-content:flex-end;margin-top:12px}
+.toasts{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-size:12.5px;font-weight:650;box-shadow:var(--sh-l);animation:pop .3s cubic-bezier(.2,.8,.3,1)}
+.toast.bad{background:#C2333B}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+
+.sideToggle{display:none}
+.scrim2{display:none}
+
+
+.btn.conn{gap:7px;font-size:12px;padding:7px 11px}
+.btn.conn .dot{width:7px;height:7px;border-radius:99px;background:currentColor;flex:none}
+.btn.conn.ok{color:#0A8878;border-color:#BFE8E0;background:#F2FBF9}
+.btn.conn.ok:hover{background:#E6F7F3}
+.btn.conn.warn{color:#B4651A;border-color:#F3DDBE;background:#FDF8F1}
+.btn.conn.warn:hover{background:#FBF1E4}
+.connstate{border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:12.5px;font-weight:600}
+.connstate b{display:block;font-size:13px;font-weight:800;letter-spacing:-.03em}
+.connstate span{display:block;margin-top:2px;font-size:11.5px;opacity:.85;font-weight:600}
+.connstate.ok{background:#F2FBF9;border:1px solid #BFE8E0;color:#0A6E60}
+.connstate.warn{background:#FDF8F1;border:1px solid #F3DDBE;color:#8A4E12}
+.mbox.wide{width:min(580px,100%);max-height:88vh;overflow-y:auto}
+.mbox textarea{width:100%;min-height:140px;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);font-family:var(--mono);font-size:11.5px;line-height:1.6;resize:vertical}
+.mbox textarea:focus{outline:none;background:var(--paper);border-color:#2E63DE;box-shadow:0 0 0 3px rgba(46,99,222,.12)}
+.steps{font-size:12.5px;color:var(--ink-2);line-height:1.8;font-weight:500;margin:0 0 14px;padding-left:19px}
+.steps li{margin-bottom:2px}
+.steps code{font-family:var(--mono);font-size:11px;background:var(--bg-2);padding:1px 5px;border-radius:4px}
+.rules{margin-top:11px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.rules summary{padding:9px 12px;font-size:12px;font-weight:700;cursor:pointer;background:var(--bg);letter-spacing:-.02em}
+.rules summary::marker{color:var(--ink-4)}
+.rules pre{margin:0;padding:11px 13px;font-family:var(--mono);font-size:10.5px;line-height:1.62;background:var(--paper);overflow-x:auto;color:var(--ink-2);border-top:1px solid var(--line)}
+
+.btn.warn-btn{color:#B4651A;border-color:#F3DDBE;background:#FDF8F1}
+.btn.warn-btn:hover{background:#FBF1E4}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 11px}
+.fl .opt{font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink-3);font-size:10px}
+.pickg{font-size:10.5px;font-weight:800;color:var(--ink-3);letter-spacing:.03em;margin-bottom:5px}
+.rolebadge{font-size:10px;font-weight:750;padding:2px 8px;border-radius:99px;margin-left:7px;vertical-align:middle}
+.rolebadge.admin{background:#EAF0FE;color:#2E63DE}
+.rolebadge.ok{background:#E9F7F4;color:#0A8878}
+.rolebadge.wait{background:#FDF3E7;color:#B4651A}
+.rolebadge.no{background:#FDF2F3;color:#C2333B}
+.notice{border-radius:10px;padding:10px 13px;font-size:12.5px;font-weight:600;line-height:1.6;margin-bottom:14px}
+.notice.warn{background:#FDF8F1;border:1px solid #F3DDBE;color:#8A4E12}
+.mbsec{display:flex;align-items:center;gap:8px;margin:16px 0 8px;font-size:11px;font-weight:800;letter-spacing:.09em;color:var(--ink-3);text-transform:uppercase}
+.mbsec em{font-style:normal;font-family:var(--mono);font-size:10px;background:var(--bg-2);padding:1px 7px;border-radius:99px;letter-spacing:0}
+.mbrow{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:7px;background:var(--paper)}
+.mbmain{flex:1;min-width:0}
+.mbname{font-size:13.5px;font-weight:750;letter-spacing:-.03em}
+.mbsub{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px}
+.mbtags{margin-top:5px;font-size:10.5px;color:var(--ink-3);font-weight:600}
+.mbtags span{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:1px 7px;margin:2px 3px 0 0;color:var(--ink-2)}
+.mbacts{display:flex;flex-direction:column;gap:4px;flex:none}
+.mbme{font-size:10.5px;font-weight:700;color:var(--ink-4);padding:5px 8px}
+@media (max-width:520px){.grid2{grid-template-columns:1fr}.mbrow{flex-direction:column}.mbacts{flex-direction:row;flex-wrap:wrap}}
+
+.pwsec{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.pwhead{font-size:11px;font-weight:800;letter-spacing:.09em;color:var(--ink-3);text-transform:uppercase;margin-bottom:11px}
+.inp:disabled{background:var(--bg-2);color:var(--ink-3);cursor:not-allowed}
+.hintline{font-size:10.5px;color:var(--ink-4);font-weight:600;margin-top:5px}
+@media (max-width:1000px){
+  .side{position:fixed;left:0;top:60px;bottom:0;z-index:70;transform:translateX(-101%);transition:transform .26s cubic-bezier(.22,.75,.28,1);box-shadow:var(--sh-l);width:300px}
+  .side.on{transform:none}
+  .sideToggle{display:inline-flex}
+  .scrim2{display:block;position:fixed;inset:60px 0 0;background:rgba(21,26,43,.3);z-index:65;opacity:0;pointer-events:none;transition:.24s}
+  .scrim2.on{opacity:1;pointer-events:auto}
+  .wrap{padding:20px 18px 80px}
+  .brand p{display:none}
+  .stat{display:none}
+}
+@media (max-width:640px){
+  .top-in{padding:0 12px;gap:9px;height:56px}
+  .brand h1{font-size:14px}
+  .tab{padding:6px 11px;font-size:12px}
+  h2.page{font-size:23px}
+  .btnlabel{display:none}
+  .mapview{padding:16px 12px 50px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header class="top">
+  <div class="top-in">
+    <button class="btn ghost sideToggle" id="sideToggle" aria-label="단원 목록 열기">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+          <rect x="3.5" y="4" width="17" height="13" rx="2.2" stroke="#fff" stroke-width="1.7"/>
+          <path d="M7 9.5h6M7 13h9" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>
+          <circle cx="17.2" cy="9.5" r="1.5" fill="#fff"/>
+        </svg>
+      </div>
+      <div>
+        <h1>수학 에듀테크 사례집</h1>
+        <p>중1 – 공통수학2 · 2022 개정 교육과정</p>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabArchive" aria-selected="true">사례집</button>
+      <button class="tab" role="tab" id="tabMap" aria-selected="false">연계 지도</button>
+    </div>
+    <div class="top-r">
+      <div class="stat"><b id="statCases">0</b><span>사례</span></div>
+      <div class="stat"><b id="statCover">0%</b><span>소단원 등록률</span></div>
+      <button class="btn ghost" id="btnMembers" title="회원 관리" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="btnlabel" id="membersLabel">회원 관리</span>
+      </button>
+      <button class="btn ghost" id="btnProfile" title="내 정보 수정" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+        <span class="btnlabel">내 정보 수정</span>
+      </button>
+      <button class="btn primary" id="btnAccount">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="accountLabel">로그인</span>
+      </button>
+      <input type="file" id="imgIn" accept="image/*" hidden>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <aside class="side" id="side">
+    <div class="side-top">
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="q" placeholder="단원 · 성취기준 · 도구 검색" autocomplete="off">
+      </div>
+      <div class="fchips" id="fchips"></div>
+    </div>
+    <nav class="tree" id="tree" aria-label="단원 목록"></nav>
+  </aside>
+  <div class="scrim2" id="scrim2"></div>
+
+  <main class="content" id="content"><div class="wrap" id="wrap"></div></main>
+  <section class="mapview hidden" id="mapview">
+    <div class="mapwrap">
+      <div class="mapintro">
+        <h2>영역별 학습 계통</h2>
+        <p>가로는 학년, 세로는 4개 영역입니다. 단원을 누르면 이어지는 앞뒤 단원이 선으로 강조되고, 소단원 목록에서 바로 사례집으로 넘어갑니다.</p>
+      </div>
+      <div class="map" id="map"></div>
+      <div class="maplegend">
+        <span class="lk"><svg width="30" height="8"><path d="M1 4h28" stroke="#BCC6D9" stroke-width="1.8" fill="none"/></svg> 같은 영역 연계</span>
+        <span class="lk"><svg width="30" height="8"><path d="M1 4h28" stroke="#BCC6D9" stroke-width="1.8" fill="none" stroke-dasharray="4 5"/></svg> 다른 영역으로 이어지는 연계</span>
+        <span class="lk">선의 왼쪽 = 배운 내용 · 오른쪽 = 배울 내용</span>
+      </div>
+    </div>
+  </section>
+</div>
+</div>
+
+<div class="modal" id="authModal">
+  <div class="mbox wide" id="authBox"></div>
+</div>
+
+<div class="modal" id="membersModal">
+  <div class="mbox wide" id="membersBox"></div>
+</div>
+
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════
+   Firebase 연결 설정
+   ───────────────────────────────────────────────────────────────
+   Firebase 콘솔 → 프로젝트 설정 → 내 앱 → SDK 설정 및 구성 에서 가져온 값입니다.
+   프로젝트를 옮길 때는 이 값만 바꾸면 됩니다.
+   ═══════════════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAd-hP-pBvQFZB2F00o8sroAzbVd6pXuLY",
+  authDomain: "ai-in-math.firebaseapp.com",
+  projectId: "ai-in-math",
+  storageBucket: "ai-in-math.firebasestorage.app",
+  messagingSenderId: "526040819968",
+  appId: "1:526040819968:web:5d6cacabf8e4a4997debe5"
+};
+
+const SDK="https://www.gstatic.com/firebasejs/10.12.5/";
+/* 아이디 로그인을 Firebase 이메일 인증에 얹기 위한 내부 도메인입니다.
+   메일이 오가지는 않습니다. Firebase가 이 형식을 거부하면 다른 값으로 바꾸세요. */
+const LOGIN_DOMAIN="@mathcase.local";
+const TAGS=["시각화·탐구","문제 풀이·진단","협업·공유","평가·피드백","코딩·AI","자료 수집·분석"];
+const BLOCK_LABEL={h2:"제목",h3:"소제목",p:"본문",ul:"목록",quote:"인용",img:"이미지",embed:"HTML 임베드",hr:"구분선"};
+const LS_DATA="mathedu.local.data", LS_ME="mathedu.me";
+
+/* 회원 정보 선택지 */
+const MID_GRADES=["1학년","2학년","3학년"];
+const HS_SUBJECTS=[
+  {g:"공통 과목",      items:["공통수학1","공통수학2","기본수학1","기본수학2"]},
+  {g:"일반 선택 과목", items:["대수","미적분Ⅰ","확률과 통계"]},
+  {g:"진로 선택 과목", items:["미적분Ⅱ","기하","경제 수학","인공지능 수학","직무 수학"]},
+  {g:"융합 선택 과목", items:["수학과 문화","실용 통계","수학과제 탐구"]}
+];
+const EDTECH=[
+  {g:"동적 시각화",       items:["지오지브라","데스모스","알지오매스"]},
+  {g:"게임형 평가",       items:["카훗","블루킷","띵커벨","ZEP Quiz","퀴즈앤"]},
+  {g:"문제 진단",         items:["AI 코스웨어","애스크매스","EBS 단추"]},
+  {g:"학습 관리",         items:["구글 클래스룸","클래스팅","노션","패들렛"]},
+  {g:"맞춤형 도구 제작",  items:["바이브코딩"]}
+];
+const EDTECH_ALL=EDTECH.flatMap(x=>x.items);
+
+
+/* ═══ 교육과정 데이터 ═══ */
+
+
+const AREAS = {
+  num:  {name:"수와 연산",     idea:"수의 확장",       c:"var(--num)",  cs:"var(--num-s)",  cb:"var(--num-b)",  hex:"#2E63DE"},
+  rel:  {name:"변화와 관계",   idea:"식 · 함수",       c:"var(--rel)",  cs:"var(--rel-s)",  cb:"var(--rel-b)",  hex:"#0C9B87"},
+  geo:  {name:"도형과 측정",   idea:"도형 · 정당화",   c:"var(--geo)",  cs:"var(--geo-s)",  cb:"var(--geo-b)",  hex:"#CE3F86"},
+  data: {name:"자료와 가능성", idea:"자료 · 확률",     c:"var(--data)", cs:"var(--data-s)", cb:"var(--data-b)", hex:"#DC7223"}
+};
+const AREA_ORDER = ["num","rel","geo","data"];
+
+const GRADES = [
+  {id:"m1", label:"중학교 1학년", stage:"공통 교육과정", book:"미래엔 · 2022 개정"},
+  {id:"m2", label:"중학교 2학년", stage:"공통 교육과정", book:"미래엔 · 2022 개정"},
+  {id:"m3", label:"중학교 3학년", stage:"공통 교육과정", book:"동아 · 2015 개정 배열"},
+  {id:"h1", label:"공통수학1",    stage:"선택 중심 · 공통 과목", book:"미래엔 · 2022 개정"},
+  {id:"h2", label:"공통수학2",    stage:"선택 중심 · 공통 과목", book:"미래엔 · 2022 개정"}
+];
+const GMAP = Object.fromEntries(GRADES.map(g=>[g.id,g]));
+
+/* ════════════════ 2. 성취기준 원문 ════════════════ */
+const STD = {
+"9수01-01":"소인수분해의 뜻을 알고, 자연수를 소인수분해 할 수 있다.",
+"9수01-02":"소인수분해를 이용하여 최대공약수와 최소공배수를 구할 수 있다.",
+"9수01-03":"다양한 상황을 이용하여 음수의 필요성을 인식하고, 양수와 음수, 정수와 유리수의 개념을 이해한다.",
+"9수01-04":"정수와 유리수의 대소 관계를 판단할 수 있다.",
+"9수01-05":"정수와 유리수의 사칙계산의 원리를 이해하고, 그 계산을 할 수 있다.",
+"9수01-06":"순환소수의 뜻을 알고, 유리수와 순환소수의 관계를 설명할 수 있다.",
+"9수01-07":"제곱근의 뜻과 성질을 알고, 제곱근의 대소 관계를 판단할 수 있다.",
+"9수01-08":"무리수의 개념을 이해하고, 무리수의 유용성을 인식할 수 있다.",
+"9수01-09":"실수의 대소 관계를 판단하고 설명할 수 있다.",
+"9수01-10":"근호를 포함한 식의 사칙계산의 원리를 이해하고, 그 계산을 할 수 있다.",
+
+"9수02-01":"다양한 상황을 문자를 사용한 식으로 나타내어 그 유용성을 인식하고, 식의 값을 구할 수 있다.",
+"9수02-02":"일차식의 덧셈과 뺄셈의 원리를 이해하고, 그 계산을 할 수 있다.",
+"9수02-03":"방정식과 그 해의 뜻을 알고, 등식의 성질을 설명할 수 있다.",
+"9수02-04":"일차방정식을 풀 수 있고, 이를 활용하여 문제를 해결할 수 있다.",
+"9수02-05":"순서쌍과 좌표를 이해하고, 그 편리함을 인식할 수 있다.",
+"9수02-06":"다양한 상황을 그래프로 나타내고, 주어진 그래프를 해석할 수 있다.",
+"9수02-07":"정비례, 반비례 관계를 이해하고, 그 관계를 표, 식, 그래프로 나타낼 수 있다.",
+"9수02-08":"지수법칙을 이해하고, 이를 이용하여 식을 간단히 할 수 있다.",
+"9수02-09":"다항식의 덧셈과 뺄셈의 원리를 이해하고, 그 계산을 할 수 있다.",
+"9수02-10":"‘(단항식)×(다항식)’, ‘(다항식)÷(단항식)’과 같은 곱셈과 나눗셈의 원리를 이해하고, 그 계산을 할 수 있다.",
+"9수02-11":"부등식과 그 해의 뜻을 알고, 부등식의 성질을 설명할 수 있다.",
+"9수02-12":"일차부등식을 풀 수 있고, 이를 활용하여 문제를 해결할 수 있다.",
+"9수02-13":"미지수가 2개인 연립일차방정식을 풀 수 있고, 이를 활용하여 문제를 해결할 수 있다.",
+"9수02-14":"함수의 개념을 이해하고, 함숫값을 구할 수 있다.",
+"9수02-15":"일차함수의 개념을 이해하고, 그 그래프를 그릴 수 있다.",
+"9수02-16":"일차함수의 그래프의 성질을 이해하고, 이를 활용하여 문제를 해결할 수 있다.",
+"9수02-17":"일차함수와 미지수가 2개인 일차방정식의 관계를 설명할 수 있다.",
+"9수02-18":"두 일차함수의 그래프와 연립일차방정식의 관계를 설명할 수 있다.",
+"9수02-19":"다항식의 곱셈과 인수분해를 할 수 있다.",
+"9수02-20":"이차방정식을 풀 수 있고, 이를 활용하여 문제를 해결할 수 있다.",
+"9수02-21":"이차함수의 개념을 이해한다.",
+"9수02-22":"이차함수의 그래프를 그릴 수 있고, 그 성질을 설명할 수 있다.",
+
+"9수03-01":"점, 선, 면, 각을 이해하고, 실생활 상황과 연결하여 점, 직선, 평면의 위치 관계를 설명할 수 있다.",
+"9수03-02":"평행선에서 동위각과 엇각의 성질을 이해하고 설명할 수 있다.",
+"9수03-03":"삼각형을 작도하고, 그 과정을 설명할 수 있다.",
+"9수03-04":"삼각형의 합동 조건을 이해하고, 이를 이용하여 두 삼각형이 합동인지 판별할 수 있다.",
+"9수03-05":"다각형의 성질을 이해하고 설명할 수 있다.",
+"9수03-06":"부채꼴의 중심각과 호의 관계를 이해하고, 이를 이용하여 부채꼴의 호의 길이와 넓이를 구할 수 있다.",
+"9수03-07":"구체적인 모형이나 공학 도구를 이용하여 다면체와 회전체의 성질을 탐구하고, 이를 설명할 수 있다.",
+"9수03-08":"입체도형의 겉넓이와 부피를 구할 수 있다.",
+"9수03-09":"이등변삼각형의 성질을 이해하고 정당화할 수 있다.",
+"9수03-10":"삼각형의 외심과 내심의 성질을 이해하고 정당화할 수 있다.",
+"9수03-11":"사각형의 성질을 이해하고 정당화할 수 있다.",
+"9수03-12":"도형의 닮음의 뜻과 닮은 도형의 성질을 이해하고, 닮음비를 구할 수 있다.",
+"9수03-13":"삼각형의 닮음 조건을 이해하고, 이를 이용하여 두 삼각형이 닮음인지 판별할 수 있다.",
+"9수03-14":"평행선 사이의 선분의 길이의 비를 구할 수 있다.",
+"9수03-15":"피타고라스 정리를 이해하고 정당화할 수 있다.",
+"9수03-16":"삼각비의 뜻을 알고, 간단한 삼각비의 값을 구할 수 있다.",
+"9수03-17":"삼각비를 활용하여 여러 가지 문제를 해결할 수 있다.",
+"9수03-18":"원의 현에 관한 성질과 접선에 관한 성질을 이해하고 정당화할 수 있다.",
+"9수03-19":"원주각의 성질을 이해하고 정당화할 수 있다.",
+
+"9수04-01":"중앙값, 최빈값의 뜻을 알고, 자료의 특성에 따라 적절한 대푯값을 선택하여 구할 수 있다.",
+"9수04-02":"자료를 줄기와 잎 그림, 도수분포표, 히스토그램, 도수분포다각형으로 나타내고 해석할 수 있다.",
+"9수04-03":"상대도수를 구하고, 상대도수의 분포를 표나 그래프로 나타내고 해석할 수 있다.",
+"9수04-04":"통계적 탐구 문제를 설정하고, 공학 도구를 이용하여 자료를 수집하여 분석하고, 그 결과를 해석할 수 있다.",
+"9수04-05":"경우의 수를 구할 수 있다.",
+"9수04-06":"확률의 개념과 그 기본 성질을 이해하고, 확률을 구할 수 있다.",
+"9수04-07":"분산과 표준편차를 구하고 자료의 분포를 설명할 수 있다.",
+"9수04-08":"공학 도구를 이용하여 자료를 상자그림으로 나타내고 분포를 비교할 수 있다.",
+"9수04-09":"자료를 산점도로 나타내고 상관관계를 말할 수 있다.",
+
+"10공수1-01-01":"다항식의 사칙연산의 원리를 설명하고, 그 계산을 할 수 있다.",
+"10공수1-01-02":"항등식의 성질과 나머지정리를 이해하고, 이를 활용하여 문제를 해결할 수 있다.",
+"10공수1-01-03":"다항식의 인수분해를 할 수 있다.",
+"10공수1-02-01":"복소수의 뜻과 성질을 설명하고, 사칙연산을 수행할 수 있다.",
+"10공수1-02-02":"이차방정식의 실근과 허근을 이해하고, 판별식을 이용하여 이차방정식의 근을 판별할 수 있다.",
+"10공수1-02-03":"이차방정식의 근과 계수의 관계를 설명할 수 있다.",
+"10공수1-02-04":"이차방정식과 이차함수를 연결하여 그 관계를 설명할 수 있다.",
+"10공수1-02-05":"이차함수의 그래프와 직선의 위치 관계를 판단할 수 있다.",
+"10공수1-02-06":"이차함수의 최대, 최소를 탐구하고, 이를 실생활과 연결하여 유용성을 인식할 수 있다.",
+"10공수1-02-07":"간단한 삼차방정식과 사차방정식을 풀 수 있다.",
+"10공수1-02-08":"미지수가 2개인 연립이차방정식을 풀 수 있다.",
+"10공수1-02-09":"미지수가 1개인 연립일차부등식을 풀 수 있다.",
+"10공수1-02-10":"절댓값을 포함한 일차부등식을 풀 수 있다.",
+"10공수1-02-11":"이차부등식과 이차함수를 연결하여 그 관계를 설명하고, 이차부등식과 연립이차부등식을 풀 수 있다.",
+"10공수1-03-01":"합의 법칙과 곱의 법칙을 이해하고, 적절한 전략을 사용하여 경우의 수와 관련된 문제를 해결할 수 있다.",
+"10공수1-03-02":"순열의 개념을 이해하고, 순열의 수를 구하는 방법을 설명할 수 있다.",
+"10공수1-03-03":"조합의 개념을 이해하고, 조합의 수를 구하는 방법을 설명할 수 있다.",
+"10공수1-04-01":"행렬의 뜻을 알고, 실생활 상황을 행렬로 표현할 수 있다.",
+"10공수1-04-02":"행렬의 연산을 수행하고, 관련된 문제를 해결할 수 있다.",
+
+"10공수2-01-01":"선분의 내분을 이해하고, 내분점의 좌표를 계산할 수 있다.",
+"10공수2-01-02":"두 직선의 평행 조건과 수직 조건을 탐구하고 이해한다.",
+"10공수2-01-03":"점과 직선 사이의 거리를 구하고, 관련된 문제를 해결할 수 있다.",
+"10공수2-01-04":"원의 방정식을 구하고, 그래프를 그릴 수 있다.",
+"10공수2-01-05":"좌표평면에서 원과 직선의 위치 관계를 판단하고, 이를 활용하여 문제를 해결할 수 있다.",
+"10공수2-01-06":"평행이동을 탐구하고, 실생활과 연결하여 문제를 해결할 수 있다.",
+"10공수2-01-07":"원점, x축, y축, 직선 y=x에 대한 대칭이동을 탐구하고, 실생활과 연결하여 문제를 해결할 수 있다.",
+"10공수2-02-01":"집합의 개념을 이해하고, 집합을 표현할 수 있다.",
+"10공수2-02-02":"두 집합 사이의 포함관계를 판단할 수 있다.",
+"10공수2-02-03":"집합의 연산을 수행하고, 벤 다이어그램을 이용하여 나타낼 수 있다.",
+"10공수2-02-04":"명제와 조건의 뜻을 알고, ‘모든’, ‘어떤’을 포함한 명제를 이해하고 설명할 수 있다.",
+"10공수2-02-05":"명제의 역과 대우를 이해하고 설명할 수 있다.",
+"10공수2-02-06":"충분조건과 필요조건을 이해하고 판단할 수 있다.",
+"10공수2-02-07":"대우를 이용한 증명법과 귀류법을 이해하고 관련된 명제를 증명할 수 있다.",
+"10공수2-02-08":"절대부등식의 뜻을 알고, 간단한 절대부등식을 증명할 수 있다.",
+"10공수2-03-01":"함수의 개념을 설명하고, 그 그래프를 이해한다.",
+"10공수2-03-02":"함수의 합성을 설명하고, 합성함수를 구할 수 있다.",
+"10공수2-03-03":"역함수의 개념을 설명하고, 역함수를 구할 수 있다.",
+"10공수2-03-04":"유리함수 y=(ax+b)/(cx+d)의 그래프를 그릴 수 있고, 그 그래프의 성질을 탐구할 수 있다.",
+"10공수2-03-05":"무리함수 y=√(ax+b)+c의 그래프를 그릴 수 있고, 그 그래프의 성질을 탐구할 수 있다."
+};
+
+/* ════════════════ 3. 단원 데이터 ════════════════ */
+/* u(id, grade, area, 로마숫자, 대단원명, 핵심주제, [용어], [소단원], {prev,next}) */
+function u(id,grade,area,no,title,theme,terms,subs,rel){
+  return {id,grade,area,no,title,theme,terms,
+    subs:subs.map((s,i)=>({id:id+"-s"+(i+1), idx:i+1, t:s[0], c:s[1], mid:s[2]||null, isNew:!!s[3]})),
+    next:(rel&&rel.next)||[], prev:(rel&&rel.prev)||[]};
+}
+
+const UNITS = [
+/* ───── 중1 ───── */
+u("m1-1","m1","num","Ⅰ","소인수분해","자연수를 소인수로 분해하기",
+ ["소수","합성수","거듭제곱","밑","지수","소인수","소인수분해","서로소"],
+ [["소수와 합성수",["9수01-01"]],
+  ["소인수분해",["9수01-01"]],
+  ["최대공약수와 최소공배수",["9수01-02"]]],
+ {next:["m2-1","m2-2","m3-1"]}),
+
+u("m1-2","m1","num","Ⅱ","정수와 유리수","음수까지 넓힌 수와 사칙계산",
+ ["양의 부호(+)","음의 부호(−)","양수","음수","양의 정수","음의 정수","정수","양의 유리수","음의 유리수","유리수","수직선","절댓값","교환법칙","결합법칙","분배법칙","역수"],
+ [["정수와 유리수",["9수01-03"]],
+  ["정수와 유리수의 대소 관계",["9수01-04"]],
+  ["정수와 유리수의 덧셈",["9수01-05"]],
+  ["정수와 유리수의 뺄셈",["9수01-05"]],
+  ["정수와 유리수의 곱셈",["9수01-05"]],
+  ["정수와 유리수의 나눗셈",["9수01-05"]]],
+ {next:["m1-3","m2-1","m3-1"]}),
+
+u("m1-3","m1","rel","Ⅲ","문자와 식","문자로 일반화하고 방정식으로 풀기",
+ ["대입","항","상수항","계수","다항식","단항식","차수","일차식","동류항","등식","방정식","미지수","해","근","항등식","이항","일차방정식"],
+ [["문자의 사용과 식의 값",["9수02-01"]],
+  ["일차식과 수의 곱셈, 나눗셈",["9수02-02"]],
+  ["일차식의 덧셈과 뺄셈",["9수02-02"]],
+  ["등식과 방정식",["9수02-03"]],
+  ["일차방정식의 풀이",["9수02-04"]]],
+ {prev:["m1-2"], next:["m2-2","m2-3","m2-4","m3-2","h1-1","h1-4"]}),
+
+u("m1-4","m1","rel","Ⅳ","좌표평면과 그래프","두 양의 관계를 좌표와 그래프로 보기",
+ ["좌표","순서쌍","x축","y축","좌표축","좌표평면","원점","x좌표","y좌표","제1사분면","제2사분면","제3사분면","제4사분면","그래프","변수","정비례","반비례"],
+ [["순서쌍과 좌표",["9수02-05"]],
+  ["그래프",["9수02-06"]],
+  ["정비례",["9수02-07"]],
+  ["반비례",["9수02-07"]]],
+ {next:["m2-5","h1-4","h2-1"]}),
+
+u("m1-5","m1","geo","Ⅴ","기본 도형과 작도","도형의 기본 요소와 합동",
+ ["교점","교선","두 점 사이의 거리","중점","수직이등분선","꼬인 위치","교각","맞꼭지각","엇각","동위각","평각","직교","수선의 발","작도","대변","대각","삼각형의 합동 조건","≡"],
+ [["점, 선, 면",["9수03-01"]],
+  ["각",["9수03-01"]],
+  ["위치 관계",["9수03-01"]],
+  ["평행선의 성질",["9수03-02"]],
+  ["간단한 도형의 작도",["9수03-03"]],
+  ["삼각형의 작도",["9수03-03"]],
+  ["삼각형의 합동 조건",["9수03-04"]]],
+ {next:["m2-6","m2-7","m3-4","m3-5"]}),
+
+u("m1-6","m1","geo","Ⅵ","평면도형의 성질","다각형과 부채꼴의 성질",
+ ["내각","외각","호","현","할선","부채꼴","중심각","활꼴","π"],
+ [["다각형",["9수03-05"]],
+  ["삼각형의 내각과 외각",["9수03-05"]],
+  ["다각형의 내각과 외각의 크기의 합",["9수03-05"]],
+  ["원과 부채꼴",["9수03-06"]],
+  ["부채꼴의 호의 길이와 넓이",["9수03-06"]]],
+ {next:["m2-6","m3-5"]}),
+
+u("m1-7","m1","geo","Ⅶ","입체도형의 성질","입체도형의 구조와 측정",
+ ["다면체","각뿔대","정다면체","회전체","회전축","원뿔대"],
+ [["다면체",["9수03-07"]],
+  ["회전체",["9수03-07"]],
+  ["기둥과 뿔의 부피",["9수03-08"]],
+  ["기둥과 뿔의 겉넓이",["9수03-08"]],
+  ["구의 부피와 겉넓이",["9수03-08"]]],
+ {next:["m2-7"]}),
+
+u("m1-8","m1","data","Ⅷ","자료의 정리와 해석","자료를 요약하고 분포로 읽기",
+ ["변량","대푯값","중앙값","최빈값","줄기와 잎 그림","계급","계급의 크기","도수","도수분포표","히스토그램","도수분포다각형","상대도수"],
+ [["대푯값",["9수04-01"]],
+  ["줄기와 잎 그림",["9수04-02"]],
+  ["도수분포표와 히스토그램",["9수04-02"]],
+  ["상대도수와 그 그래프",["9수04-03"]],
+  ["통계적 문제해결",["9수04-04"]]],
+ {next:["m2-8","m3-6"]}),
+
+/* ───── 중2 ───── */
+u("m2-1","m2","num","Ⅰ","유리수와 순환소수","유리수와 소수 표현의 관계",
+ ["유한소수","무한소수","순환소수","순환마디"],
+ [["유리수와 소수",["9수01-06"]],
+  ["유리수의 소수 표현",["9수01-06"]],
+  ["순환소수의 분수 표현",["9수01-06"]]],
+ {prev:["m1-1","m1-2"], next:["m3-1","h2-2"]}),
+
+u("m2-2","m2","rel","Ⅱ","식의 계산","지수법칙과 다항식의 연산",
+ ["전개"],
+ [["지수법칙 1",["9수02-08"]],
+  ["지수법칙 2",["9수02-08"]],
+  ["단항식의 곱셈과 나눗셈",["9수02-08"]],
+  ["다항식의 덧셈과 뺄셈",["9수02-09"]],
+  ["단항식과 다항식의 곱셈과 나눗셈",["9수02-10"]]],
+ {prev:["m1-1","m1-3"], next:["m3-2","h1-1","h1-4"]}),
+
+u("m2-3","m2","rel","Ⅲ","일차부등식","부등호로 나타낸 조건 풀기",
+ ["부등식","일차부등식"],
+ [["부등식과 그 해",["9수02-11"]],
+  ["부등식의 성질",["9수02-11"]],
+  ["일차부등식의 풀이",["9수02-12"]]],
+ {prev:["m1-3"], next:["h1-2"]}),
+
+u("m2-4","m2","rel","Ⅳ","연립일차방정식","미지수가 2개인 방정식 풀기",
+ ["연립방정식"],
+ [["연립일차방정식과 그 해",["9수02-13"]],
+  ["연립일차방정식의 풀이",["9수02-13"]]],
+ {prev:["m1-3"], next:["h1-2","h1-4"]}),
+
+u("m2-5","m2","rel","Ⅴ","일차함수","일차함수의 그래프와 방정식",
+ ["함수","함숫값","y=f(x)","일차함수","평행이동","x절편","y절편","기울기","직선의 방정식"],
+ [["함수",["9수02-14"]],
+  ["일차함수와 그 그래프",["9수02-15"]],
+  ["일차함수의 그래프의 절편",["9수02-15"]],
+  ["일차함수의 그래프의 기울기와 성질",["9수02-16"]],
+  ["일차함수의 식 구하기와 활용",["9수02-16"]],
+  ["일차함수와 일차방정식",["9수02-17"]],
+  ["일차함수의 그래프와 연립일차방정식",["9수02-18"]]],
+ {prev:["m1-4"], next:["m3-3","h2-1","h2-3"]}),
+
+u("m2-6","m2","geo","Ⅵ","삼각형과 사각형의 성질","합동을 근거로 성질 정당화하기",
+ ["증명","외접","외접원","외심","접한다","접선","접점","내접","내접원","내심","중선","□ABCD"],
+ [["이등변삼각형의 성질",["9수03-09"]],
+  ["직각삼각형의 합동 조건",["9수03-09"]],
+  ["삼각형의 외심",["9수03-10"]],
+  ["삼각형의 내심",["9수03-10"]],
+  ["평행사변형의 성질",["9수03-11"]],
+  ["평행사변형이 되는 조건",["9수03-11"]],
+  ["여러 가지 사각형의 성질",["9수03-11"]]],
+ {prev:["m1-5","m1-6"], next:["m3-4","m3-5","h2-2"]}),
+
+u("m2-7","m2","geo","Ⅶ","도형의 닮음과 피타고라스 정리","닮음비와 직각삼각형의 관계",
+ ["닮음","∽","닮음비","삼각형의 닮음 조건","중선","무게중심","피타고라스 정리"],
+ [["닮은 도형",["9수03-12"]],
+  ["삼각형의 닮음 조건",["9수03-13"]],
+  ["평행선 사이의 선분의 길이의 비",["9수03-14"]],
+  ["삼각형의 무게중심",["9수03-14"]],
+  ["피타고라스 정리",["9수03-15"]]],
+ {prev:["m1-5","m1-7"], next:["m3-1","m3-4","h2-1"]}),
+
+u("m2-8","m2","data","Ⅷ","경우의 수와 확률","세는 방법과 확률의 기본",
+ ["사건","확률"],
+ [["사건과 경우의 수",["9수04-05"]],
+  ["확률의 뜻",["9수04-06"]],
+  ["확률의 기본 성질",["9수04-06"]],
+  ["확률의 계산",["9수04-06"]]],
+ {prev:["m1-8"], next:["m3-6","h1-3"]}),
+
+/* ───── 중3 ───── */
+u("m3-1","m3","num","Ⅰ","제곱근과 실수","수를 실수까지 넓히기",
+ ["제곱근","근호","√","무리수","실수","분모의 유리화"],
+ [["제곱근과 그 성질",["9수01-07"]],
+  ["무리수와 실수",["9수01-08","9수01-09"]],
+  ["근호를 포함한 식의 계산",["9수01-10"]]],
+ {prev:["m1-1","m1-2","m2-1","m2-7"], next:["h1-2","h2-2"]}),
+
+u("m3-2","m3","rel","Ⅱ","문자와 식","인수분해와 이차방정식",
+ ["인수","인수분해","완전제곱식","이차방정식","중근","근의 공식"],
+ [["다항식의 곱셈",["9수02-19"],"1. 다항식의 곱셈과 인수분해"],
+  ["인수분해",["9수02-19"],"1. 다항식의 곱셈과 인수분해"],
+  ["이차방정식과 그 해",["9수02-20"],"2. 이차방정식"],
+  ["이차방정식의 풀이",["9수02-20"],"2. 이차방정식"]],
+ {prev:["m1-3","m2-2"], next:["h1-1","h1-2"]}),
+
+u("m3-3","m3","rel","Ⅲ","이차함수","포물선으로 나타나는 관계",
+ ["이차함수","포물선","축","꼭짓점","최댓값","최솟값"],
+ [["이차함수",["9수02-21"],"1. 이차함수와 그래프"],
+  ["이차함수 y=ax²의 그래프",["9수02-22"],"1. 이차함수와 그래프"],
+  ["이차함수 y=a(x−p)²+q의 그래프",["9수02-22"],"2. 이차함수 y=ax²+bx+c의 그래프"],
+  ["이차함수 y=ax²+bx+c의 그래프",["9수02-22"],"2. 이차함수 y=ax²+bx+c의 그래프"]],
+ {prev:["m2-5","m3-2"], next:["h1-2","h2-1","h2-3"]}),
+
+u("m3-4","m3","geo","Ⅳ","삼각비","각과 변의 길이를 잇는 비",
+ ["삼각비","사인","코사인","탄젠트","sin A","cos A","tan A"],
+ [["삼각비",["9수03-16"]],
+  ["삼각비의 활용",["9수03-17"]]],
+ {prev:["m1-5","m1-6","m2-6","m2-7"], next:[]}),
+
+u("m3-5","m3","geo","Ⅴ","원","현·접선·원주각의 성질",
+ ["접선","접점","접한다","원주각"],
+ [["원의 현",["9수03-18"],"1. 원과 직선"],
+  ["원의 접선",["9수03-18"],"1. 원과 직선"],
+  ["원주각",["9수03-19"],"2. 원주각"],
+  ["원주각의 활용",["9수03-19"],"2. 원주각"]],
+ {prev:["m1-5","m1-6","m2-6"], next:["h2-1"]}),
+
+u("m3-6","m3","data","Ⅵ","통계","흩어진 정도와 두 변량의 관계",
+ ["대푯값","중앙값","최빈값","산포도","편차","분산","표준편차","사분위수","상자그림","산점도","상관관계"],
+ [["대푯값",["9수04-01"],"1. 대푯값과 산포도"],
+  ["산포도",["9수04-07"],"1. 대푯값과 산포도"],
+  ["상자그림",["9수04-08"],"1. 대푯값과 산포도",true],
+  ["산점도와 상관관계",["9수04-09"],"2. 상관관계"]],
+ {prev:["m1-8","m2-8"], next:[]}),
+
+/* ───── 공통수학1 ───── */
+u("h1-1","h1","rel","Ⅰ","다항식","중학교 문자식을 일반 다항식으로 확장",
+ ["미정계수법","나머지정리","인수정리","조립제법"],
+ [["다항식의 덧셈과 뺄셈",["10공수1-01-01"],"1. 다항식의 연산"],
+  ["다항식의 곱셈과 나눗셈",["10공수1-01-01"],"1. 다항식의 연산"],
+  ["항등식",["10공수1-01-02"],"2. 나머지정리와 인수분해"],
+  ["나머지정리",["10공수1-01-02"],"2. 나머지정리와 인수분해"],
+  ["인수분해",["10공수1-01-03"],"2. 나머지정리와 인수분해"]],
+ {prev:["m1-3","m2-2","m3-2"], next:["h1-2"]}),
+
+u("h1-2","h1","rel","Ⅱ","방정식과 부등식","수 체계와 해를 복소수·고차까지 넓히기",
+ ["허수단위","복소수","실수부분","허수부분","허수","켤레복소수","실근","허근","판별식","연립부등식","i","a+bi"],
+ [["복소수와 그 연산",["10공수1-02-01"],"1. 복소수와 이차방정식"],
+  ["이차방정식의 판별식",["10공수1-02-02"],"1. 복소수와 이차방정식"],
+  ["이차방정식의 근과 계수의 관계",["10공수1-02-03"],"1. 복소수와 이차방정식"],
+  ["이차방정식과 이차함수",["10공수1-02-04","10공수1-02-05"],"2. 이차방정식과 이차함수"],
+  ["이차함수의 최대, 최소",["10공수1-02-06"],"2. 이차방정식과 이차함수"],
+  ["삼차방정식과 사차방정식",["10공수1-02-07"],"3. 여러 가지 방정식과 부등식"],
+  ["연립이차방정식",["10공수1-02-08"],"3. 여러 가지 방정식과 부등식"],
+  ["연립일차부등식",["10공수1-02-09","10공수1-02-10"],"3. 여러 가지 방정식과 부등식"],
+  ["이차부등식과 연립이차부등식",["10공수1-02-11"],"3. 여러 가지 방정식과 부등식"]],
+ {prev:["m2-3","m2-4","m3-1","m3-2","m3-3","h1-1"], next:["h2-3"]}),
+
+u("h1-3","h1","data","Ⅲ","경우의 수","세는 전략을 순열·조합으로 체계화",
+ ["합의 법칙","곱의 법칙","순열","계승","조합","nPr","n!","nCr"],
+ [["경우의 수",["10공수1-03-01"]],
+  ["순열",["10공수1-03-02"]],
+  ["조합",["10공수1-03-03"]]],
+ {prev:["m2-8"], next:[]}),
+
+u("h1-4","h1","rel","Ⅳ","행렬","자료를 직사각형 배열로 구조화하고 연산",
+ ["행렬","행","열","성분","m×n 행렬"],
+ [["행렬",["10공수1-04-01"]],
+  ["행렬의 덧셈과 뺄셈",["10공수1-04-02"]],
+  ["행렬의 곱셈",["10공수1-04-02"]]],
+ {prev:["m1-3","m1-4","m2-2","m2-4"], next:[]}),
+
+/* ───── 공통수학2 ───── */
+u("h2-1","h2","geo","Ⅰ","도형의 방정식","중학교 도형을 좌표평면 위의 식으로",
+ ["내분","대칭이동","y=x"],
+ [["선분의 내분",["10공수2-01-01"],"1. 평면좌표와 직선의 방정식"],
+  ["직선의 위치 관계",["10공수2-01-02"],"1. 평면좌표와 직선의 방정식"],
+  ["점과 직선 사이의 거리",["10공수2-01-03"],"1. 평면좌표와 직선의 방정식"],
+  ["원의 방정식",["10공수2-01-04"],"2. 원의 방정식"],
+  ["원과 직선의 위치 관계",["10공수2-01-05"],"2. 원의 방정식"],
+  ["평행이동",["10공수2-01-06"],"3. 도형의 이동"],
+  ["대칭이동",["10공수2-01-07"],"3. 도형의 이동"]],
+ {prev:["m1-4","m2-5","m2-7","m3-3","m3-5"], next:[]}),
+
+u("h2-2","h2","num","Ⅱ","집합과 명제","수 체계의 분류와 논리적 정당화",
+ ["집합","원소","공집합","부분집합","진부분집합","벤 다이어그램","합집합","교집합","전체집합","여집합","차집합","서로소","드모르간의 법칙","명제","가정","결론","정의","정리","조건","진리집합","부정","역","대우","충분조건","필요조건","필요충분조건","귀류법","절대부등식","∈","⊂","∪","∩","⇒","⇔"],
+ [["집합",["10공수2-02-01"],"1. 집합"],
+  ["집합 사이의 포함 관계",["10공수2-02-02"],"1. 집합"],
+  ["교집합과 합집합",["10공수2-02-03"],"1. 집합"],
+  ["여집합과 차집합",["10공수2-02-03"],"1. 집합"],
+  ["명제와 조건",["10공수2-02-04"],"2. 명제"],
+  ["명제 사이의 관계",["10공수2-02-05","10공수2-02-06"],"2. 명제"],
+  ["명제의 증명",["10공수2-02-07","10공수2-02-08"],"2. 명제"]],
+ {prev:["m2-1","m2-6","m3-1"], next:[]}),
+
+u("h2-3","h2","rel","Ⅲ","함수와 그래프","함수를 두 집합 사이의 대응으로 일반화",
+ ["정의역","치역","공역","대응","일대일대응","항등함수","상수함수","일대일함수","합성함수","역함수","다항함수","유리식","무리식","유리함수","점근선","무리함수","f⁻¹"],
+ [["함수",["10공수2-03-01"],"1. 함수"],
+  ["합성함수",["10공수2-03-02"],"1. 함수"],
+  ["역함수",["10공수2-03-03"],"1. 함수"],
+  ["유리함수",["10공수2-03-04"],"2. 유리함수와 무리함수"],
+  ["무리함수",["10공수2-03-05"],"2. 유리함수와 무리함수"]],
+ {prev:["m2-5","m3-3","h1-2"], next:[]})
+];
+
+const UMAP = Object.fromEntries(UNITS.map(x=>[x.id,x]));
+const SUBMAP = {};
+UNITS.forEach(x=>x.subs.forEach(s=>SUBMAP[s.id]={sub:s,unit:x}));
+
+/* 연결선: prev/next를 양방향으로 합쳐 중복 없는 edge 목록 만들기 */
+const EDGES = (()=>{
+  const set = new Set(), out=[];
+  const add=(a,b)=>{ if(!UMAP[a]||!UMAP[b]||a===b) return;
+    const k=a+">"+b; if(set.has(k))return; set.add(k);
+    out.push({from:a,to:b,cross:UMAP[a].area!==UMAP[b].area}); };
+  UNITS.forEach(x=>{ x.next.forEach(t=>add(x.id,t)); x.prev.forEach(p=>add(p,x.id)); });
+  return out;
+})();
+UNITS.forEach(x=>{
+  x.prevAll = EDGES.filter(e=>e.to===x.id).map(e=>e.from);
+  x.nextAll = EDGES.filter(e=>e.from===x.id).map(e=>e.to);
+});
+
+
+
+
+
+
+
+/* ═══ 공통 유틸 ═══ */
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const n=document.createElement(t);if(c)n.className=c;if(h!=null)n.innerHTML=h;return n;};
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const SYM=/^[^\uAC00-\uD7A3]+$/;
+function toast(m,bad){const t=el("div","toast"+(bad?" bad":""),esc(m));$("#toasts").appendChild(t);setTimeout(()=>{t.style.opacity=0;t.style.transition=".3s";setTimeout(()=>t.remove(),320);},2600);}
+function fmtDate(ts){const d=new Date(ts);return isNaN(d)?"":d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");}
+const A=k=>AREAS[k];
+const shortG=g=>({m1:"중1",m2:"중2",m3:"중3",h1:"공수1",h2:"공수2"}[g]||g);
+function lsGet(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+async function sha(s){
+  try{
+    const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("mathedu:"+s));
+    return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+  }catch(e){ return "plain:"+s; }
+}
+
+/* ═══════════════ 저장 계층 ═══════════════
+   SUMS  : { caseId: {id, subId, tool, title, tags, author, uid, updatedAt} }
+   BODY  : { caseId: [block,...] }        (필요할 때만 불러옴)
+   IDX   : { subId: [summary,...] }       (SUMS에서 만들어 냄)
+   백엔드 두 가지: firebase / local(브라우저) — firebase 설정은 이 파일 맨 위 FIREBASE_CONFIG에 적어 둡니다.
+   ═════════════════════════════════════════ */
+let SUMS={}, BODY={}, IDX={};
+let USER=null;                          // 로그인한 회원 { uid, loginId, name, school, level, grades, subjects, interested, used, role, status }
+let PENDING=[];                         // 승인 대기 회원 (관리자용)
+const IMG_LIMIT_STORAGE=3*1024*1024;    // Firebase Storage 보안 규칙과 맞춘 값 (3MB)
+const IMG_LIMIT_INLINE=350*1024;        // Firestore 문서 안에 그대로 담을 때의 한도
+const isApproved=()=>!!USER&&USER.status==="approved";
+const isAdmin=()=>!!USER&&USER.role==="admin"&&USER.status==="approved";
+
+const DB={
+  mode:"local", label:"이 기기에만 저장", detail:"", fb:null,
+
+  async init(){
+    const cfg=FIREBASE_CONFIG;
+    if(cfg&&cfg.projectId&&cfg.apiKey){
+      try{ await this.initFirebase(cfg); return; }
+      catch(e){ console.warn(e); toast("Firebase 연결에 실패해 이 기기 저장으로 돌아갑니다",true); }
+    }
+    this.mode="local"; this.label="이 기기에만 저장"; this.detail="브라우저 저장소를 씁니다. 다른 사람에게는 보이지 않습니다.";
+  },
+
+  async initFirebase(cfg){
+    const [app,fs,auth]=await Promise.all([
+      import(SDK+"firebase-app.js"),
+      import(SDK+"firebase-firestore.js"),
+      import(SDK+"firebase-auth.js")
+    ]);
+    const a=app.initializeApp(cfg);
+    const db=fs.getFirestore(a);
+    const au=auth.getAuth(a);
+    let storage=null;
+    if(cfg.storageBucket){
+      try{ const st=await import(SDK+"firebase-storage.js"); storage={mod:st,inst:st.getStorage(a)}; }catch(e){}
+    }
+    this.fb={app:a,db,fs,auth,au,storage};
+    this.mode="firebase"; this.label="Firebase 연결됨";
+    this.detail=cfg.projectId+(storage?" · 사진 업로드 가능":" · 사진은 주소로 넣어 주세요");
+  },
+
+  /* 목록 ─ firebase는 실시간으로 계속 갱신 */
+  async watchIndex(cb){
+    if(this.mode==="firebase"){
+      const {fs,db}=this.fb;
+      fs.onSnapshot(fs.collection(db,"caseSummaries"),snap=>{
+        SUMS={}; snap.forEach(d=>{const v=d.data(); SUMS[d.id]={...v,id:d.id};});
+        rebuildIndex(); cb();
+      },err=>{ console.warn(err); toast("사례 목록을 읽지 못했습니다. Firestore 규칙을 확인해 주세요.",true); });
+      return;
+    }
+    const raw=(lsGet(LS_DATA)||{}).index;
+    SUMS={};
+    Object.keys(raw||{}).forEach(sid=>(raw[sid]||[]).forEach(s=>{SUMS[s.id]={...s,subId:sid};}));
+    rebuildIndex(); cb();
+  },
+
+  /* 본문 ─ 소단원 단위로 필요할 때 */
+  async loadBodies(subId){
+    const ids=(IDX[subId]||[]).map(s=>s.id).filter(i=>!BODY[i]);
+    if(!ids.length) return;
+    if(this.mode==="firebase"){
+      const {fs,db}=this.fb;
+      const q=fs.query(fs.collection(db,"caseBodies"),fs.where("subId","==",subId));
+      const snap=await fs.getDocs(q);
+      snap.forEach(d=>{ try{ BODY[d.id]=JSON.parse(d.data().blocksJson||"[]"); }catch(e){ BODY[d.id]=[]; } });
+      ids.forEach(i=>{ if(!BODY[i]) BODY[i]=[]; });
+      return;
+    }
+    const bank=((lsGet(LS_DATA)||{}).bodies||{})[subId]||{};
+    Object.keys(bank).forEach(cid=>{ BODY[cid]=bank[cid].blocks||bank[cid]||[]; });
+    ids.forEach(i=>{ if(!BODY[i]) BODY[i]=[]; });
+  },
+
+  async saveCase(rec){
+    const sum={id:rec.id,subId:rec.subId,tool:rec.tool,title:rec.title,tags:rec.tags,author:rec.author,uid:rec.uid,updatedAt:rec.updatedAt};
+    if(this.mode==="firebase"){
+      const {fs,db}=this.fb;
+      await fs.setDoc(fs.doc(db,"caseSummaries",rec.id),sum);
+      await fs.setDoc(fs.doc(db,"caseBodies",rec.id),{subId:rec.subId,updatedAt:rec.updatedAt,blocksJson:JSON.stringify(rec.blocks||[])});
+      SUMS[rec.id]=sum; BODY[rec.id]=rec.blocks||[]; rebuildIndex();
+      return true;
+    }
+    SUMS[rec.id]=sum; BODY[rec.id]=rec.blocks||[]; rebuildIndex();
+    return await this._flush(rec.subId);
+  },
+
+  async deleteCase(subId,caseId){
+    if(this.mode==="firebase"){
+      const {fs,db}=this.fb;
+      await fs.deleteDoc(fs.doc(db,"caseSummaries",caseId));
+      await fs.deleteDoc(fs.doc(db,"caseBodies",caseId));
+      delete SUMS[caseId]; delete BODY[caseId]; rebuildIndex();
+      return true;
+    }
+    delete SUMS[caseId]; delete BODY[caseId]; rebuildIndex();
+    return await this._flush(subId);
+  },
+
+  /* ── 계정 ───────────────────────────────────────── */
+  idToEmail(id){ return String(id).trim().toLowerCase()+LOGIN_DOMAIN; },
+
+  /* 로그인 상태가 바뀔 때마다 회원 정보를 함께 실어 알려 줍니다 */
+  watchAuth(cb){
+    if(this.mode!=="firebase"){
+      const local=(lsGet(LS_DATA)||{}).localUser||null;
+      cb(local); return;
+    }
+    const {auth,au}=this.fb;
+    auth.onAuthStateChanged(au,async u=>{
+      if(!u){ cb(null); return; }
+      try{ cb(await this.getUser(u.uid)); }
+      catch(e){ console.warn(e); cb(null); }
+    });
+  },
+
+  async getUser(uid){
+    if(this.mode!=="firebase") return (lsGet(LS_DATA)||{}).localUser||null;
+    const {fs,db}=this.fb;
+    const d=await fs.getDoc(fs.doc(db,"users",uid));
+    return d.exists()?{...d.data(),uid}:null;
+  },
+
+  /* 첫 가입자는 곧바로 관리자·승인 상태가 됩니다 */
+  async isFirstMember(){
+    if(this.mode!=="firebase") return !((lsGet(LS_DATA)||{}).localUser);
+    const {fs,db}=this.fb;
+    const snap=await fs.getDocs(fs.query(fs.collection(db,"users"),fs.limit(1)));
+    return snap.empty;
+  },
+
+  async signUp(profile,password){
+    if(this.mode!=="firebase"){
+      const u={...profile,uid:"local",role:"admin",status:"approved",createdAt:Date.now()};
+      const d=lsGet(LS_DATA)||{}; d.localUser=u; lsSet(LS_DATA,d);
+      return u;
+    }
+    const {auth,au,fs,db}=this.fb;
+    const first=await this.isFirstMember();
+    const cred=await auth.createUserWithEmailAndPassword(au,this.idToEmail(profile.loginId),password);
+    const u={...profile, uid:cred.user.uid,
+      role: first?"admin":"member",
+      status: first?"approved":"pending",
+      createdAt: Date.now(), approvedAt: first?Date.now():null, approvedBy: first?"(최초 가입)":null };
+    await fs.setDoc(fs.doc(db,"users",cred.user.uid),u);
+    return u;
+  },
+
+  async signIn(loginId,password){
+    if(this.mode!=="firebase") return (lsGet(LS_DATA)||{}).localUser||null;
+    const {auth,au}=this.fb;
+    const cred=await auth.signInWithEmailAndPassword(au,this.idToEmail(loginId),password);
+    return await this.getUser(cred.user.uid);
+  },
+
+  async signOut(){
+    if(this.mode!=="firebase") return;
+    const {auth,au}=this.fb;
+    await auth.signOut(au);
+  },
+
+  async listUsers(){
+    if(this.mode!=="firebase"){ const u=(lsGet(LS_DATA)||{}).localUser; return u?[u]:[]; }
+    const {fs,db}=this.fb;
+    const snap=await fs.getDocs(fs.collection(db,"users"));
+    const out=[]; snap.forEach(d=>out.push({...d.data(),uid:d.id}));
+    return out.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  },
+
+  async updateUser(uid,patch){
+    if(this.mode!=="firebase"){
+      const d=lsGet(LS_DATA)||{}; d.localUser={...(d.localUser||{}),...patch}; lsSet(LS_DATA,d); return true;
+    }
+    const {fs,db}=this.fb;
+    await fs.updateDoc(fs.doc(db,"users",uid),patch);
+    return true;
+  },
+
+  /* 비밀번호 변경 ─ 현재 비밀번호로 본인 확인을 거칩니다 */
+  async changePassword(loginId,currentPw,newPw){
+    if(this.mode!=="firebase") throw new Error("로컬 모드에서는 쓸 수 없습니다.");
+    const {auth,au}=this.fb;
+    const u=au.currentUser;
+    if(!u) { const e=new Error("no user"); e.code="auth/user-not-found"; throw e; }
+    const cred=auth.EmailAuthProvider.credential(this.idToEmail(loginId),currentPw);
+    await auth.reauthenticateWithCredential(u,cred);
+    await auth.updatePassword(u,newPw);
+    return true;
+  },
+
+  /* 이름을 바꾸면 이미 쓴 사례의 작성자 표기도 함께 고칩니다 */
+  async renameAuthor(uid,name){
+    const mine=Object.values(SUMS).filter(s=>s.uid===uid);
+    if(!mine.length) return 0;
+    if(this.mode!=="firebase"){
+      mine.forEach(s=>{ SUMS[s.id]={...s,author:name}; });
+      rebuildIndex();
+      const subs=[...new Set(mine.map(s=>s.subId))];
+      for(const sid of subs) await this._flush(sid);
+      return mine.length;
+    }
+    const {fs,db}=this.fb;
+    for(const s of mine){
+      try{ await fs.updateDoc(fs.doc(db,"caseSummaries",s.id),{author:name}); SUMS[s.id]={...s,author:name}; }
+      catch(e){ console.warn(e); }
+    }
+    rebuildIndex();
+    return mine.length;
+  },
+
+  /* 사진 ─ Firebase Storage가 있으면 올리고, 없으면 본문에 그대로 담음 */
+  async uploadImage(dataUrl,caseId){
+    if(this.mode!=="firebase"||!this.fb.storage) return null;
+    const {mod,inst}=this.fb.storage;
+    const r=mod.ref(inst,"case-images/"+caseId+"/"+uid()+".jpg");
+    await mod.uploadString(r,dataUrl,"data_url");
+    return await mod.getDownloadURL(r);
+  },
+
+  get canUpload(){ return this.mode==="firebase"&&!!this.fb.storage; },
+  get isShared(){ return this.mode==="firebase"; },
+
+  /* 내부 ─ local */
+  async _flush(subId){
+    const idxOut={}; Object.values(SUMS).forEach(s=>{(idxOut[s.subId]=idxOut[s.subId]||[]).push(s);});
+    const bank={}; (IDX[subId]||[]).forEach(s=>{ bank[s.id]={...s,blocks:BODY[s.id]||[]}; });
+    const d=lsGet(LS_DATA)||{}; d.index=idxOut; d.bodies=d.bodies||{}; d.bodies[subId]=bank;
+    return lsSet(LS_DATA,d);
+  }
+};
+
+function rebuildIndex(){
+  IDX={};
+  Object.values(SUMS).forEach(s=>{ if(!SUBMAP[s.subId])return; (IDX[s.subId]=IDX[s.subId]||[]).push(s); });
+  Object.keys(IDX).forEach(k=>IDX[k].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)));
+}
+const cnt=sid=>(IDX[sid]||[]).length;
+const unitCnt=u2=>u2.subs.reduce((a,s)=>a+cnt(s.id),0);
+
+/* ═══ 화면 상태 ═══ */
+const S={ view:"archive", q:"", areas:new Set(), sub:null, unit:null,
+          openG:new Set(["m1"]), openU:new Set(), mapSel:null, editor:null, folds:new Set() };
+
+/* ═══ 검색 ═══ */
+function subMatch(sb,un){
+  if(S.areas.size&&!S.areas.has(un.area)) return false;
+  const q=S.q.trim().toLowerCase(); if(!q) return true;
+  const pool=[un.title,un.no,un.theme,GMAP[un.grade].label,AREAS[un.area].name,sb.t,sb.mid||"",
+    ...un.terms,...sb.c,...sb.c.map(c=>STD[c]||""),
+    ...(IDX[sb.id]||[]).flatMap(k=>[k.tool,k.title,(k.tags||[]).join(" ")])].join(" ").toLowerCase();
+  return pool.includes(q);
+}
+const unitMatch=un=>un.subs.some(sb=>subMatch(sb,un));
+
+/* ═══ 사이드바 ═══ */
+function renderChips(){
+  const w=$("#fchips"); w.innerHTML="";
+  AREA_ORDER.forEach(k=>{
+    const on=S.areas.has(k), b=el("button","fchip");
+    b.setAttribute("aria-pressed",on?"true":"false");
+    b.style.color=on?"#fff":A(k).hex; if(on) b.style.background=A(k).hex;
+    b.innerHTML='<span class="d"></span>'+esc(A(k).name);
+    b.onclick=()=>{on?S.areas.delete(k):S.areas.add(k);renderChips();renderTree();if(S.view==="map")renderMap();};
+    w.appendChild(b);
+  });
+}
+function renderTree(){
+  const t=$("#tree"); t.innerHTML=""; let any=false;
+  GRADES.forEach(g=>{
+    const units=UNITS.filter(x=>x.grade===g.id&&unitMatch(x));
+    if(!units.length) return; any=true;
+    const gs=el("div","gsec"+(S.openG.has(g.id)?" open":""));
+    const gh=el("button","ghead");
+    gh.innerHTML='<svg class="cv" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><b>'+esc(g.label)+'</b><span class="n">'+units.reduce((a,x)=>a+unitCnt(x),0)+'</span>';
+    gh.onclick=()=>{S.openG.has(g.id)?S.openG.delete(g.id):S.openG.add(g.id);renderTree();};
+    gs.appendChild(gh);
+    const gl=el("div","glist");
+    units.forEach(un=>{
+      const uo=S.openU.has(un.id)||un.subs.some(s=>s.id===S.sub);
+      const us=el("div","usec"+(uo?" open":""));
+      const n=unitCnt(un), hex=A(un.area).hex;
+      const uh=el("button","uhead");
+      uh.innerHTML='<span class="bar" style="background:'+hex+'"></span><span class="rn">'+esc(un.no)+'</span><span class="t">'+esc(un.title)+'</span>'+
+        (n?'<span class="badge" style="background:'+hex+'1a;color:'+hex+'">'+n+'</span>':'')+
+        '<svg class="cv" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+      uh.onclick=()=>{S.openU.has(un.id)?S.openU.delete(un.id):S.openU.add(un.id);renderTree();};
+      us.appendChild(uh);
+      const ul=el("div","ulist"); let lastMid=null;
+      un.subs.forEach(sb=>{
+        if(!subMatch(sb,un)) return;
+        if(sb.mid&&sb.mid!==lastMid){ ul.appendChild(el("div","midlbl",esc(sb.mid))); lastMid=sb.mid; }
+        const c=cnt(sb.id), r=el("button","srow");
+        r.setAttribute("aria-current",S.sub===sb.id?"true":"false");
+        r.style.setProperty("--selbg",hex+"14"); r.style.setProperty("--selc",hex);
+        r.innerHTML='<span class="t">'+esc(sb.t)+'</span>'+(c?'<span class="c has" style="background:'+hex+'">'+c+'</span>':'<span class="c">0</span>');
+        r.onclick=()=>go(sb.id);
+        ul.appendChild(r);
+      });
+      us.appendChild(ul); gl.appendChild(us);
+    });
+    gs.appendChild(gl); t.appendChild(gs);
+  });
+  if(!any) t.appendChild(el("div","noresult","조건에 맞는 단원이 없습니다."));
+}
+
+/* ═══ 이동 ═══ */
+async function go(subId){
+  S.sub=subId; S.editor=null;
+  const rec=SUBMAP[subId];
+  if(rec){ S.unit=rec.unit.id; S.openG.add(rec.unit.grade); S.openU.add(rec.unit.id); }
+  setView("archive");
+  $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
+  renderTree(); renderPage(); $("#content").scrollTop=0;
+  try{ await DB.loadBodies(subId); }catch(e){ console.warn(e); }
+  renderPage();
+}
+function setView(v){
+  S.view=v;
+  $("#tabArchive").setAttribute("aria-selected",v==="archive");
+  $("#tabMap").setAttribute("aria-selected",v==="map");
+  $("#content").classList.toggle("hidden",v!=="archive");
+  $("#mapview").classList.toggle("hidden",v!=="map");
+  $("#side").style.display=v==="archive"?"":"none";
+  if(v==="map") requestAnimationFrame(renderMap);
+}
+
+/* ═══ 본문 ═══ */
+function renderPage(){
+  const w=$("#wrap");
+  if(!S.sub){ w.innerHTML=""; w.appendChild(homeView()); return; }
+  const {sub,unit}=SUBMAP[S.sub], hex=A(unit.area).hex, G=GMAP[unit.grade];
+  w.innerHTML="";
+
+  const cr=el("div","crumb");
+  cr.innerHTML='<span class="ac" style="background:'+hex+'18;color:'+hex+'">'+esc(A(unit.area).name)+'</span>'+
+    '<span>'+esc(G.label)+'</span><span class="sep">›</span><span>'+esc(unit.no)+'. '+esc(unit.title)+'</span>'+
+    (sub.mid?'<span class="sep">›</span><span>'+esc(sub.mid)+'</span>':'');
+  w.appendChild(cr);
+  w.appendChild(el("h2","page",esc(sub.t)+(sub.isNew?'<span class="newbadge">2022 신설</span>':'')));
+  w.appendChild(el("p","subttl",esc(G.book)+" · 소단원 "+sub.idx+"/"+unit.subs.length));
+
+  const p1=panel("소단원 성취기준",sub.c.length,false);
+  sub.c.forEach(c=>{
+    const d=el("div","std"); d.innerHTML='<span class="code">'+esc(c)+'</span><p>'+esc(STD[c]||"")+'</p>';
+    p1.body.appendChild(d);
+  });
+  w.appendChild(p1.root);
+
+  const p2=panel("대단원 학습 요소와 계통",unit.terms.length,true);
+  const tw=el("div","terms"); unit.terms.forEach(t=>tw.appendChild(el("span","term"+(SYM.test(t)?" sym":""),esc(t))));
+  p2.body.appendChild(tw);
+  const mkrow=(lbl,ids)=>{
+    const r=el("div","linkrow"); r.style.marginTop="12px";
+    r.appendChild(el("span","lbl",lbl));
+    if(!ids.length) r.appendChild(el("span","nolink","이 지도 범위에는 없음"));
+    ids.forEach(i=>{
+      const t=UMAP[i]; if(!t)return;
+      const b=el("button","jump"), h2=A(t.area).hex;
+      b.innerHTML='<span class="sq" style="background:'+h2+'"></span><span class="gr">'+esc(shortG(t.grade))+'</span> '+esc(t.title);
+      b.onmouseenter=()=>{b.style.borderColor=h2;b.style.color=h2;};
+      b.onmouseleave=()=>{b.style.borderColor="";b.style.color="";};
+      b.onclick=()=>go(t.subs[0].id);
+      r.appendChild(b);
+    });
+    return r;
+  };
+  p2.body.appendChild(mkrow("배운 내용 ←",unit.prevAll));
+  p2.body.appendChild(mkrow("배울 내용 →",unit.nextAll));
+  w.appendChild(p2.root);
+
+  const list=IDX[S.sub]||[];
+  const ch=el("div","casehead");
+  ch.innerHTML='<h3>에듀테크 사례</h3><span class="n">'+list.length+'</span>';
+  const sp=el("span","sp");
+  if(list.length){
+    const h=el("button","btn sm","HTML로 저장");
+    h.title="이 소단원의 사례만 모아 낱개 HTML 파일로 내려받습니다";
+    h.onclick=()=>exportSubHTML(S.sub);
+    sp.appendChild(h);
+  }
+  if(isApproved()&&!S.editor){
+    const b=el("button","btn live","＋ 사례 추가");
+    b.onclick=()=>startEditor(S.sub,null);
+    sp.appendChild(b);
+  }
+  ch.appendChild(sp); w.appendChild(ch);
+
+  if(S.editor&&S.editor.subId===S.sub&&!S.editor.caseId) w.appendChild(buildEditor());
+
+  if(!list.length&&!S.editor){
+    const e=el("div","empty");
+    const hint = isApproved() ? '수업에서 써 본 도구와 활동을 기록해 다른 선생님과 나눠 주세요.'
+              : USER ? '관리자가 가입을 승인하면 사례를 쓸 수 있습니다.'
+              : '로그인하면 첫 사례를 남길 수 있습니다.';
+    e.innerHTML='<div class="em">✎</div><p>이 소단원에는 아직 사례가 없습니다.</p><span>'+hint+'</span>';
+    if(isApproved()){
+      const b=el("button","btn live","＋ 첫 사례 쓰기"); b.onclick=()=>startEditor(S.sub,null); e.appendChild(b);
+    }else if(!USER){
+      const b=el("button","btn primary","로그인"); b.onclick=()=>openAuth("login"); e.appendChild(b);
+    }
+    w.appendChild(e);
+  }
+  list.forEach(sum=>{
+    if(S.editor&&S.editor.caseId===sum.id){ w.appendChild(buildEditor()); return; }
+    w.appendChild(caseCard(sum,hex));
+  });
+
+  const flat=UNITS.flatMap(x=>x.subs.map(s=>s.id));
+  const i=flat.indexOf(S.sub);
+  const nav=el("div");
+  nav.style.cssText="display:flex;gap:8px;justify-content:space-between;margin-top:30px;padding-top:18px;border-top:1px solid var(--line)";
+  const mkn=(j,align)=>{
+    if(j<0||j>=flat.length) return el("span");
+    const r=SUBMAP[flat[j]], b=el("button","btn");
+    b.innerHTML=(align==="left"?"← ":"")+esc(r.sub.t)+(align==="right"?" →":"");
+    b.onclick=()=>go(flat[j]); return b;
+  };
+  nav.appendChild(mkn(i-1,"left")); nav.appendChild(mkn(i+1,"right"));
+  w.appendChild(nav);
+}
+function panel(title,n,closed){
+  const root=el("div","panel"+(closed&&!S.folds.has(title)?" closed":""));
+  const ph=el("div","ph");
+  ph.innerHTML='<h3>'+esc(title)+'</h3>'+(n!=null?'<span class="n">'+n+'</span>':'');
+  const fb=el("button","foldbtn");
+  const lbl=()=>root.classList.contains("closed")?"펼치기":"접기";
+  fb.innerHTML='<span>'+lbl()+'</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  fb.onclick=()=>{
+    root.classList.toggle("closed"); fb.querySelector("span").textContent=lbl();
+    if(root.classList.contains("closed")) S.folds.delete(title); else S.folds.add(title);
+  };
+  ph.appendChild(fb); root.appendChild(ph);
+  const body=el("div","pb"); root.appendChild(body);
+  return {root,body};
+}
+function homeView(){
+  const w=el("div");
+  w.appendChild(el("h2","page","단원을 골라 사례를 남기고, 다른 선생님의 사례를 읽어 보세요"));
+  w.appendChild(el("p","subttl","왼쪽 목록에서 학년 → 대단원 → 소단원 순으로 들어가면 그 소단원의 성취기준과 에듀테크 사례가 열립니다."));
+  if(!DB.isShared){
+    const n=el("div","panel"); n.style.borderColor="#F6DDBE";
+    n.innerHTML='<div class="pb" style="background:#FDF8F1"><b style="font-size:13px;font-weight:750">서버에 연결하지 못했습니다.</b>'+
+      '<p style="margin:6px 0 0;font-size:12.5px;color:var(--ink-2);font-weight:500;line-height:1.65">'+
+      '지금 남기는 사례는 이 브라우저에만 저장되고 다른 선생님에게는 보이지 않습니다. 인터넷 연결을 확인한 뒤 새로고침해 주세요.</p></div>';
+    w.appendChild(n);
+  }
+  const recent=[];
+  Object.values(SUMS).forEach(k=>{ if(SUBMAP[k.subId]) recent.push(k); });
+  recent.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  const p=panel("최근 등록된 사례",recent.length,false);
+  if(!recent.length) p.body.appendChild(el("div","nolink","아직 등록된 사례가 없습니다. 로그인한 뒤 첫 사례를 남겨 주세요."));
+  recent.slice(0,12).forEach(k=>{
+    const {sub,unit}=SUBMAP[k.subId], hex=A(unit.area).hex;
+    const b=el("button");
+    b.style.cssText="display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 6px;border-radius:9px;border-bottom:1px solid var(--line-2)";
+    b.onmouseenter=()=>b.style.background="var(--bg)"; b.onmouseleave=()=>b.style.background="";
+    b.innerHTML='<span style="font-size:10.5px;font-weight:800;color:#fff;background:'+hex+';padding:3px 8px;border-radius:7px;flex:none">'+esc(k.tool)+'</span>'+
+      '<span style="flex:1;min-width:0"><span style="display:block;font-size:13.5px;font-weight:700;letter-spacing:-.03em">'+esc(k.title)+'</span>'+
+      '<span style="display:block;font-size:11px;color:var(--ink-3);font-weight:600;margin-top:1px">'+esc(shortG(unit.grade))+' · '+esc(unit.title)+' · '+esc(sub.t)+'</span></span>'+
+      '<span style="font-size:10.5px;color:var(--ink-4);font-weight:650;flex:none">'+esc(k.author||"익명")+' · '+fmtDate(k.updatedAt)+'</span>';
+    b.onclick=()=>go(k.subId);
+    p.body.appendChild(b);
+  });
+  w.appendChild(p.root);
+  return w;
+}
+
+/* ═══ 사례 카드 ═══ */
+function caseCard(sum,hex){
+  const blocks=BODY[sum.id];
+  const mine = !!(USER && sum.uid && sum.uid===USER.uid);
+  const canEdit = isApproved() && (isAdmin()||mine);
+  const c=el("div","case");
+  const ch=el("div","ch");
+  ch.innerHTML='<span class="tool" style="background:'+hex+'">'+esc(sum.tool)+'</span>'+
+    '<span class="hh"><h4>'+esc(sum.title)+'</h4><p class="who"><b>'+esc(sum.author||"익명")+'</b> · '+fmtDate(sum.updatedAt)+
+    (isApproved()&&!canEdit?' · <span style="color:var(--ink-4)">다른 선생님의 사례</span>':'')+'</p></span>';
+  const acts=el("span","acts");
+  if(canEdit){
+    const e=el("button","btn sm","수정"); e.onclick=()=>startEditor(sum.subId||S.sub,sum.id);
+    const d=el("button","btn sm danger","삭제"); d.onclick=()=>delCase(sum.subId||S.sub,sum.id);
+    acts.appendChild(e); acts.appendChild(d);
+    if(isAdmin()&&!mine){ const tagb=el("span"); tagb.style.cssText="font-size:9.5px;font-weight:700;color:#B4651A;align-self:center;margin-right:2px"; tagb.textContent="관리자 권한"; acts.prepend(tagb); }
+  }
+  ch.appendChild(acts); c.appendChild(ch);
+  if(sum.tags&&sum.tags.length) c.appendChild(el("div","tags",sum.tags.map(t=>'<span class="tg">'+esc(t)+'</span>').join("")));
+  const cb=el("div","cb"), rb=el("div","rb");
+  rb.style.setProperty("--qc",hex);
+  if(!blocks) rb.innerHTML='<p style="color:var(--ink-4)">내용을 불러오는 중…</p>';
+  else renderBlocks(rb,blocks);
+  cb.appendChild(rb); c.appendChild(cb);
+  return c;
+}
+function renderBlocks(root,blocks){
+  root.innerHTML="";
+  blocks.forEach(b=>{
+    if(b.type==="h2") root.appendChild(el("h5",null,esc(b.text||"")));
+    else if(b.type==="h3") root.appendChild(el("h6",null,esc(b.text||"")));
+    else if(b.type==="p") root.appendChild(el("p",null,linkify(b.text||"")));
+    else if(b.type==="quote") root.appendChild(el("blockquote",null,linkify(b.text||"")));
+    else if(b.type==="hr") root.appendChild(el("hr"));
+    else if(b.type==="ul"){
+      const u2=el("ul");
+      (b.text||"").split("\n").filter(x=>x.trim()).forEach(x=>u2.appendChild(el("li",null,linkify(x.replace(/^[-•*]\s*/,"")))));
+      if(u2.children.length) root.appendChild(u2);
+    }
+    else if(b.type==="img"&&b.src){
+      const f=el("figure");
+      f.innerHTML='<img src="'+esc(b.src)+'" alt="'+esc(b.cap||"사례 이미지")+'" loading="lazy">'+(b.cap?'<figcaption>'+esc(b.cap)+'</figcaption>':'');
+      root.appendChild(f);
+    }
+    else if(b.type==="embed"&&(b.html||"").trim()){
+      const f=el("figure"), ifr=el("iframe");
+      ifr.setAttribute("sandbox","allow-scripts allow-same-origin allow-popups allow-forms allow-presentation");
+      ifr.setAttribute("referrerpolicy","no-referrer");
+      ifr.style.height=(b.h||420)+"px";
+      ifr.srcdoc='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;height:100%;font-family:sans-serif}iframe,img,video{max-width:100%;border:0}*{box-sizing:border-box}</style>'+b.html;
+      f.appendChild(ifr);
+      if(b.cap) f.appendChild(el("figcaption",null,esc(b.cap)));
+      root.appendChild(f);
+    }
+  });
+  if(!root.children.length) root.innerHTML='<p style="color:var(--ink-4)">내용이 비어 있습니다.</p>';
+}
+const linkify=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+
+/* ═══ 편집기 ═══ */
+function startEditor(subId,caseId){
+  const blocks=caseId?(BODY[caseId]||[]):null;
+  const sum=caseId?SUMS[caseId]:null;
+  S.editor={ subId, caseId, draftId: caseId||uid(),
+    uid: sum?sum.uid:(USER?USER.uid:null),
+    tool:sum?sum.tool:"", title:sum?sum.title:"",
+    tags:new Set(sum?(sum.tags||[]):[]),
+    blocks: blocks&&blocks.length ? JSON.parse(JSON.stringify(blocks))
+          : [{id:uid(),type:"h3",text:"수업 흐름"},{id:uid(),type:"p",text:""}] };
+  renderPage();
+  setTimeout(()=>{const n=document.querySelector(".editor .inp");if(n)n.focus();},60);
+}
+function syncEditor(){
+  const E=S.editor; if(!E) return;
+  const root=document.querySelector(".editor"); if(!root) return;
+  E.tool=root.querySelector('[data-f="tool"]').value.trim();
+  E.title=root.querySelector('[data-f="title"]').value.trim();
+  root.querySelectorAll(".blk").forEach(n=>{
+    const b=E.blocks.find(x=>x.id===n.dataset.bid); if(!b) return;
+    const g=k=>n.querySelector('[data-b="'+k+'"]');
+    if(g("text")) b.text=g("text").value;
+    if(g("src")) b.src=g("src").value.trim();
+    if(g("html")) b.html=g("html").value;
+    if(g("cap")) b.cap=g("cap").value.trim();
+    if(g("h")) b.h=Math.max(120,Math.min(1200,parseInt(g("h").value,10)||420));
+  });
+}
+const autoGrow=ta=>{ta.style.height="auto";ta.style.height=(ta.scrollHeight+2)+"px";};
+
+function buildEditor(){
+  const E=S.editor, root=el("div","editor");
+  const eh=el("div","eh");
+  eh.innerHTML='<b>'+(E.caseId?"사례 수정":"새 사례 쓰기")+'</b><span class="sp">'+esc(SUBMAP[E.subId].sub.t)+'</span>';
+  root.appendChild(eh);
+  const eb=el("div","eb");
+  eb.appendChild(field("도구 · 서비스 이름","tool",E.tool,"목록에서 고르거나 직접 적어 주세요",false,"edtechList"));
+  eb.appendChild(field("사례 제목","title",E.title,"예: 슬라이더로 a의 부호에 따른 포물선 변화 관찰하기",true));
+
+  const tf=el("div","fld"); tf.appendChild(el("label","fl","활동 유형"));
+  const tp=el("div","tagpick");
+  TAGS.forEach(t=>{
+    const b=el("button","tsel",esc(t));
+    b.setAttribute("aria-pressed",E.tags.has(t)?"true":"false");
+    b.onclick=()=>{E.tags.has(t)?E.tags.delete(t):E.tags.add(t);b.setAttribute("aria-pressed",E.tags.has(t)?"true":"false");};
+    tp.appendChild(b);
+  });
+  tf.appendChild(tp); eb.appendChild(tf);
+
+  const bf=el("div","fld"); bf.appendChild(el("label","fl","내용"));
+  const bw=el("div","blocks");
+  E.blocks.forEach((b,i)=>bw.appendChild(blockEditor(b,i)));
+  const ab=el("div","addbar");
+  [["h2","＋ 제목"],["h3","＋ 소제목"],["p","＋ 본문"],["ul","＋ 목록"],["quote","＋ 인용"],["img","＋ 이미지"],["embed","＋ HTML 임베드"],["hr","＋ 구분선"]].forEach(([t,l])=>{
+    const b=el("button","addb",l);
+    b.onclick=()=>{syncEditor();E.blocks.push(newBlock(t));renderPage();};
+    ab.appendChild(b);
+  });
+  bw.appendChild(ab); bf.appendChild(bw); eb.appendChild(bf);
+
+  const ft=el("div","efoot"), warn=el("span","warn");
+  ft.appendChild(warn);
+  const cancel=el("button","btn","취소"); cancel.onclick=()=>{S.editor=null;renderPage();};
+  const save=el("button","btn live",E.caseId?"수정 저장":"사례 저장");
+  save.onclick=()=>saveCase(save,warn);
+  ft.appendChild(cancel); ft.appendChild(save);
+  eb.appendChild(ft); root.appendChild(eb);
+  setTimeout(()=>root.querySelectorAll(".ta").forEach(autoGrow),0);
+  return root;
+}
+function field(label,f,val,ph,big,list){
+  const d=el("div","fld");
+  d.innerHTML='<label class="fl">'+esc(label)+'</label><input class="inp'+(big?" big":"")+'" data-f="'+f+'" type="text" value="'+esc(val)+'" placeholder="'+esc(ph)+'"'+(list?' list="'+list+'" autocomplete="off"':'')+'>'+
+    (list?'<datalist id="'+list+'">'+EDTECH_ALL.map(t=>'<option value="'+esc(t)+'">').join("")+'</datalist>':'');
+  return d;
+}
+function newBlock(t){
+  const b={id:uid(),type:t};
+  if(t==="img"){b.src="";b.cap="";}
+  else if(t==="embed"){b.html="";b.cap="";b.h=420;}
+  else if(t!=="hr"){b.text="";}
+  return b;
+}
+function blockEditor(b,i){
+  const E=S.editor, n=el("div","blk");
+  n.dataset.bid=b.id;
+  const bh=el("div","bh");
+  bh.innerHTML='<span class="bt">'+esc(BLOCK_LABEL[b.type]||b.type)+'</span>';
+  const ctl=el("div","bctl");
+  const mk=(t,svg,cls,fn)=>{const x=el("button","ib "+(cls||""),svg);x.title=t;x.setAttribute("aria-label",t);x.onclick=fn;return x;};
+  ctl.appendChild(mk("위로",'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>',"",()=>{
+    if(i===0)return; syncEditor(); const a=E.blocks; [a[i-1],a[i]]=[a[i],a[i-1]]; renderPage();}));
+  ctl.appendChild(mk("아래로",'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',"",()=>{
+    if(i>=E.blocks.length-1)return; syncEditor(); const a=E.blocks; [a[i+1],a[i]]=[a[i],a[i+1]]; renderPage();}));
+  ctl.appendChild(mk("삭제",'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',"del",()=>{
+    syncEditor(); E.blocks.splice(i,1); if(!E.blocks.length) E.blocks.push(newBlock("p")); renderPage();}));
+  bh.appendChild(ctl); n.appendChild(bh);
+
+  const bd=el("div","bd");
+  if(b.type==="hr") bd.innerHTML='<div style="border-top:2px solid var(--line);margin:6px 0"></div>';
+  else if(b.type==="img"){
+    bd.innerHTML='<input class="miniinp" data-b="src" type="text" placeholder="이미지 주소(https://…) 또는 아래에서 파일 선택" value="'+esc(b.src||"")+'">'+
+      '<div class="row2"><button class="addb" data-a="pick">파일에서 올리기</button>'+
+      '<input class="miniinp" data-b="cap" type="text" placeholder="이미지 설명 (선택)" value="'+esc(b.cap||"")+'"></div>'+
+      '<div class="hintline">'+(DB.canUpload
+        ? '올린 사진은 가로 1400px로 줄여 Firebase Storage에 저장됩니다. 파일당 5MB까지 가능하며, 넘으면 자동으로 더 줄이거나 알려 드립니다.'
+        : '지금은 사진이 사례 안에 그대로 담깁니다. 350KB 안에 들도록 자동으로 줄이며, 그래도 크면 되도록 이미지 주소를 붙여넣어 주세요.')+'</div>'+
+      '<div class="prev"></div>';
+    const prev=bd.querySelector(".prev");
+    const paint=()=>{const v=bd.querySelector('[data-b="src"]').value.trim();
+      prev.innerHTML=v?'<img src="'+esc(v)+'" alt="">':'<div style="font-size:11px;color:var(--ink-4);font-weight:600">미리보기가 여기 표시됩니다.</div>';};
+    paint();
+    bd.querySelector('[data-b="src"]').addEventListener("change",paint);
+    bd.querySelector('[data-a="pick"]').onclick=()=>pickImage(b.id);
+  }
+  else if(b.type==="embed"){
+    bd.innerHTML='<textarea class="ta code" data-b="html" rows="4" placeholder="&lt;iframe src=&quot;…&quot;&gt;&lt;/iframe&gt; 처럼 임베드 코드를 붙여넣으세요">'+esc(b.html||"")+'</textarea>'+
+      '<div class="row2"><input class="miniinp" data-b="cap" type="text" placeholder="설명 (선택)" value="'+esc(b.cap||"")+'" style="flex:2">'+
+      '<label style="font-size:11px;font-weight:700;color:var(--ink-3)">높이 <input class="miniinp" data-b="h" type="number" min="120" max="1200" step="20" value="'+(b.h||420)+'" style="width:82px;display:inline-block"></label>'+
+      '<button class="addb" data-a="prev">미리보기 새로고침</button></div>'+
+      '<div class="hintline">GeoGebra, Desmos, 유튜브, 패들렛 등의 공유 &lt;iframe&gt; 코드를 그대로 붙여넣으면 됩니다. 임베드는 격리된 화면에서 실행됩니다.</div>'+
+      '<div class="prev"></div>';
+    const prev=bd.querySelector(".prev");
+    const paint=()=>{
+      const v=bd.querySelector('[data-b="html"]').value.trim();
+      const h=parseInt(bd.querySelector('[data-b="h"]').value,10)||420;
+      prev.innerHTML="";
+      if(!v){prev.innerHTML='<div style="font-size:11px;color:var(--ink-4);font-weight:600">미리보기가 여기 표시됩니다.</div>';return;}
+      const ifr=el("iframe");
+      ifr.setAttribute("sandbox","allow-scripts allow-same-origin allow-popups allow-forms allow-presentation");
+      ifr.style.height=h+"px";
+      ifr.srcdoc='<!doctype html><meta charset="utf-8"><style>html,body{margin:0;height:100%}iframe,img{max-width:100%;border:0}</style>'+v;
+      prev.appendChild(ifr);
+    };
+    paint();
+    bd.querySelector('[data-a="prev"]').onclick=paint;
+    const ta=bd.querySelector(".ta"); ta.addEventListener("input",()=>autoGrow(ta));
+  }
+  else{
+    const ph={h2:"제목을 입력하세요",h3:"소제목을 입력하세요",p:"수업에서 어떻게 썼는지 적어 주세요. 링크를 붙여 넣으면 자동으로 연결됩니다.",ul:"한 줄에 하나씩 적으면 목록이 됩니다",quote:"학생 반응이나 인용을 적어 주세요"}[b.type]||"";
+    const ta=el("textarea","ta "+(b.type==="h2"?"h2":b.type==="h3"?"h3":""));
+    ta.dataset.b="text"; ta.rows=1; ta.placeholder=ph; ta.value=b.text||"";
+    ta.addEventListener("input",()=>autoGrow(ta));
+    bd.appendChild(ta);
+  }
+  n.appendChild(bd);
+  return n;
+}
+function dataUrlBytes(du){ const i=du.indexOf(","); return Math.floor((du.length-i-1)*3/4); }
+function compressToLimit(img,startMax,limit){
+  let max=startMax;
+  const qualities=[0.8,0.65,0.5,0.35,0.22];
+  for(let pass=0; pass<4; pass++){
+    const sc=Math.min(1,max/Math.max(img.width,img.height));
+    const cv=document.createElement("canvas");
+    cv.width=Math.max(1,Math.round(img.width*sc)); cv.height=Math.max(1,Math.round(img.height*sc));
+    cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    for(const q of qualities){
+      const data=cv.toDataURL("image/jpeg",q);
+      if(dataUrlBytes(data)<=limit) return data;
+    }
+    max=Math.round(max*0.7);
+  }
+  return null;
+}
+function pickImage(blockId){
+  const inp=$("#imgIn");
+  inp.onchange=()=>{
+    const f=inp.files[0]; inp.value=""; if(!f) return;
+    if(f.size>25*1024*1024) toast("파일이 커서 처리하는 데 시간이 걸릴 수 있어요…");
+    const rd=new FileReader();
+    rd.onload=()=>{
+      const img=new Image();
+      img.onload=async ()=>{
+        const limit=DB.canUpload?IMG_LIMIT_STORAGE:IMG_LIMIT_INLINE;
+        const startMax=DB.canUpload?1400:1000;
+        const data=compressToLimit(img,startMax,limit);
+        if(!data){
+          toast("사진이 너무 커서 "+(DB.canUpload?"5MB":"350KB")+" 안으로 줄이지 못했습니다. 더 작은 사진을 골라 주세요.",true);
+          return;
+        }
+        syncEditor();
+        let src=data;
+        if(DB.canUpload){
+          toast("사진을 올리는 중…");
+          try{ src=await DB.uploadImage(data,S.editor.draftId); }
+          catch(e){ console.warn(e); toast("사진 업로드에 실패해 사례 안에 담습니다",true); src=data; }
+        }
+        const b=S.editor.blocks.find(x=>x.id===blockId);
+        if(b){ b.src=src; renderPage(); toast("사진을 넣었습니다 ("+Math.round(dataUrlBytes(data)/1024)+"KB)"); }
+      };
+      img.onerror=()=>toast("이미지를 읽지 못했습니다",true);
+      img.src=rd.result;
+    };
+    rd.readAsDataURL(f);
+  };
+  inp.click();
+}
+
+
+/* ═══ 저장 · 삭제 ═══ */
+async function saveCase(btn,warnEl){
+  syncEditor();
+  const E=S.editor;
+  if(!E.tool){ toast("도구 이름을 적어 주세요",true); return; }
+  if(!E.title){ toast("사례 제목을 적어 주세요",true); return; }
+  const blocks=E.blocks.filter(b=>{
+    if(b.type==="hr") return true;
+    if(b.type==="img") return !!(b.src||"").trim();
+    if(b.type==="embed") return !!(b.html||"").trim();
+    return !!(b.text||"").trim();
+  });
+  const size=JSON.stringify(blocks).length;
+  const cap=DB.mode==="firebase"?900000:4500000;
+  if(size>cap){
+    if(warnEl) warnEl.textContent="내용이 너무 큽니다. 사진을 줄이거나 주소로 넣어 주세요.";
+    toast("저장 용량을 넘었습니다. 사진을 줄여 주세요.",true); return;
+  }
+  const rec={ id:E.draftId, subId:E.subId, tool:E.tool, title:E.title, tags:[...E.tags],
+              author:(USER?USER.name:"익명"), uid:E.uid||(USER?USER.uid:null), updatedAt:Date.now(), blocks };
+  const isEdit=!!E.caseId;
+  if(btn){ btn.disabled=true; btn.textContent="저장 중…"; }
+  try{
+    const ok=await DB.saveCase(rec);
+    S.editor=null;
+    toast(ok?(isEdit?"사례를 수정했습니다":"사례를 저장했습니다")
+            :"이 기기에만 저장되었습니다. 공유 저장소에 연결할 수 없습니다.",!ok);
+  }catch(e){
+    console.warn(e);
+    if(btn){ btn.disabled=false; btn.textContent=isEdit?"수정 저장":"사례 저장"; }
+    toast("저장하지 못했습니다. 연결과 Firestore 규칙을 확인해 주세요.",true); return;
+  }
+  refresh();
+}
+async function delCase(subId,caseId){
+  if(!confirm("이 사례를 지울까요? 되돌릴 수 없습니다.")) return;
+  try{ await DB.deleteCase(subId,caseId); toast("사례를 지웠습니다"); }
+  catch(e){ console.warn(e); toast("삭제하지 못했습니다",true); return; }
+  refresh();
+}
+function refresh(){ stats(); renderTree(); renderPage(); if(S.view==="map") renderMap(); }
+function stats(){
+  let total=0,filled=0,all=0;
+  UNITS.forEach(u2=>u2.subs.forEach(s=>{all++;const n=cnt(s.id);total+=n;if(n)filled++;}));
+  $("#statCases").textContent=total;
+  $("#statCover").textContent=(all?Math.round(filled/all*100):0)+"%";
+}
+
+/* ═══ 지도 ═══ */
+function renderMap(){
+  const map=$("#map"); map.innerHTML="";
+  const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("id","links"); svg.setAttribute("aria-hidden","true"); map.appendChild(svg);
+  map.appendChild(el("div","ch2"));
+  GRADES.forEach(g=>{
+    const h=el("div","ch2");
+    h.innerHTML='<div class="stg">'+esc(g.stage)+'</div><div class="g"><b>'+esc(g.label)+'</b><span>'+esc(g.book)+'</span></div>';
+    map.appendChild(h);
+  });
+  AREA_ORDER.forEach((ak,ri)=>{
+    if(ri>0) map.appendChild(el("div","arow"));
+    const a=A(ak), lab=el("div","alab");
+    lab.innerHTML='<div class="bar" style="background:'+a.hex+'"></div><b>'+esc(a.name)+'</b><span>'+esc(a.idea)+'</span>';
+    map.appendChild(lab);
+    GRADES.forEach(g=>{
+      const cell=el("div","mcell");
+      const list=UNITS.filter(x=>x.grade===g.id&&x.area===ak);
+      if(!list.length) cell.appendChild(el("div","mblank","—"));
+      list.forEach(un=>{
+        const vis=unitMatch(un), n=unitCnt(un), b=el("button","unit"+(vis?"":" dim"));
+        b.dataset.id=un.id;
+        b.style.setProperty("--c",a.hex); b.style.setProperty("--csoft",a.hex+"22");
+        if(S.mapSel===un.id) b.setAttribute("aria-current","true");
+        b.innerHTML='<span class="rn">'+esc(un.no)+'</span><span class="tt">'+esc(un.title)+'</span>'+
+          '<span class="mt"><span class="cn">소단원 '+un.subs.length+'</span>'+
+          '<span class="cs" style="background:'+(n?a.hex:"#EFF2F8")+';color:'+(n?"#fff":"#A6AEC2")+'">사례 '+n+'</span></span>';
+        b.onclick=e=>{e.stopPropagation();S.mapSel=S.mapSel===un.id?null:un.id;renderMap();};
+        cell.appendChild(b);
+      });
+      map.appendChild(cell);
+    });
+  });
+  requestAnimationFrame(()=>{ drawLinks(); if(S.mapSel) showPop(S.mapSel); });
+}
+function drawLinks(){
+  const map=$("#map"), svg=$("#links"); if(!map||!svg) return;
+  svg.innerHTML="";
+  const mr=map.getBoundingClientRect(), W=map.scrollWidth, H=map.scrollHeight;
+  svg.setAttribute("width",W); svg.setAttribute("height",H); svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  const pos={};
+  map.querySelectorAll(".unit").forEach(n=>{
+    const r=n.getBoundingClientRect();
+    pos[n.dataset.id]={x1:r.left-mr.left,x2:r.right-mr.left,y:r.top-mr.top+r.height/2,dim:n.classList.contains("dim")};
+  });
+  const sel=S.mapSel;
+  EDGES.forEach(e=>{
+    const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;
+    if(UMAP[e.from].grade===UMAP[e.to].grade) return;
+    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    const x1=a.x2,y1=a.y,x2=b.x1,y2=b.y,dx=Math.max(26,(x2-x1)*0.5);
+    p.setAttribute("d","M"+x1+" "+y1+" C"+(x1+dx)+" "+y1+","+(x2-dx)+" "+y2+","+x2+" "+y2);
+    let cls=e.cross?"cross":"";
+    const act=sel&&(e.from===sel||e.to===sel);
+    if(sel) cls+=act?" on":" off"; else if(a.dim||b.dim) cls+=" off";
+    p.setAttribute("class",cls.trim());
+    if(act){
+      const hue=e.from===sel?A(UMAP[e.to].area).hex:A(UMAP[e.from].area).hex;
+      p.style.stroke=hue;
+      const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx",e.from===sel?x2:x1); c.setAttribute("cy",e.from===sel?y2:y1);
+      c.setAttribute("r","3.4"); c.style.fill=hue;
+      svg.appendChild(p); svg.appendChild(c); return;
+    }
+    svg.appendChild(p);
+  });
+}
+function showPop(unitId){
+  const map=$("#map"), card=map.querySelector('.unit[data-id="'+unitId+'"]'); if(!card) return;
+  const un=UMAP[unitId], hex=A(un.area).hex;
+  const mr=map.getBoundingClientRect(), cr=card.getBoundingClientRect();
+  const pop=el("div","pop");
+  pop.innerHTML='<button class="close" aria-label="닫기"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'+
+    '<div class="pt">'+esc(un.no)+'. '+esc(un.title)+'</div><div class="ps">'+esc(un.theme)+'</div>';
+  const sl=el("div","sl");
+  un.subs.forEach(sb=>{
+    const c=cnt(sb.id), b=el("button");
+    b.innerHTML='<span class="i">'+sb.idx+'</span><span class="t">'+esc(sb.t)+'</span>'+
+      (c?'<span class="c" style="background:'+hex+';color:#fff">'+c+'</span>':'<span class="c" style="background:#EFF2F8;color:#A6AEC2">0</span>');
+    b.onclick=()=>go(sb.id);
+    sl.appendChild(b);
+  });
+  pop.appendChild(sl);
+  const gob=el("button","btn live sm","이 단원 사례집 열기");
+  gob.style.width="100%"; gob.style.justifyContent="center";
+  gob.onclick=()=>go(un.subs[0].id);
+  pop.appendChild(gob);
+  pop.querySelector(".close").onclick=e=>{e.stopPropagation();S.mapSel=null;renderMap();};
+  let left=Math.max(0,Math.min(cr.left-mr.left,map.scrollWidth-272));
+  pop.style.left=left+"px"; pop.style.top=(cr.bottom-mr.top+8)+"px";
+  map.appendChild(pop);
+}
+
+/* ═══ 계정 ═══ */
+function setAccountUI(){
+  const b=$("#btnAccount");
+  if(!USER){
+    b.className="btn primary";
+    $("#accountLabel").textContent="로그인";
+  }else{
+    b.className="btn "+(isApproved()?"live":"warn-btn");
+    $("#accountLabel").textContent=USER.name+(isAdmin()?" · 관리자":(isApproved()?"":" · 승인 대기"));
+  }
+  $("#btnProfile").hidden=!USER;          // 로그인한 사람에게만
+  const m=$("#btnMembers");
+  m.hidden=!isAdmin();                    // 관리자에게만
+  const n=PENDING.length;
+  $("#membersLabel").textContent=n?("회원 관리 "+n):"회원 관리";
+  m.classList.toggle("warn-btn",n>0);
+}
+
+/* ── 다중 선택 위젯 ── */
+function pickerGroup(groups,selected,onToggle){
+  const wrap=el("div");
+  groups.forEach(g=>{
+    const row=el("div"); row.style.marginBottom="9px";
+    row.appendChild(el("div","pickg",esc(g.g)));
+    const box=el("div","tagpick");
+    g.items.forEach(it=>{
+      const b=el("button","tsel",esc(it));
+      b.type="button";
+      b.setAttribute("aria-pressed",selected.has(it)?"true":"false");
+      b.onclick=()=>{ selected.has(it)?selected.delete(it):selected.add(it);
+        b.setAttribute("aria-pressed",selected.has(it)?"true":"false"); if(onToggle)onToggle(); };
+      box.appendChild(b);
+    });
+    row.appendChild(box); wrap.appendChild(row);
+  });
+  return wrap;
+}
+function pickerFlat(items,selected){
+  const box=el("div","tagpick");
+  items.forEach(it=>{
+    const b=el("button","tsel",esc(it)); b.type="button";
+    b.setAttribute("aria-pressed",selected.has(it)?"true":"false");
+    b.onclick=()=>{ selected.has(it)?selected.delete(it):selected.add(it);
+      b.setAttribute("aria-pressed",selected.has(it)?"true":"false"); };
+    box.appendChild(b);
+  });
+  return box;
+}
+
+/* ── 로그인 · 회원가입 ── */
+function openAuth(mode){
+  if(!DB.isShared){
+    renderLocalAccount();
+    $("#authModal").classList.add("on");
+    return;
+  }
+  (mode==="signup"?renderSignup:renderLogin)();
+  $("#authModal").classList.add("on");
+}
+const closeAuth=()=>$("#authModal").classList.remove("on");
+
+function renderLocalAccount(){
+  const box=$("#authBox");
+  box.innerHTML =
+    '<h3>혼자 쓰는 중입니다</h3>'+
+    '<p>Firebase에 연결되지 않아 회원 기능을 쓸 수 없습니다. 지금은 이 브라우저에만 사례가 저장되고, 승인 절차 없이 바로 작성할 수 있습니다. 여러 선생님이 함께 쓰려면 오른쪽 위 <b>저장 위치</b>에서 Firebase를 연결해 주세요.</p>'+
+    '<div class="fld"><label class="fl" for="lcName">표시할 이름</label><input class="inp" type="text" id="lcName" value="'+esc(USER?USER.name:"")+'" placeholder="예: 김수학"></div>'+
+    '<div class="err" id="lcErr"></div>'+
+    '<div class="frow"><button class="btn ghost" id="lcCancel">닫기</button><button class="btn live" id="lcOk">시작하기</button></div>';
+  box.querySelector("#lcCancel").onclick=closeAuth;
+  box.querySelector("#lcOk").onclick=async ()=>{
+    const name=box.querySelector("#lcName").value.trim();
+    if(!name){ box.querySelector("#lcErr").textContent="이름을 적어 주세요."; return; }
+    USER=await DB.signUp({loginId:"local",name,school:"",level:"",grades:[],subjects:[],interested:[],used:[]},"");
+    lsSet(LS_ME,name); setAccountUI(); closeAuth(); toast("시작합니다"); refresh();
+  };
+}
+
+function renderLogin(){
+  const box=$("#authBox");
+  box.innerHTML =
+    '<h3>로그인</h3>'+
+    '<p>사례를 남기려면 로그인이 필요합니다. 읽기는 로그인 없이도 됩니다.</p>'+
+    '<div class="fld"><label class="fl" for="lgId">아이디</label><input class="inp" type="text" id="lgId" autocomplete="username" placeholder="영문·숫자"></div>'+
+    '<div class="fld"><label class="fl" for="lgPw">비밀번호</label><input class="inp" type="password" id="lgPw" autocomplete="current-password"></div>'+
+    '<div class="err" id="lgErr"></div>'+
+    '<div class="frow"><button class="btn ghost" id="lgCancel">닫기</button>'+
+    '<button class="btn" id="lgToSignup">회원가입</button>'+
+    '<button class="btn primary" id="lgOk">로그인</button></div>';
+  const err=box.querySelector("#lgErr");
+  box.querySelector("#lgCancel").onclick=closeAuth;
+  box.querySelector("#lgToSignup").onclick=renderSignup;
+  const submit=async ()=>{
+    const id=box.querySelector("#lgId").value.trim(), pw=box.querySelector("#lgPw").value;
+    if(!id||!pw){ err.textContent="아이디와 비밀번호를 입력해 주세요."; return; }
+    const btn=box.querySelector("#lgOk"); btn.disabled=true; btn.textContent="확인 중…";
+    try{
+      const u=await DB.signIn(id,pw);
+      if(!u){ err.textContent="회원 정보를 찾지 못했습니다. 관리자에게 문의해 주세요."; btn.disabled=false; btn.textContent="로그인"; return; }
+      USER=u; lsSet(LS_ME,u.name); setAccountUI(); closeAuth();
+      toast(isApproved()?("반갑습니다, "+u.name+" 선생님"):"가입되었습니다. 관리자 승인을 기다려 주세요.");
+      await loadPending(); refresh();
+    }catch(e){
+      btn.disabled=false; btn.textContent="로그인";
+      err.textContent=authError(e);
+    }
+  };
+  box.querySelector("#lgOk").onclick=submit;
+  box.onkeydown=e=>{ if(e.key==="Enter"&&e.target.tagName==="INPUT"){e.preventDefault();submit();} };
+  setTimeout(()=>box.querySelector("#lgId").focus(),60);
+}
+
+function renderSignup(){
+  const box=$("#authBox");
+  const st={ level:"middle", grades:new Set(), subjects:new Set(), interested:new Set(), used:new Set() };
+  box.innerHTML =
+    '<h3>회원가입</h3>'+
+    '<p>가입 후 관리자가 승인하면 사례를 쓸 수 있습니다. 승인 전에도 다른 선생님의 사례는 읽을 수 있습니다.</p>'+
+    '<div class="grid2">'+
+      '<div class="fld"><label class="fl" for="suId">아이디</label><input class="inp" type="text" id="suId" autocomplete="username" placeholder="영문·숫자 4자 이상"></div>'+
+      '<div class="fld"><label class="fl" for="suName">이름</label><input class="inp" type="text" id="suName" placeholder="예: 김수학"></div>'+
+      '<div class="fld"><label class="fl" for="suPw">비밀번호</label><input class="inp" type="password" id="suPw" autocomplete="new-password" placeholder="6자 이상"></div>'+
+      '<div class="fld"><label class="fl" for="suPw2">비밀번호 확인</label><input class="inp" type="password" id="suPw2" autocomplete="new-password"></div>'+
+    '</div>'+
+    '<div class="fld"><label class="fl" for="suSchool">소속 학교</label><input class="inp" type="text" id="suSchool" placeholder="예: 전주중학교"></div>'+
+    '<div class="fld"><label class="fl">학교급</label><div class="tagpick" id="suLevel">'+
+      '<button class="tsel" type="button" data-lv="middle" aria-pressed="true">중학교</button>'+
+      '<button class="tsel" type="button" data-lv="high" aria-pressed="false">고등학교</button>'+
+    '</div></div>'+
+    '<div class="fld" id="suGradeWrap"><label class="fl">담당 학년 <span class="opt">복수 선택</span></label><div id="suGrades"></div></div>'+
+    '<div class="fld" id="suSubjWrap" hidden><label class="fl">담당 과목 <span class="opt">복수 선택</span></label><div id="suSubjects"></div></div>'+
+    '<div class="fld"><label class="fl">관심 있는 에듀테크 <span class="opt">복수 선택</span></label><div id="suInterested"></div></div>'+
+    '<div class="fld"><label class="fl">사용해 본 에듀테크 <span class="opt">복수 선택</span></label><div id="suUsed"></div></div>'+
+    '<div class="err" id="suErr"></div>'+
+    '<div class="frow"><button class="btn ghost" id="suCancel">닫기</button>'+
+    '<button class="btn" id="suToLogin">로그인으로</button>'+
+    '<button class="btn primary" id="suOk">가입 신청</button></div>';
+
+  box.querySelector("#suGrades").appendChild(pickerFlat(MID_GRADES,st.grades));
+  box.querySelector("#suSubjects").appendChild(pickerGroup(HS_SUBJECTS,st.subjects));
+  box.querySelector("#suInterested").appendChild(pickerGroup(EDTECH,st.interested));
+  box.querySelector("#suUsed").appendChild(pickerGroup(EDTECH,st.used));
+
+  box.querySelectorAll("#suLevel .tsel").forEach(b=>{
+    b.onclick=()=>{
+      st.level=b.dataset.lv;
+      box.querySelectorAll("#suLevel .tsel").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+      box.querySelector("#suGradeWrap").hidden = st.level!=="middle";
+      box.querySelector("#suSubjWrap").hidden  = st.level!=="high";
+    };
+  });
+
+  const err=box.querySelector("#suErr");
+  box.querySelector("#suCancel").onclick=closeAuth;
+  box.querySelector("#suToLogin").onclick=renderLogin;
+  box.querySelector("#suOk").onclick=async ()=>{
+    const g=s=>box.querySelector(s).value.trim();
+    const id=g("#suId"), name=g("#suName"), pw=box.querySelector("#suPw").value, pw2=box.querySelector("#suPw2").value, school=g("#suSchool");
+    if(!/^[A-Za-z0-9._-]{4,}$/.test(id)){ err.textContent="아이디는 영문·숫자 4자 이상으로 지어 주세요."; return; }
+    if(!name){ err.textContent="이름을 적어 주세요."; return; }
+    if(pw.length<6){ err.textContent="비밀번호는 6자 이상이어야 합니다."; return; }
+    if(pw!==pw2){ err.textContent="비밀번호를 두 번 다르게 입력했습니다."; return; }
+    if(!school){ err.textContent="소속 학교를 적어 주세요."; return; }
+    if(st.level==="middle"&&!st.grades.size){ err.textContent="담당 학년을 하나 이상 골라 주세요."; return; }
+    if(st.level==="high"&&!st.subjects.size){ err.textContent="담당 과목을 하나 이상 골라 주세요."; return; }
+    const btn=box.querySelector("#suOk"); btn.disabled=true; btn.textContent="가입 중…";
+    try{
+      const u=await DB.signUp({
+        loginId:id, name, school, level:st.level,
+        grades: st.level==="middle"?[...st.grades]:[],
+        subjects: st.level==="high"?[...st.subjects]:[],
+        interested:[...st.interested], used:[...st.used]
+      },pw);
+      USER=u; lsSet(LS_ME,u.name); setAccountUI(); closeAuth();
+      toast(isApproved()?"가입했습니다. 바로 사례를 남기실 수 있습니다.":"가입 신청을 보냈습니다. 관리자 승인을 기다려 주세요.");
+      await loadPending(); refresh();
+    }catch(e){
+      btn.disabled=false; btn.textContent="가입 신청";
+      err.textContent=authError(e);
+    }
+  };
+  setTimeout(()=>box.querySelector("#suId").focus(),60);
+}
+
+function authError(e,ctx){
+  const c=(e&&e.code)||"";
+  if(ctx==="pw"&&(c.includes("invalid-credential")||c.includes("wrong-password")||c.includes("user-mismatch")))
+    return "현재 비밀번호가 맞지 않습니다.";
+  if(c.includes("email-already-in-use")) return "이미 쓰이고 있는 아이디입니다.";
+  if(c.includes("invalid-credential")||c.includes("wrong-password")||c.includes("user-not-found")) return "아이디 또는 비밀번호가 맞지 않습니다.";
+  if(c.includes("weak-password")) return "비밀번호가 너무 짧습니다.";
+  if(c.includes("invalid-email")) return "아이디에 쓸 수 없는 문자가 있습니다.";
+  if(c.includes("too-many-requests")) return "시도가 많았습니다. 잠시 뒤 다시 해 주세요.";
+  if(c.includes("requires-recent-login")) return "보안을 위해 다시 로그인한 뒤 시도해 주세요.";
+  if(c.includes("operation-not-allowed")) return "Firebase 콘솔에서 이메일·비밀번호 로그인을 켜 주세요.";
+  if(c.includes("permission-denied")) return "권한이 없습니다. Firestore 보안 규칙을 확인해 주세요.";
+  console.warn(e);
+  return "처리하지 못했습니다. 연결 상태를 확인해 주세요.";
+}
+
+/* ── 계정 패널 (상태 확인 · 로그아웃) ── */
+function openAccount(){
+  if(!USER){ openAuth("login"); return; }
+  const box=$("#authBox");
+  const badge = isAdmin() ? '<span class="rolebadge admin">관리자</span>'
+              : isApproved() ? '<span class="rolebadge ok">승인됨</span>'
+              : '<span class="rolebadge wait">승인 대기</span>';
+  const where=(USER.level==="high"?(USER.subjects||[]):(USER.grades||[])).join(", ");
+  box.innerHTML =
+    '<h3>'+esc(USER.name)+' 선생님 '+badge+'</h3>'+
+    '<p>'+esc(USER.school||"소속 미입력")+' · '+(USER.level==="high"?"고등학교":"중학교")+
+      (where?' · '+esc(where):'')+'<br><span style="color:var(--ink-3)">아이디 '+esc(USER.loginId)+'</span></p>'+
+    (isApproved()?'':'<div class="notice warn">관리자가 승인하면 사례를 쓸 수 있습니다. 그때까지는 다른 선생님의 사례를 읽어 보실 수 있습니다.</div>')+
+    '<div class="frow"><button class="btn danger" id="acOut">로그아웃</button>'+
+    '<button class="btn" id="acEdit">내 정보 수정</button>'+
+    '<button class="btn ghost" id="acCancel">닫기</button></div>';
+  box.querySelector("#acCancel").onclick=closeAuth;
+  box.querySelector("#acEdit").onclick=openProfile;
+  box.querySelector("#acOut").onclick=async ()=>{
+    await DB.signOut();
+    USER=null; PENDING=[]; S.editor=null;
+    setAccountUI(); closeAuth(); toast("로그아웃했습니다"); refresh();
+  };
+  $("#authModal").classList.add("on");
+}
+
+/* ── 내 정보 수정 ── */
+function openProfile(){
+  if(!USER){ openAuth("login"); return; }
+  const box=$("#authBox");
+  const st={ level:USER.level||"middle",
+             grades:new Set(USER.grades||[]), subjects:new Set(USER.subjects||[]),
+             interested:new Set(USER.interested||[]), used:new Set(USER.used||[]) };
+  const badge = isAdmin() ? '<span class="rolebadge admin">관리자</span>'
+              : isApproved() ? '<span class="rolebadge ok">승인됨</span>'
+              : '<span class="rolebadge wait">승인 대기</span>';
+  box.innerHTML =
+    '<h3>내 정보 수정 '+badge+'</h3>'+
+    '<div class="fld"><label class="fl">아이디</label>'+
+      '<input class="inp" type="text" value="'+esc(USER.loginId)+'" readonly disabled>'+
+      '<div class="hintline">아이디는 바꿀 수 없습니다.</div></div>'+
+    '<div class="grid2">'+
+      '<div class="fld"><label class="fl" for="pfName">이름</label><input class="inp" type="text" id="pfName" value="'+esc(USER.name||"")+'"></div>'+
+      '<div class="fld"><label class="fl" for="pfSchool">소속 학교</label><input class="inp" type="text" id="pfSchool" value="'+esc(USER.school||"")+'"></div>'+
+    '</div>'+
+    '<div class="fld"><label class="fl">학교급</label><div class="tagpick" id="pfLevel">'+
+      '<button class="tsel" type="button" data-lv="middle" aria-pressed="'+(st.level==="middle")+'">중학교</button>'+
+      '<button class="tsel" type="button" data-lv="high" aria-pressed="'+(st.level==="high")+'">고등학교</button>'+
+    '</div></div>'+
+    '<div class="fld" id="pfGradeWrap"'+(st.level==="middle"?"":" hidden")+'><label class="fl">담당 학년 <span class="opt">복수 선택</span></label><div id="pfGrades"></div></div>'+
+    '<div class="fld" id="pfSubjWrap"'+(st.level==="high"?"":" hidden")+'><label class="fl">담당 과목 <span class="opt">복수 선택</span></label><div id="pfSubjects"></div></div>'+
+    '<div class="fld"><label class="fl">관심 있는 에듀테크 <span class="opt">복수 선택</span></label><div id="pfInterested"></div></div>'+
+    '<div class="fld"><label class="fl">사용해 본 에듀테크 <span class="opt">복수 선택</span></label><div id="pfUsed"></div></div>'+
+    '<div class="err" id="pfErr"></div>'+
+    '<div class="frow"><button class="btn ghost" id="pfCancel">닫기</button>'+
+    '<button class="btn live" id="pfSave">정보 저장</button></div>'+
+
+    '<div class="pwsec">'+
+      '<div class="pwhead">비밀번호 변경</div>'+
+      '<div class="fld"><label class="fl" for="pwCur">현재 비밀번호</label><input class="inp" type="password" id="pwCur" autocomplete="current-password"></div>'+
+      '<div class="grid2">'+
+        '<div class="fld"><label class="fl" for="pwNew">새 비밀번호</label><input class="inp" type="password" id="pwNew" autocomplete="new-password" placeholder="6자 이상"></div>'+
+        '<div class="fld"><label class="fl" for="pwNew2">새 비밀번호 확인</label><input class="inp" type="password" id="pwNew2" autocomplete="new-password"></div>'+
+      '</div>'+
+      '<div class="err" id="pwErr"></div>'+
+      '<div class="frow"><button class="btn" id="pwBtn">비밀번호 바꾸기</button></div>'+
+    '</div>';
+
+  box.querySelector("#pfGrades").appendChild(pickerFlat(MID_GRADES,st.grades));
+  box.querySelector("#pfSubjects").appendChild(pickerGroup(HS_SUBJECTS,st.subjects));
+  box.querySelector("#pfInterested").appendChild(pickerGroup(EDTECH,st.interested));
+  box.querySelector("#pfUsed").appendChild(pickerGroup(EDTECH,st.used));
+
+  box.querySelectorAll("#pfLevel .tsel").forEach(b=>{
+    b.onclick=()=>{
+      st.level=b.dataset.lv;
+      box.querySelectorAll("#pfLevel .tsel").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+      box.querySelector("#pfGradeWrap").hidden = st.level!=="middle";
+      box.querySelector("#pfSubjWrap").hidden  = st.level!=="high";
+    };
+  });
+
+  const err=box.querySelector("#pfErr");
+  box.querySelector("#pfCancel").onclick=closeAuth;
+  box.querySelector("#pfSave").onclick=async ()=>{
+    const name=box.querySelector("#pfName").value.trim();
+    const school=box.querySelector("#pfSchool").value.trim();
+    if(!name){ err.textContent="이름을 적어 주세요."; return; }
+    if(!school){ err.textContent="소속 학교를 적어 주세요."; return; }
+    if(st.level==="middle"&&!st.grades.size){ err.textContent="담당 학년을 하나 이상 골라 주세요."; return; }
+    if(st.level==="high"&&!st.subjects.size){ err.textContent="담당 과목을 하나 이상 골라 주세요."; return; }
+    const btn=box.querySelector("#pfSave"); btn.disabled=true; btn.textContent="저장 중…";
+    const patch={ name, school, level:st.level,
+      grades: st.level==="middle"?[...st.grades]:[],
+      subjects: st.level==="high"?[...st.subjects]:[],
+      interested:[...st.interested], used:[...st.used] };
+    try{
+      const renamed = name!==USER.name;
+      await DB.updateUser(USER.uid,patch);
+      Object.assign(USER,patch);
+      lsSet(LS_ME,name);
+      let n=0;
+      if(renamed){ try{ n=await DB.renameAuthor(USER.uid,name); }catch(e){ console.warn(e); } }
+      setAccountUI(); closeAuth();
+      toast(n?("저장했습니다. 사례 "+n+"건의 작성자 이름도 함께 바꿨습니다."):"저장했습니다");
+      refresh();
+    }catch(e){
+      btn.disabled=false; btn.textContent="정보 저장";
+      err.textContent=authError(e);
+    }
+  };
+
+  const pwErr=box.querySelector("#pwErr");
+  box.querySelector("#pwBtn").onclick=async ()=>{
+    const cur=box.querySelector("#pwCur").value;
+    const a=box.querySelector("#pwNew").value, b=box.querySelector("#pwNew2").value;
+    if(!cur){ pwErr.textContent="현재 비밀번호를 입력해 주세요."; return; }
+    if(a.length<6){ pwErr.textContent="새 비밀번호는 6자 이상이어야 합니다."; return; }
+    if(a!==b){ pwErr.textContent="새 비밀번호를 두 번 다르게 입력했습니다."; return; }
+    if(a===cur){ pwErr.textContent="지금 쓰는 비밀번호와 다르게 정해 주세요."; return; }
+    const btn=box.querySelector("#pwBtn"); btn.disabled=true; btn.textContent="확인 중…";
+    try{
+      await DB.changePassword(USER.loginId,cur,a);
+      box.querySelector("#pwCur").value=""; box.querySelector("#pwNew").value=""; box.querySelector("#pwNew2").value="";
+      pwErr.textContent=""; toast("비밀번호를 바꿨습니다");
+    }catch(e){
+      pwErr.textContent=authError(e,"pw");
+    }
+    btn.disabled=false; btn.textContent="비밀번호 바꾸기";
+  };
+
+  $("#authModal").classList.add("on");
+  setTimeout(()=>box.querySelector("#pfName").focus(),60);
+}
+
+/* ── 회원 관리 (관리자) ── */
+async function loadPending(){
+  if(!isAdmin()){ PENDING=[]; return; }
+  try{ PENDING=(await DB.listUsers()).filter(u=>u.status==="pending"); }
+  catch(e){ PENDING=[]; }
+  setAccountUI();
+}
+async function openMembers(){
+  if(!isAdmin()) return;
+  $("#membersModal").classList.add("on");
+  const box=$("#membersBox");
+  box.innerHTML='<h3>회원 관리</h3><p>불러오는 중…</p>';
+  let list=[];
+  try{ list=await DB.listUsers(); }
+  catch(e){ box.innerHTML='<h3>회원 관리</h3><p>'+esc(authError(e))+'</p><div class="frow"><button class="btn ghost" id="mbClose">닫기</button></div>';
+    box.querySelector("#mbClose").onclick=closeMembers; return; }
+  renderMembers(list);
+}
+const closeMembers=()=>$("#membersModal").classList.remove("on");
+function renderMembers(list){
+  const box=$("#membersBox");
+  const pend=list.filter(u=>u.status==="pending");
+  const rest=list.filter(u=>u.status!=="pending");
+  box.innerHTML='<h3>회원 관리</h3><p>가입 신청을 승인하면 그 선생님이 사례를 쓸 수 있습니다.</p>'+
+    '<div id="mbPend"></div><div id="mbRest"></div>'+
+    '<div class="frow"><button class="btn ghost" id="mbClose">닫기</button></div>';
+  box.querySelector("#mbClose").onclick=closeMembers;
+
+  const sec=(title,n)=>{ const h=el("div","mbsec"); h.innerHTML='<span>'+esc(title)+'</span><em>'+n+'</em>'; return h; };
+  const pw=box.querySelector("#mbPend");
+  pw.appendChild(sec("승인 대기",pend.length));
+  if(!pend.length) pw.appendChild(el("div","nolink","기다리는 신청이 없습니다."));
+  pend.forEach(u=>pw.appendChild(memberRow(u,list)));
+
+  const rw=box.querySelector("#mbRest");
+  rw.appendChild(sec("회원",rest.length));
+  rest.forEach(u=>rw.appendChild(memberRow(u,list)));
+}
+function memberRow(u,list){
+  const row=el("div","mbrow");
+  const cases=Object.values(SUMS).filter(s=>s.uid===u.uid).length;
+  const where=(u.level==="high"?(u.subjects||[]):(u.grades||[])).join(", ");
+  row.innerHTML =
+    '<div class="mbmain">'+
+      '<div class="mbname">'+esc(u.name)+
+        (u.role==="admin"?'<span class="rolebadge admin">관리자</span>':'')+
+        (u.status==="pending"?'<span class="rolebadge wait">대기</span>':'')+
+        (u.status==="rejected"?'<span class="rolebadge no">거절됨</span>':'')+
+      '</div>'+
+      '<div class="mbsub">'+esc(u.loginId)+' · '+esc(u.school||"소속 미입력")+' · '+
+        (u.level==="high"?"고":"중")+(where?' '+esc(where):'')+' · 사례 '+cases+'건</div>'+
+      (u.used&&u.used.length?'<div class="mbtags">사용해 봄: '+u.used.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div>':'')+
+      (u.interested&&u.interested.length?'<div class="mbtags">관심: '+u.interested.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div>':'')+
+    '</div>';
+  const acts=el("div","mbacts");
+  const me=USER&&u.uid===USER.uid;
+  const act=async (patch,msg)=>{
+    try{ await DB.updateUser(u.uid,patch); Object.assign(u,patch); toast(msg);
+      await loadPending(); renderMembers(await DB.listUsers()); refresh(); }
+    catch(e){ toast(authError(e),true); }
+  };
+  if(u.status==="pending"){
+    const ok=el("button","btn sm live","승인");
+    ok.onclick=()=>act({status:"approved",approvedAt:Date.now(),approvedBy:USER.name},"승인했습니다");
+    const no=el("button","btn sm danger","거절");
+    no.onclick=()=>{ if(confirm(u.name+" 선생님의 신청을 거절할까요?")) act({status:"rejected"},"거절했습니다"); };
+    acts.appendChild(ok); acts.appendChild(no);
+  }else if(!me){
+    if(u.role==="admin"){
+      const b=el("button","btn sm","관리자 해제");
+      b.onclick=()=>act({role:"member"},"관리자를 해제했습니다");
+      acts.appendChild(b);
+    }else{
+      const b=el("button","btn sm","관리자로");
+      b.onclick=()=>{ if(confirm(u.name+" 선생님을 관리자로 올릴까요? 모든 사례를 고치고 회원을 승인할 수 있게 됩니다.")) act({role:"admin"},"관리자로 올렸습니다"); };
+      acts.appendChild(b);
+    }
+    if(u.status==="approved"){
+      const b=el("button","btn sm danger","이용 정지");
+      b.onclick=()=>{ if(confirm(u.name+" 선생님의 작성 권한을 막을까요? 사례는 남습니다.")) act({status:"rejected"},"작성 권한을 막았습니다"); };
+      acts.appendChild(b);
+    }else if(u.status==="rejected"){
+      const b=el("button","btn sm live","다시 승인");
+      b.onclick=()=>act({status:"approved",approvedAt:Date.now(),approvedBy:USER.name},"다시 승인했습니다");
+      acts.appendChild(b);
+    }
+  }else{
+    acts.appendChild(el("span","mbme","나"));
+  }
+  row.appendChild(acts);
+  return row;
+}
+
+/* ═══ 내보내기 ═══ */
+async function exportSubHTML(subId){
+  await DB.loadBodies(subId);
+  const {sub,unit}=SUBMAP[subId], hex=A(unit.area).hex, G=GMAP[unit.grade];
+  const parts=(IDX[subId]||[]).map(sum=>{
+    const blocks=BODY[sum.id]; if(!blocks) return "";
+    const rb=el("div","rb"); rb.style.setProperty("--qc",hex); renderBlocks(rb,blocks);
+    return '<article class="case"><header><span class="tool">'+esc(sum.tool)+'</span><h2>'+esc(sum.title)+'</h2>'+
+      '<p class="who">'+esc(sum.author||"익명")+' · '+fmtDate(sum.updatedAt)+'</p></header>'+
+      ((sum.tags&&sum.tags.length)?'<p class="tags">'+sum.tags.map(t=>'<span>'+esc(t)+'</span>').join("")+'</p>':'')+
+      '<div class="rb">'+rb.innerHTML+'</div></article>';
+  }).join("\n");
+  const stds=sub.c.map(c=>'<li><code>'+esc(c)+'</code> '+esc(STD[c]||"")+'</li>').join("");
+  const doc='<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">'+
+   '<meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(sub.t)+' · 에듀테크 사례</title><style>'+
+   ':root{--c:'+hex+';--qc:'+hex+'}*{box-sizing:border-box}body{margin:0;padding:34px 20px 70px;background:#F7F9FC;color:#151A2B;'+
+   "font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;line-height:1.6}"+
+   '.sheet{max-width:780px;margin:0 auto}.crumb{font-size:12px;font-weight:650;color:#7C859C;margin-bottom:8px}'+
+   '.crumb b{color:var(--c)}h1{margin:0 0 6px;font-size:28px;font-weight:800;letter-spacing:-.05em}'+
+   '.sub{margin:0 0 18px;font-size:12.5px;color:#7C859C;font-weight:600}'+
+   '.std{background:#fff;border:1px solid #E3E8F1;border-radius:13px;padding:14px 18px;margin-bottom:22px}'+
+   '.std h3{margin:0 0 8px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7C859C}'+
+   '.std ul{margin:0;padding-left:18px;font-size:13.5px;color:#4A5268}.std li{margin-bottom:5px}'+
+   'code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#151A2B;color:#fff;padding:2px 6px;border-radius:5px}'+
+   '.case{background:#fff;border:1px solid #E3E8F1;border-radius:14px;padding:18px;margin-bottom:16px}'+
+   '.case header{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}'+
+   '.tool{font-size:11.5px;font-weight:800;color:#fff;background:var(--c);padding:4px 10px;border-radius:8px}'+
+   '.case h2{margin:0;font-size:18px;font-weight:750;letter-spacing:-.04em;flex:1;min-width:200px}'+
+   '.who{width:100%;margin:4px 0 0;font-size:11px;color:#7C859C;font-weight:600}'+
+   '.tags{margin:10px 0 0;display:flex;gap:5px;flex-wrap:wrap}.tags span{font-size:10.5px;font-weight:700;background:#F7F9FC;border:1px solid #E3E8F1;border-radius:99px;padding:2px 9px;color:#4A5268}'+
+   '.rb{margin-top:12px;font-size:14.5px;line-height:1.75;color:#4A5268}'+
+   '.rb h5{margin:20px 0 8px;font-size:17px;font-weight:800;color:#151A2B;letter-spacing:-.04em}'+
+   '.rb h6{margin:16px 0 6px;font-size:14px;font-weight:750;color:#151A2B}'+
+   '.rb p{margin:0 0 10px;white-space:pre-wrap}.rb ul{margin:0 0 12px;padding-left:20px}'+
+   '.rb blockquote{margin:0 0 12px;padding:9px 14px;border-left:3px solid var(--qc);background:#F7F9FC;border-radius:0 8px 8px 0}'+
+   '.rb hr{border:none;border-top:1px solid #E3E8F1;margin:18px 0}.rb figure{margin:0 0 14px}'+
+   '.rb img,.rb iframe{width:100%;border-radius:10px;border:1px solid #E3E8F1;display:block}'+
+   '.rb figcaption{margin-top:6px;font-size:11.5px;color:#7C859C;font-weight:600;text-align:center}'+
+   'footer{margin-top:26px;font-size:11px;color:#A6AEC2;font-weight:600;text-align:center}'+
+   '</style></head><body><div class="sheet">'+
+   '<p class="crumb"><b>'+esc(A(unit.area).name)+'</b> · '+esc(G.label)+' · '+esc(unit.no)+'. '+esc(unit.title)+'</p>'+
+   '<h1>'+esc(sub.t)+'</h1><p class="sub">'+esc(G.book)+' · 에듀테크 사례 '+(IDX[subId]||[]).length+'건</p>'+
+   '<section class="std"><h3>소단원 성취기준</h3><ul>'+stds+'</ul></section>'+parts+
+   '<footer>수학 에듀테크 사례집에서 내보냄 · '+new Date().toLocaleDateString("ko-KR")+'</footer></div></body></html>';
+  download(doc,"text/html;charset=utf-8",shortG(unit.grade)+"_"+unit.title+"_"+sub.t+".html");
+  toast("이 소단원 사례를 HTML 파일로 저장했습니다");
+}
+function download(text,type,name){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+/* ═══ 이벤트 ═══ */
+$("#q").addEventListener("input",e=>{S.q=e.target.value;renderTree();if(S.view==="map")renderMap();});
+$("#tabArchive").onclick=()=>setView("archive");
+$("#tabMap").onclick=()=>setView("map");
+$("#sideToggle").onclick=()=>{$("#side").classList.toggle("on");$("#scrim2").classList.toggle("on");};
+$("#scrim2").onclick=()=>{$("#side").classList.remove("on");$("#scrim2").classList.remove("on");};
+$("#btnAccount").onclick=()=>{ USER?openAccount():openAuth("login"); };
+$("#btnMembers").onclick=openMembers;
+$("#btnProfile").onclick=openProfile;
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape") return;
+  if($("#authModal").classList.contains("on")) closeAuth();
+  else if($("#membersModal").classList.contains("on")) closeMembers();
+});
+$("#map").addEventListener("click",e=>{ if(e.target===e.currentTarget&&S.mapSel){S.mapSel=null;renderMap();} });
+let rt; window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(S.view==="map")renderMap();},150);});
+window.addEventListener("beforeunload",e=>{ if(S.editor){e.preventDefault();e.returnValue="";} });
+
+/* ═══ 시작 ═══ */
+(async function boot(){
+  renderChips(); renderTree(); renderPage(); stats();
+  setAccountUI();
+  await DB.init();
+
+  DB.watchAuth(async u=>{
+    USER=u||null;
+    if(USER) lsSet(LS_ME,USER.name);
+    await loadPending();
+    setAccountUI();
+    if(!S.editor) renderPage();
+  });
+
+  let first=true;
+  await DB.watchIndex(async ()=>{
+    stats(); renderTree();
+    if(S.view==="map") renderMap();
+    if(first||!S.editor){
+      renderPage();
+      if(S.sub){ try{ await DB.loadBodies(S.sub); renderPage(); }catch(e){} }
+    }
+    first=false;
+  });
+})();
+</script>
+</body>
+</html>
