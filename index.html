@@ -22,6 +22,7 @@
   --sidebar:288px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{margin:0;padding:0;height:100%}
 body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow:hidden}
 button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
@@ -1054,6 +1055,7 @@ const DB={
     }
     const {auth,au}=this.fb;
     auth.onAuthStateChanged(au,async u=>{
+      if(this._signup) return;              // 가입 절차가 끝난 뒤 직접 반영합니다
       if(!u){ cb(null); return; }
       try{ cb(await this.getUser(u.uid)); }
       catch(e){ console.warn(e); cb(null); }
@@ -1067,14 +1069,6 @@ const DB={
     return d.exists()?{...d.data(),uid}:null;
   },
 
-  /* 첫 가입자는 곧바로 관리자·승인 상태가 됩니다 */
-  async isFirstMember(){
-    if(this.mode!=="firebase") return !((lsGet(LS_DATA)||{}).localUser);
-    const {fs,db}=this.fb;
-    const snap=await fs.getDocs(fs.query(fs.collection(db,"users"),fs.limit(1)));
-    return snap.empty;
-  },
-
   async signUp(profile,password){
     if(this.mode!=="firebase"){
       const u={...profile,uid:"local",role:"admin",status:"approved",createdAt:Date.now()};
@@ -1082,14 +1076,27 @@ const DB={
       return u;
     }
     const {auth,au,fs,db}=this.fb;
-    const first=await this.isFirstMember();
-    const cred=await auth.createUserWithEmailAndPassword(au,this.idToEmail(profile.loginId),password);
-    const u={...profile, uid:cred.user.uid,
-      role: first?"admin":"member",
-      status: first?"approved":"pending",
-      createdAt: Date.now(), approvedAt: first?Date.now():null, approvedBy: first?"(최초 가입)":null };
-    await fs.setDoc(fs.doc(db,"users",cred.user.uid),u);
-    return u;
+    this._signup=true;                       // 가입 도중 auth 콜백이 끼어들지 않게
+    try{
+      /* 계정을 먼저 만듭니다. 로그인된 뒤라야 Firestore를 읽고 쓸 수 있습니다. */
+      const cred=await auth.createUserWithEmailAndPassword(au,this.idToEmail(profile.loginId),password);
+      const uid=cred.user.uid;
+
+      /* 첫 가입자 판별: bootstrap 문서를 만들 수 있으면 이 사람이 처음입니다.
+         이미 있으면 규칙이 막으므로, 판정 자체가 서버에서 이뤄집니다. */
+      let first=false;
+      try{
+        await fs.setDoc(fs.doc(db,"appConfig","bootstrap"),{ownerUid:uid,createdAt:Date.now()});
+        first=true;
+      }catch(e){ first=false; }
+
+      const u={...profile, uid,
+        role: first?"admin":"member",
+        status: first?"approved":"pending",
+        createdAt: Date.now(), approvedAt: first?Date.now():null, approvedBy: first?"(최초 가입)":null };
+      await fs.setDoc(fs.doc(db,"users",uid),u);
+      return u;
+    } finally { this._signup=false; }
   },
 
   async signIn(loginId,password){
