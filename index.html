@@ -116,6 +116,10 @@ a{color:var(--num)}
 .content{flex:1;overflow-y:auto;min-width:0;position:relative}
 .wrap{max-width:840px;margin:0 auto;padding:26px 30px 90px}
 
+.homebtn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink-3);padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--paper);margin-bottom:14px;transition:.14s;letter-spacing:-.02em}
+.homebtn:hover{color:var(--ink);border-color:#C9D3E6;transform:translateX(-2px)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0;text-align:left;border-radius:10px;padding:4px 6px;margin-left:-6px;transition:.14s}
+.brand:hover{background:var(--bg-2)}
 .crumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;font-weight:650;color:var(--ink-3);margin-bottom:11px}
 .crumb .sep{color:var(--ink-4)}
 .crumb .ac{padding:2px 8px;border-radius:99px;font-weight:750}
@@ -181,7 +185,8 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .rb hr{border:none;border-top:1px solid var(--line);margin:18px 0}
 .rb figure{margin:0 0 14px}
 .rb figure img{width:100%;display:block;border-radius:10px;border:1px solid var(--line)}
-.rb figure iframe{width:100%;border:1px solid var(--line);border-radius:10px;display:block;background:var(--bg)}
+.embedbox{position:relative;width:100%;max-width:100%;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff}
+.embedbox iframe{border:0;display:block;background:#fff}
 .rb figcaption{margin-top:6px;font-size:11.5px;color:var(--ink-3);font-weight:600;text-align:center}
 .rb a{font-weight:600}
 
@@ -229,6 +234,8 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .miniinp:focus{outline:none;background:var(--paper);border-color:#0C9B87}
 .row2{display:flex;gap:7px;align-items:center;margin-top:7px;flex-wrap:wrap}
 .row2 .miniinp{flex:1;min-width:120px}
+.minilbl{font-size:11px;font-weight:700;color:var(--ink-3);display:inline-flex;align-items:center;gap:5px;flex:none}
+.miniinp.sel{width:auto;min-width:104px;flex:none;padding:6px 8px}
 .addbar{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
 .addb{font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);transition:.14s;display:inline-flex;align-items:center;gap:4px}
 .addb:hover{border-color:#0C9B87;color:#0A8878;background:#F2FBF9}
@@ -382,7 +389,7 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
     <button class="btn ghost sideToggle" id="sideToggle" aria-label="단원 목록 열기">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
     </button>
-    <div class="brand">
+    <button class="brand" id="brandHome" title="처음 화면으로">
       <div class="mark" aria-hidden="true">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
           <rect x="3.5" y="4" width="17" height="13" rx="2.2" stroke="#fff" stroke-width="1.7"/>
@@ -394,7 +401,7 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
         <h1>수학 에듀테크 사례집</h1>
         <p>중1 – 공통수학2 · 2022 개정 교육과정</p>
       </div>
-    </div>
+    </button>
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" id="tabArchive" aria-selected="true">사례집</button>
       <button class="tab" role="tab" id="tabMap" aria-selected="false">연계 지도</button>
@@ -1267,6 +1274,13 @@ async function go(subId){
   try{ await DB.loadBodies(subId); }catch(e){ console.warn(e); }
   renderPage();
 }
+function goHome(){
+  if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
+  S.sub=null; S.unit=null; S.editor=null;
+  setView("archive");
+  $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
+  renderTree(); renderPage(); $("#content").scrollTop=0;
+}
 function setView(v){
   S.view=v;
   $("#tabArchive").setAttribute("aria-selected",v==="archive");
@@ -1283,6 +1297,11 @@ function renderPage(){
   if(!S.sub){ w.innerHTML=""; w.appendChild(homeView()); return; }
   const {sub,unit}=SUBMAP[S.sub], hex=A(unit.area).hex, G=GMAP[unit.grade];
   w.innerHTML="";
+
+  const home=el("button","homebtn");
+  home.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> 전체 단원으로';
+  home.onclick=goHome;
+  w.appendChild(home);
 
   const cr=el("div","crumb");
   cr.innerHTML='<span class="ac" style="background:'+hex+'18;color:'+hex+'">'+esc(A(unit.area).name)+'</span>'+
@@ -1410,7 +1429,7 @@ function homeView(){
     b.innerHTML='<span style="font-size:10.5px;font-weight:800;color:#fff;background:'+hex+';padding:3px 8px;border-radius:7px;flex:none">'+esc(k.tool)+'</span>'+
       '<span style="flex:1;min-width:0"><span style="display:block;font-size:13.5px;font-weight:700;letter-spacing:-.03em">'+esc(k.title)+'</span>'+
       '<span style="display:block;font-size:11px;color:var(--ink-3);font-weight:600;margin-top:1px">'+esc(shortG(unit.grade))+' · '+esc(unit.title)+' · '+esc(sub.t)+'</span></span>'+
-      '<span style="font-size:10.5px;color:var(--ink-4);font-weight:650;flex:none">'+esc(k.author||"익명")+' · '+fmtDate(k.updatedAt)+'</span>';
+      '<span style="font-size:10.5px;color:var(--ink-4);font-weight:650;flex:none">'+esc(honorific(k.author))+' · '+fmtDate(k.updatedAt)+'</span>';
     b.onclick=()=>go(k.subId);
     p.body.appendChild(b);
   });
@@ -1426,7 +1445,7 @@ function caseCard(sum,hex){
   const c=el("div","case");
   const ch=el("div","ch");
   ch.innerHTML='<span class="tool" style="background:'+hex+'">'+esc(sum.tool)+'</span>'+
-    '<span class="hh"><h4>'+esc(sum.title)+'</h4><p class="who"><b>'+esc(sum.author||"익명")+'</b> · '+fmtDate(sum.updatedAt)+
+    '<span class="hh"><h4>'+esc(sum.title)+'</h4><p class="who"><b>'+esc(honorific(sum.author))+'</b> · '+fmtDate(sum.updatedAt)+
     (isApproved()&&!canEdit?' · <span style="color:var(--ink-4)">다른 선생님의 사례</span>':'')+'</p></span>';
   const acts=el("span","acts");
   if(canEdit){
@@ -1444,7 +1463,63 @@ function caseCard(sum,hex){
   cb.appendChild(rb); c.appendChild(cb);
   return c;
 }
-function renderBlocks(root,blocks){
+/* ═══ HTML 임베드 ═══
+   fit 값: auto(기본) · stretch(가로 채우기) · scale(축소해 맞추기) · none(원본 크기)
+   예전에 쓴 글에는 fit·w 값이 없으므로 auto로 보고 내용에 맞춰 자동 판정합니다. */
+function embedMode(b){
+  const f=b.fit;
+  if(f==="stretch"||f==="scale"||f==="none") return f;
+  const s=(b.html||"").trim();
+  const single=/^<(iframe|embed|video)\b[\s\S]*<\/(iframe|embed|video)>$/i.test(s)
+             ||/^<(iframe|embed)\b[^>]*\/?>$/i.test(s);
+  return single ? "stretch" : "scale";
+}
+function embedDoc(html,mode){
+  const head='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+  const css = mode==="stretch"
+    ? '<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}'+
+      'iframe,embed,video{width:100%!important;height:100%!important;border:0;display:block}'+
+      'img{max-width:100%;height:auto}</style>'
+    : '<style>html,body{margin:0;padding:0}*{box-sizing:border-box}'+
+      'body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}'+
+      'img,video,canvas,svg,table,pre{max-width:100%}</style>';
+  return head+css+(html||"");
+}
+const EMBED_SANDBOX="allow-scripts allow-same-origin allow-popups allow-forms allow-presentation";
+function embedDims(b){
+  return { w:Math.max(320,parseInt(b.w,10)||1000), h:Math.max(120,parseInt(b.h,10)||420) };
+}
+function mountEmbed(parent,b){
+  const mode=embedMode(b), {w:dw,h:dh}=embedDims(b);
+  const box=el("div","embedbox"), ifr=el("iframe");
+  ifr.setAttribute("sandbox",EMBED_SANDBOX);
+  ifr.setAttribute("referrerpolicy","no-referrer");
+  ifr.setAttribute("loading","lazy");
+  ifr.srcdoc=embedDoc(b.html,mode);
+  box.appendChild(ifr); parent.appendChild(box);
+  if(mode==="none"){
+    box.style.overflowX="auto";
+    ifr.style.width=dw+"px"; ifr.style.height=dh+"px";
+    return box;
+  }
+  if(mode==="stretch"){
+    ifr.style.width="100%"; ifr.style.height=dh+"px";
+    return box;
+  }
+  ifr.style.width=dw+"px"; ifr.style.height=dh+"px"; ifr.style.transformOrigin="top left";
+  const fit=()=>{
+    const cw=box.clientWidth||dw, s=Math.min(1,cw/dw);
+    ifr.style.transform="scale("+s+")";
+    box.style.height=Math.round(dh*s)+"px";
+  };
+  fit();
+  try{ const ro=new ResizeObserver(fit); ro.observe(box); }
+  catch(e){ window.addEventListener("resize",fit); }
+  setTimeout(fit,60);
+  return box;
+}
+function renderBlocks(root,blocks,opt){
+  const forExport=!!(opt&&opt.forExport);
   root.innerHTML="";
   blocks.forEach(b=>{
     if(b.type==="h2") root.appendChild(el("h5",null,esc(b.text||"")));
@@ -1463,17 +1538,27 @@ function renderBlocks(root,blocks){
       root.appendChild(f);
     }
     else if(b.type==="embed"&&(b.html||"").trim()){
-      const f=el("figure"), ifr=el("iframe");
-      ifr.setAttribute("sandbox","allow-scripts allow-same-origin allow-popups allow-forms allow-presentation");
-      ifr.setAttribute("referrerpolicy","no-referrer");
-      ifr.style.height=(b.h||420)+"px";
-      ifr.srcdoc='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;height:100%;font-family:sans-serif}iframe,img,video{max-width:100%;border:0}*{box-sizing:border-box}</style>'+b.html;
-      f.appendChild(ifr);
+      const f=el("figure");
+      if(forExport){
+        const mode=embedMode(b), {w:dw,h:dh}=embedDims(b);
+        f.innerHTML='<div class="embedbox" data-fit="'+mode+'" data-w="'+dw+'" data-h="'+dh+'">'+
+          '<iframe sandbox="'+EMBED_SANDBOX+'" referrerpolicy="no-referrer" loading="lazy" '+
+          'style="'+(mode==="stretch"?"width:100%;height:"+dh+"px":"width:"+dw+"px;height:"+dh+"px")+'" '+
+          'srcdoc="'+esc(embedDoc(b.html,mode))+'"></iframe></div>';
+      }else{
+        mountEmbed(f,b);
+      }
       if(b.cap) f.appendChild(el("figcaption",null,esc(b.cap)));
       root.appendChild(f);
     }
   });
   if(!root.children.length) root.innerHTML='<p style="color:var(--ink-4)">내용이 비어 있습니다.</p>';
+}
+/* 작성자 이름 뒤에 호칭을 붙입니다. 이미 붙어 있거나 이름이 없으면 그대로 둡니다. */
+function honorific(name){
+  const n=(name||"").trim();
+  if(!n||n==="익명") return "익명";
+  return /(선생님|샘|교사)$/.test(n) ? n : n+" 선생님";
 }
 const linkify=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
 
@@ -1502,7 +1587,9 @@ function syncEditor(){
     if(g("src")) b.src=g("src").value.trim();
     if(g("html")) b.html=g("html").value;
     if(g("cap")) b.cap=g("cap").value.trim();
-    if(g("h")) b.h=Math.max(120,Math.min(1200,parseInt(g("h").value,10)||420));
+    if(g("h")) b.h=Math.max(120,Math.min(1600,parseInt(g("h").value,10)||420));
+    if(g("w")) b.w=Math.max(320,Math.min(2000,parseInt(g("w").value,10)||1000));
+    if(g("fit")) b.fit=g("fit").value;
   });
 }
 const autoGrow=ta=>{ta.style.height="auto";ta.style.height=(ta.scrollHeight+2)+"px";};
@@ -1556,7 +1643,7 @@ function field(label,f,val,ph,big,list){
 function newBlock(t){
   const b={id:uid(),type:t};
   if(t==="img"){b.src="";b.cap="";}
-  else if(t==="embed"){b.html="";b.cap="";b.h=420;}
+  else if(t==="embed"){b.html="";b.cap="";b.h=420;b.w=1000;b.fit="auto";}
   else if(t!=="hr"){b.text="";}
   return b;
 }
@@ -1593,26 +1680,44 @@ function blockEditor(b,i){
     bd.querySelector('[data-a="pick"]').onclick=()=>pickImage(b.id);
   }
   else if(b.type==="embed"){
+    const fitNow=b.fit||"auto";
     bd.innerHTML='<textarea class="ta code" data-b="html" rows="4" placeholder="&lt;iframe src=&quot;…&quot;&gt;&lt;/iframe&gt; 처럼 임베드 코드를 붙여넣으세요">'+esc(b.html||"")+'</textarea>'+
+      '<div class="row2">'+
+        '<label class="minilbl">폭 맞춤 <select class="miniinp sel" data-b="fit">'+
+          '<option value="auto"'+(fitNow==="auto"?" selected":"")+'>자동</option>'+
+          '<option value="stretch"'+(fitNow==="stretch"?" selected":"")+'>가로 채우기</option>'+
+          '<option value="scale"'+(fitNow==="scale"?" selected":"")+'>축소해 맞추기</option>'+
+          '<option value="none"'+(fitNow==="none"?" selected":"")+'>원본 크기</option>'+
+        '</select></label>'+
+        '<label class="minilbl" data-only="scale">기준 폭 <input class="miniinp" data-b="w" type="number" min="320" max="2000" step="20" value="'+(b.w||1000)+'" style="width:86px"></label>'+
+        '<label class="minilbl">높이 <input class="miniinp" data-b="h" type="number" min="120" max="1600" step="20" value="'+(b.h||420)+'" style="width:86px"></label>'+
+      '</div>'+
       '<div class="row2"><input class="miniinp" data-b="cap" type="text" placeholder="설명 (선택)" value="'+esc(b.cap||"")+'" style="flex:2">'+
-      '<label style="font-size:11px;font-weight:700;color:var(--ink-3)">높이 <input class="miniinp" data-b="h" type="number" min="120" max="1200" step="20" value="'+(b.h||420)+'" style="width:82px;display:inline-block"></label>'+
       '<button class="addb" data-a="prev">미리보기 새로고침</button></div>'+
-      '<div class="hintline">GeoGebra, Desmos, 유튜브, 패들렛 등의 공유 &lt;iframe&gt; 코드를 그대로 붙여넣으면 됩니다. 임베드는 격리된 화면에서 실행됩니다.</div>'+
+      '<div class="hintline">GeoGebra, Desmos, 유튜브 같은 공유 &lt;iframe&gt; 코드는 <b>가로 채우기</b>가, 직접 만든 페이지처럼 폭이 정해진 내용은 <b>축소해 맞추기</b>가 알맞습니다. <b>자동</b>은 붙여넣은 코드를 보고 알아서 고릅니다. 기준 폭은 만들 때 상정한 화면 폭입니다.</div>'+
       '<div class="prev"></div>';
+
     const prev=bd.querySelector(".prev");
+    const syncOnly=()=>{
+      const m=bd.querySelector('[data-b="fit"]').value;
+      const eff = m==="auto" ? embedMode({html:bd.querySelector('[data-b="html"]').value,fit:"auto"}) : m;
+      bd.querySelector('[data-only="scale"]').style.display = eff==="scale" ? "" : "none";
+    };
     const paint=()=>{
       const v=bd.querySelector('[data-b="html"]').value.trim();
-      const h=parseInt(bd.querySelector('[data-b="h"]').value,10)||420;
       prev.innerHTML="";
+      syncOnly();
       if(!v){prev.innerHTML='<div style="font-size:11px;color:var(--ink-4);font-weight:600">미리보기가 여기 표시됩니다.</div>';return;}
-      const ifr=el("iframe");
-      ifr.setAttribute("sandbox","allow-scripts allow-same-origin allow-popups allow-forms allow-presentation");
-      ifr.style.height=h+"px";
-      ifr.srcdoc='<!doctype html><meta charset="utf-8"><style>html,body{margin:0;height:100%}iframe,img{max-width:100%;border:0}</style>'+v;
-      prev.appendChild(ifr);
+      mountEmbed(prev,{
+        html:v,
+        fit:bd.querySelector('[data-b="fit"]').value,
+        w:parseInt(bd.querySelector('[data-b="w"]').value,10)||1000,
+        h:parseInt(bd.querySelector('[data-b="h"]').value,10)||420
+      });
     };
     paint();
     bd.querySelector('[data-a="prev"]').onclick=paint;
+    bd.querySelector('[data-b="fit"]').onchange=paint;
     const ta=bd.querySelector(".ta"); ta.addEventListener("input",()=>autoGrow(ta));
   }
   else{
@@ -2253,9 +2358,9 @@ async function exportSubHTML(subId){
   const {sub,unit}=SUBMAP[subId], hex=A(unit.area).hex, G=GMAP[unit.grade];
   const parts=(IDX[subId]||[]).map(sum=>{
     const blocks=BODY[sum.id]; if(!blocks) return "";
-    const rb=el("div","rb"); rb.style.setProperty("--qc",hex); renderBlocks(rb,blocks);
+    const rb=el("div","rb"); rb.style.setProperty("--qc",hex); renderBlocks(rb,blocks,{forExport:true});
     return '<article class="case"><header><span class="tool">'+esc(sum.tool)+'</span><h2>'+esc(sum.title)+'</h2>'+
-      '<p class="who">'+esc(sum.author||"익명")+' · '+fmtDate(sum.updatedAt)+'</p></header>'+
+      '<p class="who">'+esc(honorific(sum.author))+' · '+fmtDate(sum.updatedAt)+'</p></header>'+
       ((sum.tags&&sum.tags.length)?'<p class="tags">'+sum.tags.map(t=>'<span>'+esc(t)+'</span>').join("")+'</p>':'')+
       '<div class="rb">'+rb.innerHTML+'</div></article>';
   }).join("\n");
@@ -2283,14 +2388,24 @@ async function exportSubHTML(subId){
    '.rb p{margin:0 0 10px;white-space:pre-wrap}.rb ul{margin:0 0 12px;padding-left:20px}'+
    '.rb blockquote{margin:0 0 12px;padding:9px 14px;border-left:3px solid var(--qc);background:#F7F9FC;border-radius:0 8px 8px 0}'+
    '.rb hr{border:none;border-top:1px solid #E3E8F1;margin:18px 0}.rb figure{margin:0 0 14px}'+
-   '.rb img,.rb iframe{width:100%;border-radius:10px;border:1px solid #E3E8F1;display:block}'+
+   '.rb img{width:100%;border-radius:10px;border:1px solid #E3E8F1;display:block}'+
+   '.embedbox{position:relative;width:100%;max-width:100%;overflow:hidden;border:1px solid #E3E8F1;border-radius:10px;background:#fff}'+
+   '.embedbox iframe{border:0;display:block;background:#fff}'+
    '.rb figcaption{margin-top:6px;font-size:11.5px;color:#7C859C;font-weight:600;text-align:center}'+
    'footer{margin-top:26px;font-size:11px;color:#A6AEC2;font-weight:600;text-align:center}'+
    '</style></head><body><div class="sheet">'+
    '<p class="crumb"><b>'+esc(A(unit.area).name)+'</b> · '+esc(G.label)+' · '+esc(unit.no)+'. '+esc(unit.title)+'</p>'+
    '<h1>'+esc(sub.t)+'</h1><p class="sub">'+esc(G.book)+' · 에듀테크 사례 '+(IDX[subId]||[]).length+'건</p>'+
    '<section class="std"><h3>소단원 성취기준</h3><ul>'+stds+'</ul></section>'+parts+
-   '<footer>수학 에듀테크 사례집에서 내보냄 · '+new Date().toLocaleDateString("ko-KR")+'</footer></div></body></html>';
+   '<footer>수학 에듀테크 사례집에서 내보냄 · '+new Date().toLocaleDateString("ko-KR")+'</footer></div>'+
+   '<scr'+'ipt>'+
+   'document.querySelectorAll(\'.embedbox[data-fit="scale"]\').forEach(function(box){'+
+   ' var f=box.querySelector("iframe"),dw=+box.dataset.w||1000,dh=+box.dataset.h||420;'+
+   ' function fit(){var s=Math.min(1,(box.clientWidth||dw)/dw);'+
+   '  f.style.transformOrigin="top left";f.style.transform="scale("+s+")";'+
+   '  f.style.width=dw+"px";f.style.height=dh+"px";box.style.height=Math.round(dh*s)+"px";}'+
+   ' fit();window.addEventListener("resize",fit);setTimeout(fit,80);});'+
+   '</scr'+'ipt></body></html>';
   download(doc,"text/html;charset=utf-8",shortG(unit.grade)+"_"+unit.title+"_"+sub.t+".html");
   toast("이 소단원 사례를 HTML 파일로 저장했습니다");
 }
@@ -2307,6 +2422,7 @@ $("#tabMap").onclick=()=>setView("map");
 $("#sideToggle").onclick=()=>{$("#side").classList.toggle("on");$("#scrim2").classList.toggle("on");};
 $("#scrim2").onclick=()=>{$("#side").classList.remove("on");$("#scrim2").classList.remove("on");};
 $("#btnAccount").onclick=()=>{ USER?openAccount():openAuth("login"); };
+$("#brandHome").onclick=goHome;
 $("#btnMembers").onclick=openMembers;
 $("#btnProfile").onclick=openProfile;
 document.addEventListener("keydown",e=>{
