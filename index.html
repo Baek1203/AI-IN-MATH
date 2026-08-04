@@ -360,6 +360,51 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .pwhead{font-size:11px;font-weight:800;letter-spacing:.09em;color:var(--ink-3);text-transform:uppercase;margin-bottom:11px}
 .inp:disabled{background:var(--bg-2);color:var(--ink-3);cursor:not-allowed}
 .hintline{font-size:10.5px;color:var(--ink-4);font-weight:600;margin-top:5px}
+.homecta{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin:16px 0 6px}
+.ctahint{font-size:12px;color:var(--ink-3);font-weight:600;letter-spacing:-.01em}
+.unitpick{margin-bottom:15px;padding-bottom:15px;border-bottom:1px dashed var(--line)}
+.upsel{display:flex;gap:7px;flex-wrap:wrap}
+.upsel select{flex:1;min-width:130px}
+.upfoot{margin-top:9px;display:flex;justify-content:flex-end}
+.upchip{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;background:var(--c,var(--bg));background:color-mix(in srgb, var(--c) 10%, white);border:1px solid var(--c);}
+.updot{width:8px;height:8px;border-radius:99px;background:var(--c);flex:none}
+.uptxt{flex:1;font-size:13px;font-weight:650;letter-spacing:-.02em;color:var(--ink);min-width:0}
+.uptxt .sep{color:var(--ink-4);margin:0 5px;font-weight:500}
+.tfbar{margin-top:8px}
+.tftoggle{display:flex;align-items:center;gap:6px;width:100%;padding:6px 2px;font-size:11.5px;font-weight:650;color:var(--ink-3);border-radius:7px;transition:.14s}
+.tftoggle:hover{color:var(--ink-2);background:var(--bg)}
+.tftoggle.active{color:var(--num)}
+.tftoggle span:nth-child(2){flex:1;text-align:left}
+.tftoggle .tfcv{transition:transform .18s;color:var(--ink-4)}
+.tftoggle[aria-expanded="true"] .tfcv{transform:rotate(180deg)}
+.tfcount{font-family:var(--mono);font-size:9.5px;font-weight:700;background:var(--num);color:#fff;padding:1px 6px;border-radius:99px}
+.tfpanel{display:flex;flex-wrap:wrap;gap:5px;padding:9px 2px 3px}
+.tchip{font-size:10.5px;font-weight:650;padding:4px 9px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);transition:.14s;letter-spacing:-.01em}
+.tchip:hover{border-color:#C9D3E6}
+.tchip[aria-pressed="true"]{background:var(--num);border-color:var(--num);color:#fff}
+.tfclear{font-size:10.5px;font-weight:650;color:var(--ink-4);padding:4px 6px;text-decoration:underline;text-underline-offset:2px}
+.tfclear:hover{color:var(--ink-2)}
+
+.who{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.authorlink{font-weight:750;color:var(--ink);letter-spacing:-.01em;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px;transition:.14s}
+.authorlink:hover{color:var(--num);text-decoration-color:var(--num)}
+.mbtags span{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:2px 9px;margin:0 4px 4px 0;font-size:11px;font-weight:650;color:var(--ink-2)}
+.embed-expand{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:8px;background:rgba(21,26,43,.55);color:#fff;display:grid;place-items:center;backdrop-filter:blur(2px);opacity:.82;transition:.15s;z-index:2}
+.embed-expand:hover{opacity:1;background:rgba(21,26,43,.78);transform:scale(1.06)}
+
+.embed-overlay{position:fixed;inset:0;z-index:300;background:rgba(10,13,22,.72);backdrop-filter:blur(3px);display:none;place-items:center;padding:18px}
+.embed-overlay.on{display:grid}
+.embed-frame{width:min(96vw,1320px);height:min(90vh,920px);background:var(--paper);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.42);display:flex;flex-direction:column}
+.embed-frame-head{flex:none;display:flex;align-items:center;gap:10px;padding:12px 14px 12px 18px;border-bottom:1px solid var(--line);background:var(--bg)}
+.embed-frame-head span{font-size:13.5px;font-weight:750;letter-spacing:-.025em;color:var(--ink-2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.embed-frame-close{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--ink-3);flex:none}
+.embed-frame-close:hover{background:var(--bg-2);color:var(--ink)}
+.embed-frame-body{flex:1;min-height:0;overflow:auto;display:flex;align-items:flex-start;justify-content:center;background:#F1F4FA;padding:16px}
+.embed-frame-body .embedbox{border:none;box-shadow:0 2px 14px rgba(21,26,43,.1)}
+@media (max-width:640px){
+  .embed-frame{width:100vw;height:100dvh;border-radius:0}
+  .embed-frame-body{padding:10px}
+}
 @media (max-width:1000px){
   .side{position:fixed;left:0;top:60px;bottom:0;z-index:70;transform:translateX(-101%);transition:transform .26s cubic-bezier(.22,.75,.28,1);box-shadow:var(--sh-l);width:300px}
   .side.on{transform:none}
@@ -434,6 +479,15 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
         <input type="search" id="q" placeholder="단원 · 성취기준 · 도구 검색" autocomplete="off">
       </div>
       <div class="fchips" id="fchips"></div>
+      <div class="tfbar">
+        <button class="tftoggle" id="tfToggle" aria-expanded="false">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          <span>활동 유형 필터</span>
+          <span class="tfcount" id="tfCount" hidden></span>
+          <svg class="tfcv" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="tfpanel" id="tfPanel" hidden></div>
+      </div>
     </div>
     <nav class="tree" id="tree" aria-label="단원 목록"></nav>
   </aside>
@@ -465,6 +519,22 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
   <div class="mbox wide" id="membersBox"></div>
 </div>
 
+<div class="modal" id="peekModal">
+  <div class="mbox" id="peekBox"></div>
+</div>
+
+<div class="embed-overlay" id="embedOverlay">
+  <div class="embed-frame">
+    <div class="embed-frame-head">
+      <span id="embedFrameTitle"></span>
+      <button class="embed-frame-close" id="embedFrameClose" aria-label="닫기">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="embed-frame-body" id="embedFrameBody"></div>
+  </div>
+</div>
+
 
 <div class="toasts" id="toasts"></div>
 
@@ -489,7 +559,7 @@ const SDK="https://www.gstatic.com/firebasejs/10.12.5/";
 /* 아이디 로그인을 Firebase 이메일 인증에 얹기 위한 내부 도메인입니다.
    메일이 오가지는 않습니다. Firebase가 이 형식을 거부하면 다른 값으로 바꾸세요. */
 const LOGIN_DOMAIN="@mathcase.local";
-const TAGS=["시각화·탐구","문제 풀이·진단","협업·공유","평가·피드백","코딩·AI","자료 수집·분석"];
+const TAGS=["학습관리","협력·의사소통","진단·맞춤학습","평가·피드백","흥미·동기유발","개념이해·시각화","탐구·추측 형성","문제해결·모델링","반복 연습","계산·절차 수행 대행"];
 const BLOCK_LABEL={h2:"제목",h3:"소제목",p:"본문",ul:"목록",quote:"인용",img:"이미지",embed:"HTML 임베드",hr:"구분선"};
 const LS_DATA="mathedu.local.data", LS_ME="mathedu.me";
 
@@ -1064,7 +1134,11 @@ const DB={
     auth.onAuthStateChanged(au,async u=>{
       if(this._signup) return;              // 가입 절차가 끝난 뒤 직접 반영합니다
       if(!u){ cb(null); return; }
-      try{ cb(await this.getUser(u.uid)); }
+      try{
+        const usr=await this.getUser(u.uid);
+        cb(usr);
+        if(usr) this.syncPublicProfile(u.uid,usr).catch(e=>console.warn("공개 프로필 동기화 실패",e));
+      }
       catch(e){ console.warn(e); cb(null); }
     });
   },
@@ -1102,6 +1176,7 @@ const DB={
         status: first?"approved":"pending",
         createdAt: Date.now(), approvedAt: first?Date.now():null, approvedBy: first?"(최초 가입)":null };
       await fs.setDoc(fs.doc(db,"users",uid),u);
+      await this.syncPublicProfile(uid,u);
       return u;
     } finally { this._signup=false; }
   },
@@ -1134,6 +1209,37 @@ const DB={
     const {fs,db}=this.fb;
     await fs.updateDoc(fs.doc(db,"users",uid),patch);
     return true;
+  },
+
+  /* ── 공개 프로필 ─ 로그인 여부와 상관없이 누구나 읽을 수 있는, 안전한 항목만 담은 별도 문서
+     (아이디·역할·승인상태는 절대 담지 않습니다) ── */
+  publicSubset(u){
+    return { name:u.name||"", school:u.school||"", level:u.level||"middle",
+             grades:u.grades||[], subjects:u.subjects||[],
+             interested:u.interested||[], used:u.used||[], updatedAt:Date.now() };
+  },
+  async syncPublicProfile(uid,u){
+    const rec=this.publicSubset(u);
+    if(this.mode!=="firebase"){
+      const d=lsGet(LS_DATA)||{}; d.publicProfiles=d.publicProfiles||{}; d.publicProfiles[uid]=rec;
+      return lsSet(LS_DATA,d);
+    }
+    const {fs,db}=this.fb;
+    await fs.setDoc(fs.doc(db,"publicProfiles",uid),rec);
+    return true;
+  },
+  async getPublicProfile(uid){
+    if(this.mode!=="firebase") return ((lsGet(LS_DATA)||{}).publicProfiles||{})[uid]||null;
+    const {fs,db}=this.fb;
+    const d=await fs.getDoc(fs.doc(db,"publicProfiles",uid));
+    return d.exists()?{...d.data(),uid}:null;
+  },
+  async listPublicProfileIds(){
+    if(this.mode!=="firebase") return Object.keys((lsGet(LS_DATA)||{}).publicProfiles||{});
+    const {fs,db}=this.fb;
+    const snap=await fs.getDocs(fs.collection(db,"publicProfiles"));
+    const out=[]; snap.forEach(d=>out.push(d.id));
+    return out;
   },
 
   /* 비밀번호 변경 ─ 현재 비밀번호로 본인 확인을 거칩니다 */
@@ -1198,12 +1304,16 @@ const cnt=sid=>(IDX[sid]||[]).length;
 const unitCnt=u2=>u2.subs.reduce((a,s)=>a+cnt(s.id),0);
 
 /* ═══ 화면 상태 ═══ */
-const S={ view:"archive", q:"", areas:new Set(), sub:null, unit:null,
+const S={ view:"archive", q:"", areas:new Set(), types:new Set(), typeOpen:false, sub:null, unit:null,
           openG:new Set(["m1"]), openU:new Set(), mapSel:null, editor:null, folds:new Set() };
 
 /* ═══ 검색 ═══ */
 function subMatch(sb,un){
   if(S.areas.size&&!S.areas.has(un.area)) return false;
+  if(S.types.size){
+    const list=IDX[sb.id]||[];
+    if(!list.some(k=>(k.tags||[]).some(t=>S.types.has(t)))) return false;
+  }
   const q=S.q.trim().toLowerCase(); if(!q) return true;
   const pool=[un.title,un.no,un.theme,GMAP[un.grade].label,AREAS[un.area].name,sb.t,sb.mid||"",
     ...un.terms,...sb.c,...sb.c.map(c=>STD[c]||""),
@@ -1223,6 +1333,29 @@ function renderChips(){
     b.onclick=()=>{on?S.areas.delete(k):S.areas.add(k);renderChips();renderTree();if(S.view==="map")renderMap();};
     w.appendChild(b);
   });
+}
+function renderTypeFilter(){
+  const tog=$("#tfToggle"), panel=$("#tfPanel"), cnt=$("#tfCount");
+  tog.setAttribute("aria-expanded",S.typeOpen?"true":"false");
+  tog.classList.toggle("active",S.types.size>0);
+  panel.hidden=!S.typeOpen;
+  cnt.hidden=S.types.size===0;
+  cnt.textContent=S.types.size||"";
+  panel.innerHTML="";
+  TAGS.forEach(t=>{
+    const on=S.types.has(t), b=el("button","tchip",esc(t));
+    b.setAttribute("aria-pressed",on?"true":"false");
+    b.onclick=()=>{
+      on?S.types.delete(t):S.types.add(t);
+      renderTypeFilter(); renderTree(); if(S.view==="map")renderMap();
+    };
+    panel.appendChild(b);
+  });
+  if(S.types.size){
+    const clr=el("button","tfclear","모두 해제");
+    clr.onclick=()=>{ S.types.clear(); renderTypeFilter(); renderTree(); if(S.view==="map")renderMap(); };
+    panel.appendChild(clr);
+  }
 }
 function renderTree(){
   const t=$("#tree"); t.innerHTML=""; let any=false;
@@ -1294,6 +1427,7 @@ function setView(v){
 /* ═══ 본문 ═══ */
 function renderPage(){
   const w=$("#wrap");
+  if(S.editor && S.editor.pickerMode){ w.innerHTML=""; w.appendChild(composeView()); return; }
   if(!S.sub){ w.innerHTML=""; w.appendChild(homeView()); return; }
   const {sub,unit}=SUBMAP[S.sub], hex=A(unit.area).hex, G=GMAP[unit.grade];
   w.innerHTML="";
@@ -1405,10 +1539,43 @@ function panel(title,n,closed){
   const body=el("div","pb"); root.appendChild(body);
   return {root,body};
 }
+function composeView(){
+  const w=el("div");
+  const back=el("button","homebtn");
+  back.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> 사례집으로';
+  back.onclick=()=>{
+    if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
+    S.editor=null; renderPage();
+  };
+  w.appendChild(back);
+  w.appendChild(el("h2","page","새 사례 등록"));
+  w.appendChild(el("p","subttl","등록할 단원을 고르고, 도구와 활동 내용을 적어 주세요."));
+  w.appendChild(buildEditor());
+  return w;
+}
+
 function homeView(){
   const w=el("div");
   w.appendChild(el("h2","page","단원을 골라 사례를 남기고, 다른 선생님의 사례를 읽어 보세요"));
   w.appendChild(el("p","subttl","왼쪽 목록에서 학년 → 대단원 → 소단원 순으로 들어가면 그 소단원의 성취기준과 에듀테크 사례가 열립니다."));
+
+  const cta=el("div","homecta");
+  if(isApproved()){
+    const b=el("button","btn live","＋ 사례 등록하기");
+    b.onclick=()=>startEditor(null,null);
+    cta.appendChild(b);
+    cta.appendChild(el("span","ctahint","등록할 단원은 다음 화면에서 고를 수 있어요."));
+  }else if(USER){
+    const b=el("button","btn warn-btn","＋ 사례 등록하기"); b.disabled=true;
+    cta.appendChild(b);
+    cta.appendChild(el("span","ctahint","관리자가 승인하면 사례를 등록할 수 있어요."));
+  }else{
+    const b=el("button","btn primary","로그인하고 사례 등록하기");
+    b.onclick=()=>openAuth("login");
+    cta.appendChild(b);
+  }
+  w.appendChild(cta);
+
   if(!DB.isShared){
     const n=el("div","panel"); n.style.borderColor="#F6DDBE";
     n.innerHTML='<div class="pb" style="background:#FDF8F1"><b style="font-size:13px;font-weight:750">서버에 연결하지 못했습니다.</b>'+
@@ -1438,6 +1605,53 @@ function homeView(){
 }
 
 /* ═══ 사례 카드 ═══ */
+/* 회원 프로필 요약 카드 ─ 본인 화면(아이디 포함)과 다른 선생님 열람(아이디 제외) 양쪽에서 씁니다 */
+function profileCardHTML(u,opt){
+  const showId=!!(opt&&opt.showId);
+  const badge = u.role==="admin" ? '<span class="rolebadge admin">관리자</span>'
+              : u.status==="approved" ? '<span class="rolebadge ok">승인됨</span>'
+              : u.status==="pending" ? '<span class="rolebadge wait">승인 대기</span>' : '';
+  const where=(u.level==="high"?(u.subjects||[]):(u.grades||[])).join(", ");
+  const tagblock=(label,list)=> (list&&list.length)
+    ? '<div class="fld"><label class="fl">'+label+'</label><div class="mbtags" style="margin-top:0">'+list.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div></div>'
+    : '<div class="fld"><label class="fl">'+label+'</label><span class="nolink">아직 고른 것이 없습니다.</span></div>';
+  return '<h3>'+esc(u.name)+' 선생님 '+badge+'</h3>'+
+    '<p>'+esc(u.school||"소속 미입력")+' · '+(u.level==="high"?"고등학교":"중학교")+
+      (where?' · '+esc(where):'')+
+      (showId?'<br><span style="color:var(--ink-3)">아이디 '+esc(u.loginId)+'</span>':'')+'</p>'+
+    tagblock("관심 있는 에듀테크",u.interested)+
+    tagblock("사용해 본 에듀테크",u.used);
+}
+
+/* 사례 카드의 작성자 이름을 눌렀을 때: 본인이면 내 정보 화면, 남이면 열람 전용 카드 */
+function authorClick(uid){
+  if(!uid) return;
+  if(USER && uid===USER.uid){ openAccount(); return; }
+  openPeek(uid);
+}
+function openPeek(uid){
+  const box=$("#peekBox");
+  box.innerHTML='<h3>불러오는 중…</h3>';
+  $("#peekModal").classList.add("on");
+  DB.getPublicProfile(uid).then(u=>{
+    if(!u){
+      box.innerHTML='<h3>아직 공개된 프로필이 없습니다</h3><p>이 선생님이 다시 로그인하거나 정보를 저장하면 여기서 볼 수 있게 됩니다.</p>'+
+        '<div class="frow"><button class="btn ghost" id="pkCancel">닫기</button></div>';
+      box.querySelector("#pkCancel").onclick=closePeek;
+      return;
+    }
+    box.innerHTML=profileCardHTML(u,{showId:false})+
+      '<div class="frow"><button class="btn ghost" id="pkCancel">닫기</button></div>';
+    box.querySelector("#pkCancel").onclick=closePeek;
+  }).catch(e=>{
+    console.warn(e);
+    box.innerHTML='<h3>불러오지 못했습니다</h3><p>'+esc(authError(e))+'</p>'+
+      '<div class="frow"><button class="btn ghost" id="pkCancel">닫기</button></div>';
+    box.querySelector("#pkCancel").onclick=closePeek;
+  });
+}
+const closePeek=()=>$("#peekModal").classList.remove("on");
+
 function caseCard(sum,hex){
   const blocks=BODY[sum.id];
   const mine = !!(USER && sum.uid && sum.uid===USER.uid);
@@ -1445,8 +1659,12 @@ function caseCard(sum,hex){
   const c=el("div","case");
   const ch=el("div","ch");
   ch.innerHTML='<span class="tool" style="background:'+hex+'">'+esc(sum.tool)+'</span>'+
-    '<span class="hh"><h4>'+esc(sum.title)+'</h4><p class="who"><b>'+esc(honorific(sum.author))+'</b> · '+fmtDate(sum.updatedAt)+
-    (isApproved()&&!canEdit?' · <span style="color:var(--ink-4)">다른 선생님의 사례</span>':'')+'</p></span>';
+    '<span class="hh"><h4>'+esc(sum.title)+'</h4><p class="who">'+
+    (sum.uid?'<button class="authorlink" data-uid="'+esc(sum.uid)+'">'+esc(honorific(sum.author))+'</button>'
+            :'<b>'+esc(honorific(sum.author))+'</b>')+
+    ' · '+fmtDate(sum.updatedAt)+'</p></span>';
+  const authBtn=ch.querySelector(".authorlink");
+  if(authBtn) authBtn.onclick=()=>authorClick(sum.uid);
   const acts=el("span","acts");
   if(canEdit){
     const e=el("button","btn sm","수정"); e.onclick=()=>startEditor(sum.subId||S.sub,sum.id);
@@ -1455,7 +1673,7 @@ function caseCard(sum,hex){
     if(isAdmin()&&!mine){ const tagb=el("span"); tagb.style.cssText="font-size:9.5px;font-weight:700;color:#B4651A;align-self:center;margin-right:2px"; tagb.textContent="관리자 권한"; acts.prepend(tagb); }
   }
   ch.appendChild(acts); c.appendChild(ch);
-  if(sum.tags&&sum.tags.length) c.appendChild(el("div","tags",sum.tags.map(t=>'<span class="tg">'+esc(t)+'</span>').join("")));
+  if(sum.tags&&sum.tags.length) c.appendChild(el("div","tags",sum.tags.map(t=>'<span class="tg">#'+esc(t)+'</span>').join("")));
   const cb=el("div","cb"), rb=el("div","rb");
   rb.style.setProperty("--qc",hex);
   if(!blocks) rb.innerHTML='<p style="color:var(--ink-4)">내용을 불러오는 중…</p>';
@@ -1487,36 +1705,58 @@ function embedDoc(html,mode){
 }
 const EMBED_SANDBOX="allow-scripts allow-same-origin allow-popups allow-forms allow-presentation";
 function embedDims(b){
-  return { w:Math.max(320,parseInt(b.w,10)||1000), h:Math.max(120,parseInt(b.h,10)||420) };
+  return { w:Math.max(320,parseInt(b.w,10)||1000), h:Math.max(120,parseInt(b.h,10)||560) };
 }
-function mountEmbed(parent,b){
+function mountEmbed(parent,b,opts){
+  opts=opts||{};
   const mode=embedMode(b), {w:dw,h:dh}=embedDims(b);
   const box=el("div","embedbox"), ifr=el("iframe");
   ifr.setAttribute("sandbox",EMBED_SANDBOX);
   ifr.setAttribute("referrerpolicy","no-referrer");
-  ifr.setAttribute("loading","lazy");
+  if(!opts.big) ifr.setAttribute("loading","lazy");
   ifr.srcdoc=embedDoc(b.html,mode);
   box.appendChild(ifr); parent.appendChild(box);
+
   if(mode==="none"){
     box.style.overflowX="auto";
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px";
-    return box;
+  }else if(mode==="stretch"){
+    ifr.style.width="100%";
+    if(opts.big){ box.style.width="100%"; box.style.height="100%"; ifr.style.height="100%"; }
+    else{ ifr.style.height=dh+"px"; }
+  }else{
+    ifr.style.width=dw+"px"; ifr.style.height=dh+"px"; ifr.style.transformOrigin="top left";
+    const fit=()=>{
+      const cw=box.clientWidth||dw, s=Math.min(1,cw/dw);
+      ifr.style.transform="scale("+s+")";
+      box.style.height=Math.round(dh*s)+"px";
+    };
+    fit();
+    try{ const ro=new ResizeObserver(fit); ro.observe(box); }
+    catch(e){ window.addEventListener("resize",fit); }
+    setTimeout(fit,60);
   }
-  if(mode==="stretch"){
-    ifr.style.width="100%"; ifr.style.height=dh+"px";
-    return box;
+
+  if(opts.expand!==false){
+    const exp=el("button","embed-expand");
+    exp.type="button"; exp.title="크게 보기"; exp.setAttribute("aria-label","크게 보기");
+    exp.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+    exp.onclick=e=>{ e.stopPropagation(); openEmbedModal(b); };
+    box.appendChild(exp);
   }
-  ifr.style.width=dw+"px"; ifr.style.height=dh+"px"; ifr.style.transformOrigin="top left";
-  const fit=()=>{
-    const cw=box.clientWidth||dw, s=Math.min(1,cw/dw);
-    ifr.style.transform="scale("+s+")";
-    box.style.height=Math.round(dh*s)+"px";
-  };
-  fit();
-  try{ const ro=new ResizeObserver(fit); ro.observe(box); }
-  catch(e){ window.addEventListener("resize",fit); }
-  setTimeout(fit,60);
   return box;
+}
+
+/* 임베드를 큰 모달로 띄워 넉넉한 화면에서 보게 합니다 */
+function openEmbedModal(b){
+  const body=$("#embedFrameBody"); body.innerHTML="";
+  $("#embedFrameTitle").textContent = b.cap||"임베드 콘텐츠";
+  mountEmbed(body,b,{big:true,expand:false});
+  $("#embedOverlay").classList.add("on");
+}
+function closeEmbedModal(){
+  $("#embedOverlay").classList.remove("on");
+  $("#embedFrameBody").innerHTML="";   // 닫으면 안의 스크립트·오디오도 함께 멈춥니다
 }
 function renderBlocks(root,blocks,opt){
   const forExport=!!(opt&&opt.forExport);
@@ -1568,12 +1808,13 @@ function startEditor(subId,caseId){
   const sum=caseId?SUMS[caseId]:null;
   S.editor={ subId, caseId, draftId: caseId||uid(),
     uid: sum?sum.uid:(USER?USER.uid:null),
+    pickerMode: !subId && !caseId,   // 메인 화면에서 시작하면 단원을 먼저 고릅니다
     tool:sum?sum.tool:"", title:sum?sum.title:"",
     tags:new Set(sum?(sum.tags||[]):[]),
     blocks: blocks&&blocks.length ? JSON.parse(JSON.stringify(blocks))
           : [{id:uid(),type:"h3",text:"수업 흐름"},{id:uid(),type:"p",text:""}] };
   renderPage();
-  setTimeout(()=>{const n=document.querySelector(".editor .inp");if(n)n.focus();},60);
+  setTimeout(()=>{const n=document.querySelector(".editor .inp, .editor select");if(n)n.focus();},60);
 }
 function syncEditor(){
   const E=S.editor; if(!E) return;
@@ -1587,7 +1828,7 @@ function syncEditor(){
     if(g("src")) b.src=g("src").value.trim();
     if(g("html")) b.html=g("html").value;
     if(g("cap")) b.cap=g("cap").value.trim();
-    if(g("h")) b.h=Math.max(120,Math.min(1600,parseInt(g("h").value,10)||420));
+    if(g("h")) b.h=Math.max(120,Math.min(1800,parseInt(g("h").value,10)||560));
     if(g("w")) b.w=Math.max(320,Math.min(2000,parseInt(g("w").value,10)||1000));
     if(g("fit")) b.fit=g("fit").value;
   });
@@ -1597,9 +1838,11 @@ const autoGrow=ta=>{ta.style.height="auto";ta.style.height=(ta.scrollHeight+2)+"
 function buildEditor(){
   const E=S.editor, root=el("div","editor");
   const eh=el("div","eh");
-  eh.innerHTML='<b>'+(E.caseId?"사례 수정":"새 사례 쓰기")+'</b><span class="sp">'+esc(SUBMAP[E.subId].sub.t)+'</span>';
+  const subLabel = E.subId ? SUBMAP[E.subId].sub.t : (E.pickerMode ? "단원을 선택해 주세요" : "");
+  eh.innerHTML='<b>'+(E.caseId?"사례 수정":"새 사례 쓰기")+'</b>'+(subLabel?'<span class="sp">'+esc(subLabel)+'</span>':'');
   root.appendChild(eh);
   const eb=el("div","eb");
+  if(E.pickerMode) eb.appendChild(unitPickerField());
   eb.appendChild(field("도구 · 서비스 이름","tool",E.tool,"목록에서 고르거나 직접 적어 주세요",false,"edtechList"));
   eb.appendChild(field("사례 제목","title",E.title,"예: 슬라이더로 a의 부호에 따른 포물선 변화 관찰하기",true));
 
@@ -1634,6 +1877,66 @@ function buildEditor(){
   setTimeout(()=>root.querySelectorAll(".ta").forEach(autoGrow),0);
   return root;
 }
+/* 메인 화면에서 사례를 시작할 때 등록할 소단원을 고르는 위젯 */
+function unitPickerField(){
+  const E=S.editor;
+  const wrap=el("div","fld unitpick");
+  wrap.appendChild(el("label","fl","등록할 단원"));
+
+  if(E.subId){
+    const {sub,unit}=SUBMAP[E.subId], hex=A(unit.area).hex;
+    const row=el("div","upchip");
+    row.style.setProperty("--c",hex);
+    row.innerHTML =
+      '<span class="updot"></span>'+
+      '<span class="uptxt"><b>'+esc(GMAP[unit.grade].label)+'</b>'+
+      '<span class="sep">·</span>'+esc(unit.title)+
+      '<span class="sep">·</span>'+esc(sub.t)+'</span>';
+    const chg=el("button","btn sm ghost","변경"); chg.type="button";
+    chg.onclick=()=>{ syncEditor(); E.subId=null; renderPage(); };
+    row.appendChild(chg);
+    wrap.appendChild(row);
+    return wrap;
+  }
+
+  const row=el("div","upsel");
+  const gSel=el("select","miniinp");
+  gSel.innerHTML='<option value="">학년 선택</option>'+
+    GRADES.map(g=>'<option value="'+g.id+'">'+esc(g.label)+'</option>').join("");
+  const uSel=el("select","miniinp"); uSel.disabled=true;
+  uSel.innerHTML='<option value="">먼저 학년을 골라 주세요</option>';
+  const sSel=el("select","miniinp"); sSel.disabled=true;
+  sSel.innerHTML='<option value="">먼저 대단원을 골라 주세요</option>';
+  row.appendChild(gSel); row.appendChild(uSel); row.appendChild(sSel);
+  wrap.appendChild(row);
+
+  const foot=el("div","upfoot");
+  const okBtn=el("button","btn sm live","이 소단원으로 정하기"); okBtn.type="button"; okBtn.disabled=true;
+  foot.appendChild(okBtn);
+  wrap.appendChild(foot);
+
+  gSel.onchange=()=>{
+    const list=UNITS.filter(u=>u.grade===gSel.value);
+    uSel.disabled=!gSel.value;
+    uSel.innerHTML = gSel.value
+      ? '<option value="">대단원 선택</option>'+list.map(u=>'<option value="'+u.id+'">'+esc(u.no)+'. '+esc(u.title)+'</option>').join("")
+      : '<option value="">먼저 학년을 골라 주세요</option>';
+    sSel.disabled=true; sSel.innerHTML='<option value="">먼저 대단원을 골라 주세요</option>';
+    okBtn.disabled=true;
+  };
+  uSel.onchange=()=>{
+    const un=UMAP[uSel.value];
+    sSel.disabled=!un;
+    sSel.innerHTML = un
+      ? '<option value="">소단원 선택</option>'+un.subs.map(s=>'<option value="'+s.id+'">'+s.idx+'. '+esc(s.t)+'</option>').join("")
+      : '<option value="">먼저 대단원을 골라 주세요</option>';
+    okBtn.disabled=true;
+  };
+  sSel.onchange=()=>{ okBtn.disabled=!sSel.value; };
+  okBtn.onclick=()=>{ if(!sSel.value) return; syncEditor(); E.subId=sSel.value; renderPage(); };
+
+  return wrap;
+}
 function field(label,f,val,ph,big,list){
   const d=el("div","fld");
   d.innerHTML='<label class="fl">'+esc(label)+'</label><input class="inp'+(big?" big":"")+'" data-f="'+f+'" type="text" value="'+esc(val)+'" placeholder="'+esc(ph)+'"'+(list?' list="'+list+'" autocomplete="off"':'')+'>'+
@@ -1643,7 +1946,7 @@ function field(label,f,val,ph,big,list){
 function newBlock(t){
   const b={id:uid(),type:t};
   if(t==="img"){b.src="";b.cap="";}
-  else if(t==="embed"){b.html="";b.cap="";b.h=420;b.w=1000;b.fit="auto";}
+  else if(t==="embed"){b.html="";b.cap="";b.h=560;b.w=1000;b.fit="auto";}
   else if(t!=="hr"){b.text="";}
   return b;
 }
@@ -1690,7 +1993,7 @@ function blockEditor(b,i){
           '<option value="none"'+(fitNow==="none"?" selected":"")+'>원본 크기</option>'+
         '</select></label>'+
         '<label class="minilbl" data-only="scale">기준 폭 <input class="miniinp" data-b="w" type="number" min="320" max="2000" step="20" value="'+(b.w||1000)+'" style="width:86px"></label>'+
-        '<label class="minilbl">높이 <input class="miniinp" data-b="h" type="number" min="120" max="1600" step="20" value="'+(b.h||420)+'" style="width:86px"></label>'+
+        '<label class="minilbl">높이 <input class="miniinp" data-b="h" type="number" min="120" max="1800" step="20" value="'+(b.h||560)+'" style="width:86px"></label>'+
       '</div>'+
       '<div class="row2"><input class="miniinp" data-b="cap" type="text" placeholder="설명 (선택)" value="'+esc(b.cap||"")+'" style="flex:2">'+
       '<button class="addb" data-a="prev">미리보기 새로고침</button></div>'+
@@ -1786,6 +2089,7 @@ function pickImage(blockId){
 async function saveCase(btn,warnEl){
   syncEditor();
   const E=S.editor;
+  if(!E.subId){ toast("등록할 단원을 먼저 선택해 주세요",true); return; }
   if(!E.tool){ toast("도구 이름을 적어 주세요",true); return; }
   if(!E.title){ toast("사례 제목을 적어 주세요",true); return; }
   const blocks=E.blocks.filter(b=>{
@@ -1803,6 +2107,7 @@ async function saveCase(btn,warnEl){
   const rec={ id:E.draftId, subId:E.subId, tool:E.tool, title:E.title, tags:[...E.tags],
               author:(USER?USER.name:"익명"), uid:E.uid||(USER?USER.uid:null), updatedAt:Date.now(), blocks };
   const isEdit=!!E.caseId;
+  const wasCompose=E.pickerMode && !isEdit;
   if(btn){ btn.disabled=true; btn.textContent="저장 중…"; }
   try{
     const ok=await DB.saveCase(rec);
@@ -1814,7 +2119,9 @@ async function saveCase(btn,warnEl){
     if(btn){ btn.disabled=false; btn.textContent=isEdit?"수정 저장":"사례 저장"; }
     toast("저장하지 못했습니다. 연결과 Firestore 규칙을 확인해 주세요.",true); return;
   }
-  refresh();
+  stats();
+  if(wasCompose){ await go(rec.subId); }
+  else{ refresh(); }
 }
 async function delCase(subId,caseId){
   if(!confirm("이 사례를 지울까요? 되돌릴 수 없습니다.")) return;
@@ -2128,14 +2435,8 @@ function authError(e,ctx){
 function openAccount(){
   if(!USER){ openAuth("login"); return; }
   const box=$("#authBox");
-  const badge = isAdmin() ? '<span class="rolebadge admin">관리자</span>'
-              : isApproved() ? '<span class="rolebadge ok">승인됨</span>'
-              : '<span class="rolebadge wait">승인 대기</span>';
-  const where=(USER.level==="high"?(USER.subjects||[]):(USER.grades||[])).join(", ");
   box.innerHTML =
-    '<h3>'+esc(USER.name)+' 선생님 '+badge+'</h3>'+
-    '<p>'+esc(USER.school||"소속 미입력")+' · '+(USER.level==="high"?"고등학교":"중학교")+
-      (where?' · '+esc(where):'')+'<br><span style="color:var(--ink-3)">아이디 '+esc(USER.loginId)+'</span></p>'+
+    profileCardHTML(USER,{showId:true})+
     (isApproved()?'':'<div class="notice warn">관리자가 승인하면 사례를 쓸 수 있습니다. 그때까지는 다른 선생님의 사례를 읽어 보실 수 있습니다.</div>')+
     '<div class="frow"><button class="btn danger" id="acOut">로그아웃</button>'+
     '<button class="btn" id="acEdit">내 정보 수정</button>'+
@@ -2225,6 +2526,7 @@ function openProfile(){
       await DB.updateUser(USER.uid,patch);
       Object.assign(USER,patch);
       lsSet(LS_ME,name);
+      try{ await DB.syncPublicProfile(USER.uid,USER); }catch(e){ console.warn("공개 프로필 동기화 실패",e); }
       let n=0;
       if(renamed){ try{ n=await DB.renameAuthor(USER.uid,name); }catch(e){ console.warn(e); } }
       setAccountUI(); closeAuth();
@@ -2278,11 +2580,12 @@ async function openMembers(){
   renderMembers(list);
 }
 const closeMembers=()=>$("#membersModal").classList.remove("on");
-function renderMembers(list){
+async function renderMembers(list){
   const box=$("#membersBox");
   const pend=list.filter(u=>u.status==="pending");
   const rest=list.filter(u=>u.status!=="pending");
   box.innerHTML='<h3>회원 관리</h3><p>가입 신청을 승인하면 그 선생님이 사례를 쓸 수 있습니다.</p>'+
+    '<div id="mbBackfill"></div>'+
     '<div id="mbPend"></div><div id="mbRest"></div>'+
     '<div class="frow"><button class="btn ghost" id="mbClose">닫기</button></div>';
   box.querySelector("#mbClose").onclick=closeMembers;
@@ -2296,6 +2599,28 @@ function renderMembers(list){
   const rw=box.querySelector("#mbRest");
   rw.appendChild(sec("회원",rest.length));
   rest.forEach(u=>rw.appendChild(memberRow(u,list)));
+
+  /* 공개 프로필이 없는 회원이 있을 때만 보이는 배너입니다. 모두 채워지면 다음에 열 때 저절로 사라집니다. */
+  try{
+    const haveIds=new Set(await DB.listPublicProfileIds());
+    const missing=list.filter(u=>!haveIds.has(u.uid));
+    const bf=box.querySelector("#mbBackfill");
+    if(!missing.length){ bf.innerHTML=""; return; }
+    bf.innerHTML =
+      '<div class="notice warn" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+
+        '<span style="flex:1;min-width:180px">공개 프로필이 없는 회원이 '+missing.length+'명 있습니다. 이 선생님들은 이름을 눌러도 아직 프로필이 보이지 않습니다.</span>'+
+        '<button class="btn sm live" id="mbBackfillBtn">지금 채우기</button>'+
+      '</div>';
+    bf.querySelector("#mbBackfillBtn").onclick=async (e)=>{
+      const btn=e.currentTarget; btn.disabled=true; btn.textContent="채우는 중…";
+      let n=0;
+      for(const u of missing){
+        try{ await DB.syncPublicProfile(u.uid,u); n++; }catch(err){ console.warn(err); }
+      }
+      toast(n+"명의 공개 프로필을 채웠습니다");
+      renderMembers(await DB.listUsers());   // 다시 그리면 조건에 따라 배너가 사라집니다
+    };
+  }catch(e){ console.warn(e); }
 }
 function memberRow(u,list){
   const row=el("div","mbrow");
@@ -2361,7 +2686,7 @@ async function exportSubHTML(subId){
     const rb=el("div","rb"); rb.style.setProperty("--qc",hex); renderBlocks(rb,blocks,{forExport:true});
     return '<article class="case"><header><span class="tool">'+esc(sum.tool)+'</span><h2>'+esc(sum.title)+'</h2>'+
       '<p class="who">'+esc(honorific(sum.author))+' · '+fmtDate(sum.updatedAt)+'</p></header>'+
-      ((sum.tags&&sum.tags.length)?'<p class="tags">'+sum.tags.map(t=>'<span>'+esc(t)+'</span>').join("")+'</p>':'')+
+      ((sum.tags&&sum.tags.length)?'<p class="tags">'+sum.tags.map(t=>'<span>#'+esc(t)+'</span>').join("")+'</p>':'')+
       '<div class="rb">'+rb.innerHTML+'</div></article>';
   }).join("\n");
   const stds=sub.c.map(c=>'<li><code>'+esc(c)+'</code> '+esc(STD[c]||"")+'</li>').join("");
@@ -2417,6 +2742,7 @@ function download(text,type,name){
 
 /* ═══ 이벤트 ═══ */
 $("#q").addEventListener("input",e=>{S.q=e.target.value;renderTree();if(S.view==="map")renderMap();});
+$("#tfToggle").addEventListener("click",()=>{ S.typeOpen=!S.typeOpen; renderTypeFilter(); });
 $("#tabArchive").onclick=()=>setView("archive");
 $("#tabMap").onclick=()=>setView("map");
 $("#sideToggle").onclick=()=>{$("#side").classList.toggle("on");$("#scrim2").classList.toggle("on");};
@@ -2425,10 +2751,21 @@ $("#btnAccount").onclick=()=>{ USER?openAccount():openAuth("login"); };
 $("#brandHome").onclick=goHome;
 $("#btnMembers").onclick=openMembers;
 $("#btnProfile").onclick=openProfile;
+$("#embedFrameClose").onclick=closeEmbedModal;
+function bindBackdropClose(id,fn){
+  const m=document.getElementById(id);
+  if(m) m.addEventListener("click",e=>{ if(e.target===m) fn(); });
+}
+bindBackdropClose("authModal",closeAuth);
+bindBackdropClose("membersModal",closeMembers);
+bindBackdropClose("peekModal",closePeek);
+bindBackdropClose("embedOverlay",closeEmbedModal);
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape") return;
-  if($("#authModal").classList.contains("on")) closeAuth();
+  if($("#embedOverlay").classList.contains("on")) closeEmbedModal();
+  else if($("#authModal").classList.contains("on")) closeAuth();
   else if($("#membersModal").classList.contains("on")) closeMembers();
+  else if($("#peekModal").classList.contains("on")) closePeek();
 });
 $("#map").addEventListener("click",e=>{ if(e.target===e.currentTarget&&S.mapSel){S.mapSel=null;renderMap();} });
 let rt; window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(S.view==="map")renderMap();},150);});
@@ -2436,7 +2773,7 @@ window.addEventListener("beforeunload",e=>{ if(S.editor){e.preventDefault();e.re
 
 /* ═══ 시작 ═══ */
 (async function boot(){
-  renderChips(); renderTree(); renderPage(); stats();
+  renderChips(); renderTypeFilter(); renderTree(); renderPage(); stats();
   setAccountUI();
   await DB.init();
 
