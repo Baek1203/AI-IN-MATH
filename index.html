@@ -185,6 +185,7 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .rb hr{border:none;border-top:1px solid var(--line);margin:18px 0}
 .rb figure{margin:0 0 14px}
 .rb figure img{width:100%;display:block;border-radius:10px;border:1px solid var(--line)}
+.rb figure img:not(.loaded){min-height:180px;background:var(--bg-2)}
 .embedbox{position:relative;width:100%;max-width:100%;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff}
 .embedbox iframe{border:0;display:block;background:#fff}
 .rb figcaption{margin-top:6px;font-size:11.5px;color:var(--ink-3);font-weight:600;text-align:center}
@@ -1608,26 +1609,55 @@ async function go(subId,focusCaseId){
 }
 /* 특정 사례가 화면에 보이도록 스크롤하고 잠깐 강조합니다 */
 function scrollToCase(caseId){
-  let tries=0;
-  const run=()=>{
-    const node=document.getElementById("case-"+caseId);
-    const content=$("#content");
-    if(!node||!content) return false;
-    /* offsetTop은 기준 요소에 따라 어긋날 수 있어, 화면상의 실제 위치로 계산합니다 */
+  const content=$("#content");
+  if(!content) return;
+  let tries=0, settled=0, lastTop=null, timer=null, stop=false;
+
+  const targetTop=(node)=>{
     const nodeTop=node.getBoundingClientRect().top;
     const contTop=content.getBoundingClientRect().top;
-    const top=Math.max(0, content.scrollTop + (nodeTop-contTop) - 24);
-    if(typeof content.scrollTo==="function") content.scrollTo({top,behavior:"smooth"});
+    return Math.max(0, content.scrollTop + (nodeTop-contTop) - 24);
+  };
+  const jump=(top,smooth)=>{
+    if(smooth&&typeof content.scrollTo==="function") content.scrollTo({top,behavior:"smooth"});
     else content.scrollTop=top;
+  };
+
+  /* 위쪽 사례의 이미지·임베드가 나중에 로드되면 대상 카드가 밀려 내려갑니다.
+     위치가 더 이상 변하지 않을 때까지 짧게 재보정합니다. */
+  const settle=()=>{
+    if(stop) return;
+    const node=document.getElementById("case-"+caseId);
+    if(!node) return;
+    const top=targetTop(node);
+    if(lastTop===null||Math.abs(top-lastTop)>2){
+      jump(top,lastTop===null);   // 첫 이동만 부드럽게, 이후 보정은 즉시
+      lastTop=top; settled=0;
+    }else{
+      settled++;
+    }
+    if(settled<3 && ++tries<40) timer=setTimeout(settle,100);
+  };
+
+  const start=()=>{
+    const node=document.getElementById("case-"+caseId);
+    if(!node){
+      if(++tries<20){ setTimeout(start,80); return; }
+      return;
+    }
+    tries=0;
     node.classList.add("case-focus");
-    setTimeout(()=>node.classList.remove("case-focus"),2000);
-    return true;
+    setTimeout(()=>node.classList.remove("case-focus"),2200);
+    settle();
+    /* 사용자가 직접 스크롤하면 보정을 멈춥니다 */
+    const onUser=()=>{ stop=true; clearTimeout(timer);
+      content.removeEventListener("wheel",onUser);
+      content.removeEventListener("touchstart",onUser); };
+    content.addEventListener("wheel",onUser,{passive:true});
+    content.addEventListener("touchstart",onUser,{passive:true});
+    setTimeout(onUser,4500);
   };
-  const attempt=()=>{
-    if(run()) return;
-    if(++tries<10) setTimeout(attempt,80);   // 본문이 아직 그려지는 중이면 다시 시도합니다
-  };
-  requestAnimationFrame(attempt);
+  requestAnimationFrame(start);
 }
 function goHome(){
   if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
@@ -2208,6 +2238,11 @@ function renderBlocks(root,blocks,opt){
       if(src){
         const f=el("figure");
         f.innerHTML='<img src="'+esc(src)+'" alt="'+esc(b.cap||"사례 이미지")+'" loading="lazy">'+(b.cap?'<figcaption>'+esc(b.cap)+'</figcaption>':'');
+        const im=f.querySelector("img");
+        if(im){
+          const done=()=>im.classList.add("loaded");
+          if(im.complete) done(); else { im.addEventListener("load",done); im.addEventListener("error",done); }
+        }
         root.appendChild(f);
       }
     }
