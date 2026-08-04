@@ -1608,35 +1608,34 @@ async function go(subId,focusCaseId){
   if(focusCaseId) scrollToCase(focusCaseId);
 }
 /* 특정 사례가 화면에 보이도록 스크롤하고 잠깐 강조합니다 */
+/* 스크롤 상태와 무관하게 컨테이너 기준 절대 위치를 구합니다.
+   getBoundingClientRect + scrollTop 조합은 부드러운 스크롤이 진행 중일 때
+   중간값을 읽어 목표가 흔들리므로 offsetTop 체인을 씁니다. */
+function offsetWithin(node,container){
+  let y=0, el=node;
+  while(el && el!==container){ y+=el.offsetTop; el=el.offsetParent; }
+  return y;
+}
 function scrollToCase(caseId){
   const content=$("#content");
   if(!content) return;
-  let tries=0, settled=0, lastTop=null, timer=null, stop=false;
+  const GAP=32;                         // 카드 위에 남길 여백
+  let tries=0, settled=0, lastTarget=null, timer=null, stop=false, first=true;
 
-  const targetTop=(node)=>{
-    const nodeTop=node.getBoundingClientRect().top;
-    const contTop=content.getBoundingClientRect().top;
-    return Math.max(0, content.scrollTop + (nodeTop-contTop) - 24);
-  };
-  const jump=(top,smooth)=>{
-    if(smooth&&typeof content.scrollTo==="function") content.scrollTo({top,behavior:"smooth"});
-    else content.scrollTop=top;
-  };
-
-  /* 위쪽 사례의 이미지·임베드가 나중에 로드되면 대상 카드가 밀려 내려갑니다.
-     위치가 더 이상 변하지 않을 때까지 짧게 재보정합니다. */
   const settle=()=>{
     if(stop) return;
     const node=document.getElementById("case-"+caseId);
     if(!node) return;
-    const top=targetTop(node);
-    if(lastTop===null||Math.abs(top-lastTop)>2){
-      jump(top,lastTop===null);   // 첫 이동만 부드럽게, 이후 보정은 즉시
-      lastTop=top; settled=0;
+    const target=Math.max(0, offsetWithin(node,content)-GAP);
+    if(lastTarget===null||Math.abs(target-lastTarget)>2){
+      /* 목표가 바뀐 경우에만 이동합니다(첫 이동만 부드럽게) */
+      if(first&&typeof content.scrollTo==="function"){ content.scrollTo({top:target,behavior:"smooth"}); first=false; }
+      else content.scrollTop=target;
+      lastTarget=target; settled=0;
     }else{
       settled++;
     }
-    if(settled<3 && ++tries<40) timer=setTimeout(settle,100);
+    if(settled<4 && ++tries<50) timer=setTimeout(settle,100);
   };
 
   const start=()=>{
@@ -1649,13 +1648,12 @@ function scrollToCase(caseId){
     node.classList.add("case-focus");
     setTimeout(()=>node.classList.remove("case-focus"),2200);
     settle();
-    /* 사용자가 직접 스크롤하면 보정을 멈춥니다 */
     const onUser=()=>{ stop=true; clearTimeout(timer);
       content.removeEventListener("wheel",onUser);
       content.removeEventListener("touchstart",onUser); };
     content.addEventListener("wheel",onUser,{passive:true});
     content.addEventListener("touchstart",onUser,{passive:true});
-    setTimeout(onUser,4500);
+    setTimeout(onUser,5000);
   };
   requestAnimationFrame(start);
 }
