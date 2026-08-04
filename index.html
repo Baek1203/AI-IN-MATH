@@ -1187,12 +1187,19 @@ const DB={
       const {fs,db}=this.fb;
       const q=fs.query(fs.collection(db,"caseBodies"),fs.where("subId","==",subId));
       const snap=await fs.getDocs(q);
-      snap.forEach(d=>{ try{ BODY[d.id]=JSON.parse(d.data().blocksJson||"[]"); }catch(e){ BODY[d.id]=[]; } });
+      snap.forEach(d=>{
+        let parsed=[];
+        try{ parsed=JSON.parse(d.data().blocksJson||"[]"); }catch(e){ parsed=[]; }
+        BODY[d.id]=Array.isArray(parsed)?parsed:[];
+      });
       ids.forEach(i=>{ if(!BODY[i]) BODY[i]=[]; });
       return;
     }
     const bank=((lsGet(LS_DATA)||{}).bodies||{})[subId]||{};
-    Object.keys(bank).forEach(cid=>{ BODY[cid]=bank[cid].blocks||bank[cid]||[]; });
+    Object.keys(bank).forEach(cid=>{
+      const raw=(bank[cid]&&bank[cid].blocks)||bank[cid]||[];
+      BODY[cid]=Array.isArray(raw)?raw:[];
+    });
     ids.forEach(i=>{ if(!BODY[i]) BODY[i]=[]; });
   },
 
@@ -2068,7 +2075,8 @@ function closeEmbedModal(){
 function renderBlocks(root,blocks,opt){
   const forExport=!!(opt&&opt.forExport);
   root.innerHTML="";
-  blocks.forEach(b=>{
+  const list=Array.isArray(blocks)?blocks.filter(b=>b&&typeof b==="object"):[];
+  list.forEach(b=>{
     if(b.type==="h2") root.appendChild(el("h5",null,esc(b.text||"")));
     else if(b.type==="h3") root.appendChild(el("h6",null,esc(b.text||"")));
     else if(b.type==="p") root.appendChild(el("p",null,linkify(b.text||"")));
@@ -2080,9 +2088,12 @@ function renderBlocks(root,blocks,opt){
       if(u2.children.length) root.appendChild(u2);
     }
     else if(b.type==="img"&&b.src){
-      const f=el("figure");
-      f.innerHTML='<img src="'+esc(b.src)+'" alt="'+esc(b.cap||"사례 이미지")+'" loading="lazy">'+(b.cap?'<figcaption>'+esc(b.cap)+'</figcaption>':'');
-      root.appendChild(f);
+      const src=safeImageSrc(b.src);
+      if(src){
+        const f=el("figure");
+        f.innerHTML='<img src="'+esc(src)+'" alt="'+esc(b.cap||"사례 이미지")+'" loading="lazy">'+(b.cap?'<figcaption>'+esc(b.cap)+'</figcaption>':'');
+        root.appendChild(f);
+      }
     }
     else if(b.type==="embed"&&(b.html||"").trim()){
       const f=el("figure");
@@ -2107,7 +2118,16 @@ function honorific(name){
   if(!n||n==="익명") return "익명";
   return /(선생님|샘|교사)$/.test(n) ? n : n+" 선생님";
 }
-const linkify=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+const linkify=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+/* 이미지 주소는 http(s)와 이미지 데이터 URL만 허용합니다. javascript: 같은 것은 걸러냅니다. */
+function safeImageSrc(src){
+  const s=String(src||"").trim();
+  if(!s) return "";
+  if(/^https?:\/\//i.test(s)) return s;
+  if(/^data:image\/(png|jpe?g|gif|webp|avif|bmp|svg\+xml);base64,/i.test(s)) return s;
+  if(/^\/\//.test(s)) return "https:"+s;
+  return "";
+}
 
 /* ═══ 편집기 ═══ */
 function startEditor(subId,caseId){
@@ -2284,7 +2304,10 @@ function blockEditor(b,i){
       '<div class="prev"></div>';
     const prev=bd.querySelector(".prev");
     const paint=()=>{const v=bd.querySelector('[data-b="src"]').value.trim();
-      prev.innerHTML=v?'<img src="'+esc(v)+'" alt="">':'<div style="font-size:11px;color:var(--ink-4);font-weight:600">미리보기가 여기 표시됩니다.</div>';};
+      const sv=safeImageSrc(v);
+      prev.innerHTML = sv ? '<img src="'+esc(sv)+'" alt="">'
+        : (v ? '<div style="font-size:11px;color:#B4651A;font-weight:600">이 주소는 쓸 수 없습니다. http(s)로 시작하는 이미지 주소를 넣어 주세요.</div>'
+             : '<div style="font-size:11px;color:var(--ink-4);font-weight:600">미리보기가 여기 표시됩니다.</div>');};
     paint();
     bd.querySelector('[data-b="src"]').addEventListener("change",paint);
     bd.querySelector('[data-a="pick"]').onclick=()=>pickImage(b.id);
