@@ -400,7 +400,8 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .embed-frame-close{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--ink-3);flex:none}
 .embed-frame-close:hover{background:var(--bg-2);color:var(--ink)}
 .embed-frame-body{flex:1;min-height:0;overflow:auto;display:flex;align-items:flex-start;justify-content:center;background:#F1F4FA;padding:16px}
-.embed-frame-body .embedbox{border:none;box-shadow:0 2px 14px rgba(21,26,43,.1)}
+.embed-frame-body .embedbox{border:none;box-shadow:0 2px 14px rgba(21,26,43,.1);width:auto;max-width:100%;margin:0 auto}
+.embed-frame-body .embedbox.wfill{width:100%}
 @media (max-width:640px){
   .embed-frame{width:100vw;height:100dvh;border-radius:0}
   .embed-frame-body{padding:10px}
@@ -425,7 +426,24 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
+.npin{font-size:9.5px;font-weight:800;color:#fff;background:#DC7223;padding:2px 6px;border-radius:99px;flex:none;letter-spacing:-.01em;line-height:1.5}
+.noticerow.pinned .ntitle{font-weight:750}
+.noticerow .nedit{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:var(--ink-4);flex:none;font-size:12px;transition:.14s}
+.noticerow .nedit:hover{background:var(--bg-2);color:var(--num)}
+.mdpin{display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+.mdpin input{width:16px;height:16px;flex:none;cursor:pointer;accent-color:#DC7223}
+.mdpin span{font-size:12.5px;color:var(--ink-2);font-weight:550;letter-spacing:-.02em}
+.mdpin b{font-weight:750;color:var(--ink)}
 .noticelist{display:flex;flex-direction:column;gap:2px}
+.recentrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 6px;border-radius:9px;border-bottom:1px solid var(--line-2);transition:.12s}
+.recentrow:hover{background:var(--bg)}
+.rtool{font-size:10.5px;font-weight:800;color:#fff;padding:3px 6px;border-radius:7px;flex:none;width:72px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5}
+.rmain{flex:1;min-width:0}
+.rtitle{display:block;font-size:13.5px;font-weight:700;letter-spacing:-.03em;line-height:1.4}
+.rpath{display:block;font-size:11px;color:var(--ink-3);font-weight:600;margin-top:1px}
+.rmeta{font-size:10.5px;color:var(--ink-4);font-weight:650;flex:none;text-align:right}
+.case-focus{animation:caseFocus 2s ease}
+@keyframes caseFocus{0%,55%{box-shadow:0 0 0 3px rgba(46,99,222,.35),var(--sh-m)}100%{box-shadow:var(--sh-s)}}
 .homegrid{display:grid;grid-template-columns:1fr 264px;gap:16px;align-items:start}
 .homegrid-main,.homegrid-side{min-width:0}
 @media (max-width:760px){.homegrid{grid-template-columns:1fr;gap:0}}
@@ -1355,13 +1373,13 @@ const DB={
       const {fs,db}=this.fb;
       fs.onSnapshot(fs.collection(db,"notices"),snap=>{
         const arr=[]; snap.forEach(d=>arr.push({...d.data(),id:d.id}));
-        arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        arr.sort((a,b)=>((b.pinned?1:0)-(a.pinned?1:0))||((b.createdAt||0)-(a.createdAt||0)));
         NOTICES=arr; cb();
       },err=>{ console.warn(err); });
       return;
     }
     const arr=(lsGet(LS_DATA)||{}).notices||[];
-    NOTICES=[...arr].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    NOTICES=[...arr].sort((a,b)=>((b.pinned?1:0)-(a.pinned?1:0))||((b.createdAt||0)-(a.createdAt||0)));
     cb();
   },
   async createNotice(rec){
@@ -1541,7 +1559,36 @@ function renderTree(){
 }
 
 /* ═══ 이동 ═══ */
-async function go(subId){
+/* 브라우저 뒤로 가기로 이전 화면에 돌아갈 수 있도록 상태를 기록합니다 */
+let HISTORY_READY=false;
+function pushHist(state,replace){
+  if(!window.history||!window.history.pushState) return;
+  try{
+    if(replace||!HISTORY_READY){ history.replaceState(state,""); HISTORY_READY=true; }
+    else history.pushState(state,"");
+  }catch(e){}
+}
+function applyHist(st){
+  const s=st||{v:"home"};
+  S.editor=null;
+  if(s.v==="sub"&&SUBMAP[s.sub]){
+    S.sub=s.sub; S.noticesPage=false;
+    const rec=SUBMAP[s.sub];
+    S.unit=rec.unit.id; S.openG.add(rec.unit.grade); S.openU.add(rec.unit.id);
+    setView("archive"); renderTree(); renderPage();
+    DB.loadBodies(s.sub).then(()=>{ if(S.sub===s.sub) renderPage(); }).catch(()=>{});
+  }else if(s.v==="notices"){
+    S.sub=null; S.noticesPage=true;
+    setView("archive"); renderTree(); renderPage();
+  }else{
+    S.sub=null; S.unit=null; S.noticesPage=false;
+    setView("archive"); renderTree(); renderPage();
+  }
+  $("#content").scrollTop=0;
+}
+
+async function go(subId,focusCaseId){
+  pushHist({v:"sub",sub:subId});
   S.sub=subId; S.editor=null; S.noticesPage=false;
   const rec=SUBMAP[subId];
   if(rec){ S.unit=rec.unit.id; S.openG.add(rec.unit.grade); S.openU.add(rec.unit.id); }
@@ -1550,9 +1597,26 @@ async function go(subId){
   renderTree(); renderPage(); $("#content").scrollTop=0;
   try{ await DB.loadBodies(subId); }catch(e){ console.warn(e); }
   renderPage();
+  if(focusCaseId) scrollToCase(focusCaseId);
+}
+/* 특정 사례가 화면에 보이도록 스크롤하고 잠깐 강조합니다 */
+function scrollToCase(caseId){
+  const run=()=>{
+    const node=document.getElementById("case-"+caseId);
+    if(!node) return false;
+    const content=$("#content"), top=node.offsetTop-16;
+    if(content&&typeof content.scrollTo==="function") content.scrollTo({top,behavior:"smooth"});
+    else if(content) content.scrollTop=top;
+    node.classList.add("case-focus");
+    setTimeout(()=>node.classList.remove("case-focus"),2000);
+    return true;
+  };
+  if(run()) return;
+  setTimeout(run,120);   // 본문이 아직 그려지는 중이면 한 번 더 시도합니다
 }
 function goHome(){
   if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
+  pushHist({v:"home"});
   S.sub=null; S.unit=null; S.editor=null; S.noticesPage=false;
   setView("archive");
   $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
@@ -1560,6 +1624,7 @@ function goHome(){
 }
 function goNoticesPage(){
   if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
+  pushHist({v:"notices"});
   S.sub=null; S.editor=null; S.noticesPage=true;
   setView("archive");
   $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
@@ -1585,7 +1650,7 @@ function renderPage(){
   w.innerHTML="";
 
   const home=el("button","homebtn");
-  home.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> 전체 단원으로';
+  home.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> 홈으로';
   home.onclick=goHome;
   w.appendChild(home);
 
@@ -1695,15 +1760,16 @@ function panel(title,n,closed){
 /* ═══ 공지사항 (사용 안내 · 패치 내역) ═══ */
 function noticeRow(n,opt){
   opt=opt||{};
-  const row=el("button","noticerow");
+  const row=el("button","noticerow"+(n.pinned?" pinned":""));
   row.innerHTML =
-    '<span class="ndot"></span>'+
+    (n.pinned?'<span class="npin">필독</span>':'<span class="ndot"></span>')+
     '<span class="ntitle">'+esc(n.title||"제목 없는 글")+'</span>'+
     (opt.full?'<span class="nauthor">'+esc(n.author||"관리자")+'</span>':'')+
     '<span class="ndate">'+(opt.full?fmtDateTime(n.createdAt):fmtDate(n.createdAt))+'</span>'+
-    (opt.full&&isAdmin()?'<span class="ndel" title="삭제">✕</span>':'');
+    (opt.full&&isAdmin()?'<span class="nedit" title="수정">✎</span><span class="ndel" title="삭제">✕</span>':'');
   row.onclick=e=>{
     if(e.target.classList.contains("ndel")){ e.stopPropagation(); deleteNoticeConfirm(n); return; }
+    if(e.target.classList.contains("nedit")){ e.stopPropagation(); openNoticeUpload(n); return; }
     openNoticeRead(n);
   };
   return row;
@@ -1716,8 +1782,11 @@ function noticesPanel(){
       ? "아직 올라온 글이 없습니다. 전체 공지사항 화면에서 새 글을 올려 보세요."
       : "아직 올라온 공지가 없습니다."));
   }else{
+    /* 필독 공지는 12개 제한과 상관없이 항상 맨 위에 보입니다 */
+    const pinned=NOTICES.filter(n=>n.pinned);
+    const rest=NOTICES.filter(n=>!n.pinned).slice(0,Math.max(0,12-pinned.length));
     const list=el("div","noticelist");
-    NOTICES.slice(0,12).forEach(n=>list.appendChild(noticeRow(n,{full:false})));
+    pinned.concat(rest).forEach(n=>list.appendChild(noticeRow(n,{full:false})));
     p.body.appendChild(list);
   }
   const more=el("button","noticemore","전체 공지사항 보기 →");
@@ -1755,12 +1824,15 @@ function openNoticeRead(n){
   $("#noticeFrameTitle").textContent=n.title||"";
   const body=$("#noticeFrameBody"); body.innerHTML="";
   const wrap=el("div","md-wrap");
-  wrap.appendChild(el("div","notice-frame-meta", esc(n.author||"관리자")+" · "+fmtDateTime(n.createdAt)));
+  wrap.appendChild(el("div","notice-frame-meta",
+    (n.pinned?'<span class="npin" style="margin-right:7px">필독</span>':'')+
+    esc(n.author||"관리자")+" · "+fmtDateTime(n.createdAt)+
+    (n.editedAt?' · <span style="color:var(--ink-4)">'+fmtDateTime(n.editedAt)+' 수정</span>':'')));
   const rb=el("div","md-render");
   wrap.appendChild(rb);
   body.appendChild(wrap);
   renderMarkdown(rb,n.markdown||"");
-  $("#noticeOverlay").classList.add("on");
+  openOverlay("noticeOverlay");
 }
 function closeNoticeRead(){
   $("#noticeOverlay").classList.remove("on");
@@ -1773,26 +1845,41 @@ async function deleteNoticeConfirm(n){
 }
 
 const NOTICE_MAX_BYTES=300*1024;
-function openNoticeUpload(){
+function openNoticeUpload(editing){
   if(!isAdmin()) return;
   const box=$("#noticeUpBox");
-  const state={ filename:"", content:"" };
+  const isEdit=!!editing;
+  const state={ filename:"", content: isEdit?(editing.markdown||""):"" };
   box.innerHTML =
-    '<h3>새 글 올리기</h3>'+
-    '<p>사용 안내나 패치 내역처럼 여러 선생님과 나눌 마크다운(.md) 파일을 올립니다. 목록에서 가장 위에 표시됩니다.</p>'+
+    '<h3>'+(isEdit?'공지 수정':'새 글 올리기')+'</h3>'+
+    '<p>'+(isEdit
+      ? '제목과 필독 여부는 바로 고칠 수 있고, 내용을 바꾸려면 새 .md 파일을 올려 주세요.'
+      : '사용 안내나 패치 내역처럼 여러 선생님과 나눌 마크다운(.md) 파일을 올립니다. 목록에서 가장 위에 표시됩니다.')+'</p>'+
     '<div class="mdup-drop" id="mdDrop" tabindex="0">'+
       '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="15"/></svg>'+
-      '<b>여기를 눌러 .md 파일을 고르세요</b><span>끌어다 놓아도 됩니다</span>'+
+      '<b>'+(isEdit?'내용을 바꾸려면 새 .md 파일을 고르세요':'여기를 눌러 .md 파일을 고르세요')+'</b>'+
+      '<span>'+(isEdit?'고르지 않으면 기존 내용이 그대로 유지됩니다':'끌어다 놓아도 됩니다')+'</span>'+
     '</div>'+
     '<input type="file" id="mdFile" accept=".md,text/markdown,text/plain" hidden>'+
-    '<div class="fld" style="margin-top:14px"><label class="fl" for="mdTitle">제목</label><input class="inp" type="text" id="mdTitle" placeholder="파일을 고르면 자동으로 채워집니다"></div>'+
+    '<div class="fld" style="margin-top:14px"><label class="fl" for="mdTitle">제목</label>'+
+      '<input class="inp" type="text" id="mdTitle" placeholder="파일을 고르면 자동으로 채워집니다" value="'+esc(isEdit?(editing.title||""):"")+'"></div>'+
+    '<div class="fld"><label class="mdpin"><input type="checkbox" id="mdPinned"'+(isEdit&&editing.pinned?' checked':'')+'>'+
+      '<span><b>필독</b> — 첫 화면 공지사항 맨 위에 항상 보입니다</span></label></div>'+
     '<div id="mdPreviewWrap"></div>'+
     '<div class="err" id="mdErr"></div>'+
-    '<div class="frow"><button class="btn ghost" id="mdCancel">취소</button><button class="btn live" id="mdPublish" disabled>게시</button></div>';
+    '<div class="frow"><button class="btn ghost" id="mdCancel">취소</button>'+
+    '<button class="btn live" id="mdPublish"'+(isEdit?'':' disabled')+'>'+(isEdit?'수정 저장':'게시')+'</button></div>';
 
   const drop=box.querySelector("#mdDrop"), fileInp=box.querySelector("#mdFile"),
         titleInp=box.querySelector("#mdTitle"), err=box.querySelector("#mdErr"),
-        pubBtn=box.querySelector("#mdPublish");
+        pubBtn=box.querySelector("#mdPublish"), pinInp=box.querySelector("#mdPinned");
+
+  const showPreview=()=>{
+    const pw=box.querySelector("#mdPreviewWrap");
+    pw.innerHTML='<div class="mdup-preview"><div class="mdup-ph">미리보기</div><div class="md-render" id="mdPrevBody"></div></div>';
+    renderMarkdown(pw.querySelector("#mdPrevBody"),state.content);
+  };
+  if(isEdit&&state.content) showPreview();
 
   const useFile=(f)=>{
     if(!f) return;
@@ -1805,11 +1892,9 @@ function openNoticeUpload(){
     const rd=new FileReader();
     rd.onload=()=>{
       state.filename=f.name; state.content=String(rd.result||"");
-      titleInp.value=extractNoticeTitle(state.filename,state.content);
+      if(!isEdit||!titleInp.value.trim()) titleInp.value=extractNoticeTitle(state.filename,state.content);
       err.textContent="";
-      const pw=box.querySelector("#mdPreviewWrap");
-      pw.innerHTML='<div class="mdup-preview"><div class="mdup-ph">미리보기</div><div class="md-render" id="mdPrevBody"></div></div>';
-      renderMarkdown(pw.querySelector("#mdPrevBody"),state.content);
+      showPreview();
       pubBtn.disabled=false;
     };
     rd.onerror=()=>{ err.textContent="파일을 읽지 못했습니다."; };
@@ -1827,19 +1912,24 @@ function openNoticeUpload(){
     const title=titleInp.value.trim();
     if(!state.content){ err.textContent="파일을 먼저 골라 주세요."; return; }
     if(!title){ err.textContent="제목을 적어 주세요."; return; }
-    pubBtn.disabled=true; pubBtn.textContent="게시하는 중…";
+    pubBtn.disabled=true; pubBtn.textContent=isEdit?"저장하는 중…":"게시하는 중…";
     try{
-      await DB.createNotice({ title, markdown:state.content, author:USER?USER.name:"관리자", authorUid:USER?USER.uid:null, createdAt:Date.now() });
+      const rec={ title, markdown:state.content, pinned:!!pinInp.checked,
+                  author: isEdit?(editing.author||"관리자"):(USER?USER.name:"관리자"),
+                  authorUid: isEdit?(editing.authorUid||null):(USER?USER.uid:null),
+                  createdAt: isEdit?(editing.createdAt||Date.now()):Date.now() };
+      if(isEdit){ rec.id=editing.id; rec.editedAt=Date.now(); rec.editedBy=USER?USER.name:"관리자"; }
+      await DB.createNotice(rec);
       closeNoticeUpload();
-      toast("게시했습니다");
+      toast(isEdit?"수정했습니다":"게시했습니다");
     }catch(e){
       console.warn(e);
-      pubBtn.disabled=false; pubBtn.textContent="게시";
-      err.textContent="게시하지 못했습니다. 연결과 Firestore 규칙을 확인해 주세요.";
+      pubBtn.disabled=false; pubBtn.textContent=isEdit?"수정 저장":"게시";
+      err.textContent=(isEdit?"수정":"게시")+"하지 못했습니다. 연결과 Firestore 규칙을 확인해 주세요.";
     }
   };
-  $("#noticeUpModal").classList.add("on");
-  setTimeout(()=>drop.focus(),60);
+  openOverlay("noticeUpModal");
+  setTimeout(()=>{ (isEdit?titleInp:drop).focus(); },60);
 }
 const closeNoticeUpload=()=>$("#noticeUpModal").classList.remove("on");
 
@@ -1898,14 +1988,12 @@ function homeView(){
   if(!recent.length) p.body.appendChild(el("div","nolink","아직 등록된 사례가 없습니다. 로그인한 뒤 첫 사례를 남겨 주세요."));
   recent.slice(0,12).forEach(k=>{
     const {sub,unit}=SUBMAP[k.subId], hex=A(unit.area).hex;
-    const b=el("button");
-    b.style.cssText="display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 6px;border-radius:9px;border-bottom:1px solid var(--line-2)";
-    b.onmouseenter=()=>b.style.background="var(--bg)"; b.onmouseleave=()=>b.style.background="";
-    b.innerHTML='<span style="font-size:10.5px;font-weight:800;color:#fff;background:'+hex+';padding:3px 8px;border-radius:7px;flex:none">'+esc(k.tool)+'</span>'+
-      '<span style="flex:1;min-width:0"><span style="display:block;font-size:13.5px;font-weight:700;letter-spacing:-.03em">'+esc(k.title)+'</span>'+
-      '<span style="display:block;font-size:11px;color:var(--ink-3);font-weight:600;margin-top:1px">'+esc(shortG(unit.grade))+' · '+esc(unit.title)+' · '+esc(sub.t)+'</span></span>'+
-      '<span style="font-size:10.5px;color:var(--ink-4);font-weight:650;flex:none">'+esc(honorific(k.author))+' · '+fmtDate(k.updatedAt)+'</span>';
-    b.onclick=()=>go(k.subId);
+    const b=el("button","recentrow");
+    b.innerHTML='<span class="rtool" style="background:'+hex+'">'+esc(k.tool)+'</span>'+
+      '<span class="rmain"><span class="rtitle">'+esc(k.title)+'</span>'+
+      '<span class="rpath">'+esc(shortG(unit.grade))+' · '+esc(unit.title)+' · '+esc(sub.t)+'</span></span>'+
+      '<span class="rmeta">'+esc(honorific(k.author))+' · '+fmtDate(k.updatedAt)+'</span>';
+    b.onclick=()=>go(k.subId,k.id);
     p.body.appendChild(b);
   });
   left.appendChild(p.root);
@@ -1946,7 +2034,7 @@ function authorClick(uid){
 function openPeek(uid){
   const box=$("#peekBox");
   box.innerHTML='<h3>불러오는 중…</h3>';
-  $("#peekModal").classList.add("on");
+  openOverlay("peekModal");
   DB.getPublicProfile(uid).then(u=>{
     if(!u){
       box.innerHTML='<h3>아직 공개된 프로필이 없습니다</h3><p>이 선생님이 다시 로그인하거나 정보를 저장하면 여기서 볼 수 있게 됩니다.</p>'+
@@ -1971,6 +2059,7 @@ function caseCard(sum,hex){
   const mine = !!(USER && sum.uid && sum.uid===USER.uid);
   const canEdit = isApproved() && (isAdmin()||mine);
   const c=el("div","case");
+  c.id="case-"+sum.id;
   const ch=el("div","ch");
   ch.innerHTML='<span class="tool" style="background:'+hex+'">'+esc(sum.tool)+'</span>'+
     '<span class="hh"><h4>'+esc(sum.title)+'</h4><p class="who">'+
@@ -2034,12 +2123,14 @@ function mountEmbed(parent,b,opts){
   if(mode==="none"){
     box.style.overflowX="auto";
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px";
+    if(opts.big) box.style.width=Math.min(dw,10000)+"px";
   }else if(mode==="stretch"){
     ifr.style.width="100%";
-    if(opts.big){ box.style.width="100%"; box.style.height="100%"; ifr.style.height="100%"; }
+    if(opts.big){ box.classList.add("wfill"); box.style.height="100%"; ifr.style.height="100%"; }
     else{ ifr.style.height=dh+"px"; }
   }else{
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px"; ifr.style.transformOrigin="top left";
+    if(opts.big) box.style.width=dw+"px";
     const fit=()=>{
       const cw=box.clientWidth||dw, s=Math.min(1,cw/dw);
       ifr.style.transform="scale("+s+")";
@@ -2066,7 +2157,7 @@ function openEmbedModal(b){
   const body=$("#embedFrameBody"); body.innerHTML="";
   $("#embedFrameTitle").textContent = b.cap||"임베드 콘텐츠";
   mountEmbed(body,b,{big:true,expand:false});
-  $("#embedOverlay").classList.add("on");
+  openOverlay("embedOverlay");
 }
 function closeEmbedModal(){
   $("#embedOverlay").classList.remove("on");
@@ -2614,11 +2705,11 @@ function pickerFlat(items,selected){
 function openAuth(mode){
   if(!DB.isShared){
     renderLocalAccount();
-    $("#authModal").classList.add("on");
+    openOverlay("authModal");
     return;
   }
   (mode==="signup"?renderSignup:renderLogin)();
-  $("#authModal").classList.add("on");
+  openOverlay("authModal");
 }
 const closeAuth=()=>$("#authModal").classList.remove("on");
 
@@ -2778,7 +2869,7 @@ function openAccount(){
     USER=null; PENDING=[]; S.editor=null;
     setAccountUI(); closeAuth(); toast("로그아웃했습니다"); refresh();
   };
-  $("#authModal").classList.add("on");
+  openOverlay("authModal");
 }
 
 /* ── 내 정보 수정 ── */
@@ -2887,7 +2978,7 @@ function openProfile(){
     btn.disabled=false; btn.textContent="비밀번호 바꾸기";
   };
 
-  $("#authModal").classList.add("on");
+  openOverlay("authModal");
   setTimeout(()=>box.querySelector("#pfName").focus(),60);
 }
 
@@ -2900,7 +2991,7 @@ async function loadPending(){
 }
 async function openMembers(){
   if(!isAdmin()) return;
-  $("#membersModal").classList.add("on");
+  openOverlay("membersModal");
   const box=$("#membersBox");
   box.innerHTML='<h3>회원 관리</h3><p>불러오는 중…</p>';
   let list=[];
@@ -3105,9 +3196,36 @@ document.addEventListener("keydown",e=>{
 $("#map").addEventListener("click",e=>{ if(e.target===e.currentTarget&&S.mapSel){S.mapSel=null;renderMap();} });
 let rt; window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(S.view==="map")renderMap();},150);});
 window.addEventListener("beforeunload",e=>{ if(S.editor){e.preventDefault();e.returnValue="";} });
+window.addEventListener("popstate",e=>{
+  /* 모달이 열려 있으면 뒤로 가기로 모달부터 닫습니다 */
+  const overlays=[["embedOverlay",closeEmbedModal],["noticeOverlay",closeNoticeRead]];
+  const modals=[["noticeUpModal",closeNoticeUpload],["authModal",closeAuth],["membersModal",closeMembers],["peekModal",closePeek]];
+  let closed=false;
+  for(const [id,fn] of overlays.concat(modals)){
+    const n=document.getElementById(id);
+    if(n&&n.classList.contains("on")){ fn(); closed=true; break; }
+  }
+  if(closed){ pushHist(e.state||{v:"home"},true); return; }
+  if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")){
+    pushHist(historyStateNow(),false); return;
+  }
+  applyHist(e.state);
+});
+function openOverlay(id){
+  const n=document.getElementById(id);
+  if(!n) return;
+  if(!n.classList.contains("on")) pushHist(historyStateNow());
+  n.classList.add("on");
+}
+function historyStateNow(){
+  if(S.noticesPage) return {v:"notices"};
+  if(S.sub) return {v:"sub",sub:S.sub};
+  return {v:"home"};
+}
 
 /* ═══ 시작 ═══ */
 (async function boot(){
+  pushHist({v:"home"},true);
   renderChips(); renderTypeFilter(); renderTree(); renderPage(); stats();
   setAccountUI();
   await DB.init();
