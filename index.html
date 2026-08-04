@@ -424,6 +424,65 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
   .mapview{padding:16px 12px 50px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.noticelist{display:flex;flex-direction:column;gap:2px}
+.homegrid{display:grid;grid-template-columns:1fr 264px;gap:16px;align-items:start}
+.homegrid-main,.homegrid-side{min-width:0}
+@media (max-width:760px){.homegrid{grid-template-columns:1fr;gap:0}}
+
+.notices-compact .noticerow{padding:8px 6px}
+.notices-compact .ntitle{font-size:13px}
+.notices-compact .nauthor{display:none!important}
+.noticemore{display:block;width:100%;text-align:center;margin-top:9px;padding:9px;border-radius:9px;border:1px dashed var(--line);font-size:11.5px;font-weight:700;color:var(--ink-3);background:transparent;transition:.14s}
+.noticemore:hover{border-color:#0C9B87;color:#0A8878;background:#F2FBF9}
+.noticelist-full .noticerow{padding:12px 9px}
+.noticelist-full .ntitle{font-size:14px}
+.noticerow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 8px;border-radius:9px;border-bottom:1px solid var(--line-2);transition:.12s}
+.noticerow:hover{background:var(--bg)}
+.noticerow .ndot{width:7px;height:7px;border-radius:99px;background:#0C9B87;flex:none}
+.noticerow .ntitle{flex:1;min-width:0;font-size:13.5px;font-weight:700;letter-spacing:-.03em;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.noticerow .ndate{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);font-weight:600;flex:none}
+.noticerow .nauthor{font-size:10.5px;color:var(--ink-4);font-weight:600;flex:none;display:none}
+@media (min-width:560px){.noticerow .nauthor{display:inline}}
+.noticerow .ndel{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:var(--ink-4);flex:none;font-size:12px;transition:.14s}
+.noticerow .ndel:hover{background:#FDF2F3;color:#C2333B}
+
+.notice-frame-body{background:var(--paper)!important;padding:0!important;display:block!important;align-items:normal!important;justify-content:normal!important}
+.notice-frame-body .md-wrap{max-width:760px;margin:0 auto;padding:34px 30px 60px}
+.notice-frame-meta{font-size:11.5px;color:var(--ink-3);font-weight:650;margin:0 0 22px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+
+.md-render{font-size:14.5px;line-height:1.78;color:var(--ink-2);letter-spacing:-.015em;font-weight:450;word-break:break-word}
+.md-render>*:first-child{margin-top:0}
+.md-render h1{font-size:24px;font-weight:800;letter-spacing:-.04em;color:var(--ink);margin:30px 0 14px;line-height:1.35}
+.md-render h2{font-size:19px;font-weight:800;letter-spacing:-.035em;color:var(--ink);margin:28px 0 12px;line-height:1.35;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.md-render h3{font-size:16px;font-weight:750;letter-spacing:-.03em;color:var(--ink);margin:22px 0 9px}
+.md-render h4{font-size:14px;font-weight:750;letter-spacing:-.02em;color:var(--ink);margin:18px 0 7px}
+.md-render p{margin:0 0 13px}
+.md-render ul,.md-render ol{margin:0 0 13px;padding-left:22px}
+.md-render li{margin:0 0 5px}
+.md-render li>p{margin:0 0 6px}
+.md-render strong{font-weight:750;color:var(--ink)}
+.md-render em{font-style:italic}
+.md-render a{color:var(--num);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.md-render blockquote{margin:0 0 13px;padding:10px 15px;border-left:3px solid var(--num);background:var(--bg);border-radius:0 8px 8px 0;color:var(--ink-2)}
+.md-render blockquote p:last-child{margin-bottom:0}
+.md-render hr{border:none;border-top:1px solid var(--line);margin:22px 0}
+.md-render code{font-family:var(--mono);font-size:12.5px;background:var(--bg-2);padding:2px 6px;border-radius:5px;color:#C2333B}
+.md-render pre{margin:0 0 13px;padding:13px 15px;background:#151A2B;border-radius:10px;overflow-x:auto}
+.md-render pre code{background:none;padding:0;color:#E3E8F1;font-size:12.5px;line-height:1.6}
+.md-render table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px}
+.md-render th,.md-render td{border:1px solid var(--line);padding:7px 11px;text-align:left}
+.md-render th{background:var(--bg);font-weight:750;color:var(--ink)}
+.md-render img{max-width:100%;border-radius:10px;display:block;margin:8px 0}
+
+.mdup-drop{border:1.5px dashed var(--line);border-radius:12px;padding:26px 16px;text-align:center;cursor:pointer;transition:.15s;background:var(--bg)}
+.mdup-drop:hover,.mdup-drop.over{border-color:#0C9B87;background:#F2FBF9}
+.mdup-drop svg{color:var(--ink-4);margin-bottom:8px}
+.mdup-drop b{display:block;font-size:13px;font-weight:700;color:var(--ink-2)}
+.mdup-drop span{display:block;font-size:11.5px;color:var(--ink-3);font-weight:600;margin-top:3px}
+.mdup-preview{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mdup-preview .mdup-ph{padding:9px 13px;background:var(--bg);border-bottom:1px solid var(--line);font-size:10.5px;font-weight:800;letter-spacing:.07em;color:var(--ink-3);text-transform:uppercase}
+.mdup-preview .md-render{padding:16px;max-height:340px;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -535,9 +594,26 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
   </div>
 </div>
 
+<div class="embed-overlay" id="noticeOverlay">
+  <div class="embed-frame">
+    <div class="embed-frame-head">
+      <span id="noticeFrameTitle"></span>
+      <button class="embed-frame-close" id="noticeFrameClose" aria-label="닫기">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="embed-frame-body notice-frame-body" id="noticeFrameBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="noticeUpModal">
+  <div class="mbox wide" id="noticeUpBox"></div>
+</div>
 
 <div class="toasts" id="toasts"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/marked@18.0.9/lib/marked.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.13/dist/purify.min.js"></script>
 <script>
 "use strict";
 /* ═══════════════════════════════════════════════════════════════
@@ -1008,6 +1084,30 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const SYM=/^[^\uAC00-\uD7A3]+$/;
 function toast(m,bad){const t=el("div","toast"+(bad?" bad":""),esc(m));$("#toasts").appendChild(t);setTimeout(()=>{t.style.opacity=0;t.style.transition=".3s";setTimeout(()=>t.remove(),320);},2600);}
 function fmtDate(ts){const d=new Date(ts);return isNaN(d)?"":d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");}
+function fmtDateTime(ts){
+  const d=new Date(ts); if(isNaN(d)) return "";
+  return fmtDate(ts)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+/* 마크다운을 안전하게 그려 넣습니다. 라이브러리를 못 불러온 경우 일반 텍스트로 대신합니다. */
+function renderMarkdown(container,md){
+  let html;
+  try{
+    html = window.marked ? window.marked.parse(md||"") : null;
+  }catch(e){ console.warn("마크다운 해석 실패",e); html=null; }
+  if(html==null){
+    container.innerHTML="";
+    (md||"").split("\n").forEach(line=>container.appendChild(el("p",null,esc(line))));
+    return;
+  }
+  const clean = window.DOMPurify ? window.DOMPurify.sanitize(html) : html;
+  container.innerHTML = clean;
+  container.querySelectorAll("a[href]").forEach(a=>{ a.target="_blank"; a.rel="noopener noreferrer"; });
+}
+function extractNoticeTitle(filename,content){
+  const m=(content||"").match(/^#\s+(.+?)\s*$/m);
+  if(m&&m[1]) return m[1].trim().slice(0,120);
+  return (filename||"").replace(/\.md$/i,"").replace(/[-_]+/g," ").trim().slice(0,120)||"제목 없는 글";
+}
 const A=k=>AREAS[k];
 const shortG=g=>({m1:"중1",m2:"중2",m3:"중3",h1:"공수1",h2:"공수2"}[g]||g);
 function lsGet(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
@@ -1025,7 +1125,7 @@ async function sha(s){
    IDX   : { subId: [summary,...] }       (SUMS에서 만들어 냄)
    백엔드 두 가지: firebase / local(브라우저) — firebase 설정은 이 파일 맨 위 FIREBASE_CONFIG에 적어 둡니다.
    ═════════════════════════════════════════ */
-let SUMS={}, BODY={}, IDX={};
+let SUMS={}, BODY={}, IDX={}, NOTICES=[];
 let USER=null;                          // 로그인한 회원 { uid, loginId, name, school, level, grades, subjects, interested, used, role, status }
 let PENDING=[];                         // 승인 대기 회원 (관리자용)
 const IMG_LIMIT_STORAGE=3*1024*1024;    // Firebase Storage 보안 규칙과 맞춘 값 (3MB)
@@ -1242,6 +1342,43 @@ const DB={
     return out;
   },
 
+  /* ── 공지사항 ─ 사용 안내·패치 내역처럼 관리자가 올리는 마크다운 게시글 ── */
+  watchNotices(cb){
+    if(this.mode==="firebase"){
+      const {fs,db}=this.fb;
+      fs.onSnapshot(fs.collection(db,"notices"),snap=>{
+        const arr=[]; snap.forEach(d=>arr.push({...d.data(),id:d.id}));
+        arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        NOTICES=arr; cb();
+      },err=>{ console.warn(err); });
+      return;
+    }
+    const arr=(lsGet(LS_DATA)||{}).notices||[];
+    NOTICES=[...arr].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    cb();
+  },
+  async createNotice(rec){
+    const id=rec.id||uid();
+    const full={...rec,id};
+    if(this.mode==="firebase"){
+      const {fs,db}=this.fb;
+      await fs.setDoc(fs.doc(db,"notices",id),full);
+      return true;
+    }
+    const d=lsGet(LS_DATA)||{}; d.notices=d.notices||[];
+    d.notices=d.notices.filter(n=>n.id!==id); d.notices.push(full);
+    return lsSet(LS_DATA,d);
+  },
+  async deleteNotice(id){
+    if(this.mode==="firebase"){
+      const {fs,db}=this.fb;
+      await fs.deleteDoc(fs.doc(db,"notices",id));
+      return true;
+    }
+    const d=lsGet(LS_DATA)||{}; d.notices=(d.notices||[]).filter(n=>n.id!==id);
+    return lsSet(LS_DATA,d);
+  },
+
   /* 비밀번호 변경 ─ 현재 비밀번호로 본인 확인을 거칩니다 */
   async changePassword(loginId,currentPw,newPw){
     if(this.mode!=="firebase") throw new Error("로컬 모드에서는 쓸 수 없습니다.");
@@ -1305,7 +1442,7 @@ const unitCnt=u2=>u2.subs.reduce((a,s)=>a+cnt(s.id),0);
 
 /* ═══ 화면 상태 ═══ */
 const S={ view:"archive", q:"", areas:new Set(), types:new Set(), typeOpen:false, sub:null, unit:null,
-          openG:new Set(["m1"]), openU:new Set(), mapSel:null, editor:null, folds:new Set() };
+          openG:new Set(["m1"]), openU:new Set(), mapSel:null, editor:null, folds:new Set(), noticesPage:false };
 
 /* ═══ 검색 ═══ */
 function subMatch(sb,un){
@@ -1398,7 +1535,7 @@ function renderTree(){
 
 /* ═══ 이동 ═══ */
 async function go(subId){
-  S.sub=subId; S.editor=null;
+  S.sub=subId; S.editor=null; S.noticesPage=false;
   const rec=SUBMAP[subId];
   if(rec){ S.unit=rec.unit.id; S.openG.add(rec.unit.grade); S.openU.add(rec.unit.id); }
   setView("archive");
@@ -1409,7 +1546,14 @@ async function go(subId){
 }
 function goHome(){
   if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
-  S.sub=null; S.unit=null; S.editor=null;
+  S.sub=null; S.unit=null; S.editor=null; S.noticesPage=false;
+  setView("archive");
+  $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
+  renderTree(); renderPage(); $("#content").scrollTop=0;
+}
+function goNoticesPage(){
+  if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
+  S.sub=null; S.editor=null; S.noticesPage=true;
   setView("archive");
   $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
   renderTree(); renderPage(); $("#content").scrollTop=0;
@@ -1428,6 +1572,7 @@ function setView(v){
 function renderPage(){
   const w=$("#wrap");
   if(S.editor && S.editor.pickerMode){ w.innerHTML=""; w.appendChild(composeView()); return; }
+  if(S.noticesPage){ w.innerHTML=""; w.appendChild(noticesPageView()); return; }
   if(!S.sub){ w.innerHTML=""; w.appendChild(homeView()); return; }
   const {sub,unit}=SUBMAP[S.sub], hex=A(unit.area).hex, G=GMAP[unit.grade];
   w.innerHTML="";
@@ -1539,6 +1684,158 @@ function panel(title,n,closed){
   const body=el("div","pb"); root.appendChild(body);
   return {root,body};
 }
+
+/* ═══ 공지사항 (사용 안내 · 패치 내역) ═══ */
+function noticeRow(n,opt){
+  opt=opt||{};
+  const row=el("button","noticerow");
+  row.innerHTML =
+    '<span class="ndot"></span>'+
+    '<span class="ntitle">'+esc(n.title||"제목 없는 글")+'</span>'+
+    (opt.full?'<span class="nauthor">'+esc(n.author||"관리자")+'</span>':'')+
+    '<span class="ndate">'+(opt.full?fmtDateTime(n.createdAt):fmtDate(n.createdAt))+'</span>'+
+    (opt.full&&isAdmin()?'<span class="ndel" title="삭제">✕</span>':'');
+  row.onclick=e=>{
+    if(e.target.classList.contains("ndel")){ e.stopPropagation(); deleteNoticeConfirm(n); return; }
+    openNoticeRead(n);
+  };
+  return row;
+}
+function noticesPanel(){
+  const p=panel("공지사항",NOTICES.length,false);
+  p.root.classList.add("notices-compact");
+  if(!NOTICES.length){
+    p.body.appendChild(el("div","nolink", isAdmin()
+      ? "아직 올라온 글이 없습니다. 전체 공지사항 화면에서 새 글을 올려 보세요."
+      : "아직 올라온 공지가 없습니다."));
+  }else{
+    const list=el("div","noticelist");
+    NOTICES.slice(0,12).forEach(n=>list.appendChild(noticeRow(n,{full:false})));
+    p.body.appendChild(list);
+  }
+  const more=el("button","noticemore","전체 공지사항 보기 →");
+  more.onclick=goNoticesPage;
+  p.body.appendChild(more);
+  return p.root;
+}
+function noticesPageView(){
+  const w=el("div");
+  const back=el("button","homebtn");
+  back.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> 홈으로';
+  back.onclick=goHome;
+  w.appendChild(back);
+  w.appendChild(el("h2","page","공지사항"));
+  w.appendChild(el("p","subttl","사용 안내와 패치 내역을 모아 봅니다. 최신 글이 맨 위에 있습니다."));
+
+  if(isAdmin()){
+    const cta=el("div","homecta");
+    const add=el("button","btn live","＋ 새 글 올리기");
+    add.onclick=openNoticeUpload;
+    cta.appendChild(add);
+    w.appendChild(cta);
+  }
+
+  if(!NOTICES.length){
+    w.appendChild(el("div","nolink","아직 올라온 공지가 없습니다."));
+    return w;
+  }
+  const list=el("div","noticelist noticelist-full");
+  NOTICES.forEach(n=>list.appendChild(noticeRow(n,{full:true})));
+  w.appendChild(list);
+  return w;
+}
+function openNoticeRead(n){
+  $("#noticeFrameTitle").textContent=n.title||"";
+  const body=$("#noticeFrameBody"); body.innerHTML="";
+  const wrap=el("div","md-wrap");
+  wrap.appendChild(el("div","notice-frame-meta", esc(n.author||"관리자")+" · "+fmtDateTime(n.createdAt)));
+  const rb=el("div","md-render");
+  wrap.appendChild(rb);
+  body.appendChild(wrap);
+  renderMarkdown(rb,n.markdown||"");
+  $("#noticeOverlay").classList.add("on");
+}
+function closeNoticeRead(){
+  $("#noticeOverlay").classList.remove("on");
+  $("#noticeFrameBody").innerHTML="";
+}
+async function deleteNoticeConfirm(n){
+  if(!confirm('"'+(n.title||"이 글")+'"을(를) 지울까요? 되돌릴 수 없습니다.')) return;
+  try{ await DB.deleteNotice(n.id); toast("지웠습니다"); }
+  catch(e){ console.warn(e); toast("지우지 못했습니다",true); }
+}
+
+const NOTICE_MAX_BYTES=300*1024;
+function openNoticeUpload(){
+  if(!isAdmin()) return;
+  const box=$("#noticeUpBox");
+  const state={ filename:"", content:"" };
+  box.innerHTML =
+    '<h3>새 글 올리기</h3>'+
+    '<p>사용 안내나 패치 내역처럼 여러 선생님과 나눌 마크다운(.md) 파일을 올립니다. 목록에서 가장 위에 표시됩니다.</p>'+
+    '<div class="mdup-drop" id="mdDrop" tabindex="0">'+
+      '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="15"/></svg>'+
+      '<b>여기를 눌러 .md 파일을 고르세요</b><span>끌어다 놓아도 됩니다</span>'+
+    '</div>'+
+    '<input type="file" id="mdFile" accept=".md,text/markdown,text/plain" hidden>'+
+    '<div class="fld" style="margin-top:14px"><label class="fl" for="mdTitle">제목</label><input class="inp" type="text" id="mdTitle" placeholder="파일을 고르면 자동으로 채워집니다"></div>'+
+    '<div id="mdPreviewWrap"></div>'+
+    '<div class="err" id="mdErr"></div>'+
+    '<div class="frow"><button class="btn ghost" id="mdCancel">취소</button><button class="btn live" id="mdPublish" disabled>게시</button></div>';
+
+  const drop=box.querySelector("#mdDrop"), fileInp=box.querySelector("#mdFile"),
+        titleInp=box.querySelector("#mdTitle"), err=box.querySelector("#mdErr"),
+        pubBtn=box.querySelector("#mdPublish");
+
+  const useFile=(f)=>{
+    if(!f) return;
+    if(!/\.(md|markdown|txt)$/i.test(f.name)&&f.type&&!f.type.startsWith("text/")){
+      err.textContent="마크다운(.md) 파일을 골라 주세요."; return;
+    }
+    if(f.size>NOTICE_MAX_BYTES){
+      err.textContent="파일이 너무 큽니다(최대 300KB). 내용을 줄여서 다시 올려 주세요."; return;
+    }
+    const rd=new FileReader();
+    rd.onload=()=>{
+      state.filename=f.name; state.content=String(rd.result||"");
+      titleInp.value=extractNoticeTitle(state.filename,state.content);
+      err.textContent="";
+      const pw=box.querySelector("#mdPreviewWrap");
+      pw.innerHTML='<div class="mdup-preview"><div class="mdup-ph">미리보기</div><div class="md-render" id="mdPrevBody"></div></div>';
+      renderMarkdown(pw.querySelector("#mdPrevBody"),state.content);
+      pubBtn.disabled=false;
+    };
+    rd.onerror=()=>{ err.textContent="파일을 읽지 못했습니다."; };
+    rd.readAsText(f,"utf-8");
+  };
+  drop.onclick=()=>fileInp.click();
+  drop.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fileInp.click(); } };
+  fileInp.onchange=()=>useFile(fileInp.files[0]);
+  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop",e=>{ const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) useFile(f); });
+
+  box.querySelector("#mdCancel").onclick=closeNoticeUpload;
+  pubBtn.onclick=async ()=>{
+    const title=titleInp.value.trim();
+    if(!state.content){ err.textContent="파일을 먼저 골라 주세요."; return; }
+    if(!title){ err.textContent="제목을 적어 주세요."; return; }
+    pubBtn.disabled=true; pubBtn.textContent="게시하는 중…";
+    try{
+      await DB.createNotice({ title, markdown:state.content, author:USER?USER.name:"관리자", authorUid:USER?USER.uid:null, createdAt:Date.now() });
+      closeNoticeUpload();
+      toast("게시했습니다");
+    }catch(e){
+      console.warn(e);
+      pubBtn.disabled=false; pubBtn.textContent="게시";
+      err.textContent="게시하지 못했습니다. 연결과 Firestore 규칙을 확인해 주세요.";
+    }
+  };
+  $("#noticeUpModal").classList.add("on");
+  setTimeout(()=>drop.focus(),60);
+}
+const closeNoticeUpload=()=>$("#noticeUpModal").classList.remove("on");
+
 function composeView(){
   const w=el("div");
   const back=el("button","homebtn");
@@ -1583,6 +1880,10 @@ function homeView(){
       '지금 남기는 사례는 이 브라우저에만 저장되고 다른 선생님에게는 보이지 않습니다. 인터넷 연결을 확인한 뒤 새로고침해 주세요.</p></div>';
     w.appendChild(n);
   }
+
+  const grid=el("div","homegrid");
+
+  const left=el("div","homegrid-main");
   const recent=[];
   Object.values(SUMS).forEach(k=>{ if(SUBMAP[k.subId]) recent.push(k); });
   recent.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
@@ -1600,7 +1901,13 @@ function homeView(){
     b.onclick=()=>go(k.subId);
     p.body.appendChild(b);
   });
-  w.appendChild(p.root);
+  left.appendChild(p.root);
+
+  const right=el("div","homegrid-side");
+  right.appendChild(noticesPanel());
+
+  grid.appendChild(left); grid.appendChild(right);
+  w.appendChild(grid);
   return w;
 }
 
@@ -2760,9 +3067,14 @@ bindBackdropClose("authModal",closeAuth);
 bindBackdropClose("membersModal",closeMembers);
 bindBackdropClose("peekModal",closePeek);
 bindBackdropClose("embedOverlay",closeEmbedModal);
+bindBackdropClose("noticeOverlay",closeNoticeRead);
+bindBackdropClose("noticeUpModal",closeNoticeUpload);
+$("#noticeFrameClose").onclick=closeNoticeRead;
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape") return;
   if($("#embedOverlay").classList.contains("on")) closeEmbedModal();
+  else if($("#noticeOverlay").classList.contains("on")) closeNoticeRead();
+  else if($("#noticeUpModal").classList.contains("on")) closeNoticeUpload();
   else if($("#authModal").classList.contains("on")) closeAuth();
   else if($("#membersModal").classList.contains("on")) closeMembers();
   else if($("#peekModal").classList.contains("on")) closePeek();
@@ -2783,6 +3095,10 @@ window.addEventListener("beforeunload",e=>{ if(S.editor){e.preventDefault();e.re
     await loadPending();
     setAccountUI();
     if(!S.editor) renderPage();
+  });
+
+  DB.watchNotices(()=>{
+    if(!S.sub && S.view==="archive" && !S.editor) renderPage();
   });
 
   let first=true;
