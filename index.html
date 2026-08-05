@@ -2309,39 +2309,63 @@ function mountEmbed(parent,b,opts){
   ifr.srcdoc=embedDoc(b.html,mode);
   box.appendChild(ifr); parent.appendChild(box);
 
+  /* 작성 시 적어 둔 높이는 참고값일 뿐, 실제 내용이 더 길 수 있습니다.
+     내용이 다 실린 뒤 진짜 높이를 재서 그 값으로 다시 맞춥니다. */
+  const measureRealHeight=(cb)=>{
+    let last=-1;
+    const read=()=>{
+      try{
+        const doc=ifr.contentDocument;
+        const h=doc?Math.max(
+          doc.documentElement?doc.documentElement.scrollHeight:0,
+          doc.body?doc.body.scrollHeight:0
+        ):0;
+        if(h>40&&h<20000&&Math.abs(h-last)>3){ last=h; cb(h); }
+      }catch(e){}
+    };
+    ifr.addEventListener("load",read);
+    setTimeout(read,150);   // srcdoc은 load 이벤트보다 먼저 그려지는 경우가 있어 한 번 더 확인합니다
+    setTimeout(read,500);
+  };
+
   if(mode==="stretch"){
     ifr.style.width="100%";
     if(opts.big){ box.classList.add("wfill"); box.style.height="100%"; ifr.style.height="100%"; }
     else{ ifr.style.height=dh+"px"; }
   }else if(opts.big){
-    /* 크게 보기 모달: 가로는 모달 폭에 맞추고, 세로는 원본 내용이 전부 보이도록
+    /* 크게 보기 모달: 가로는 모달 폭에 맞추고, 세로는 실제 내용 전체가 보이도록
        가로·세로 비율을 함께 고려해 줄입니다(넘치는 방향이 없도록 contain 방식). */
+    let realH=dh;
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px"; ifr.style.transformOrigin="top left";
     const fit=()=>{
-      const cw=parent.clientWidth||dw, ch=parent.clientHeight||dh;
-      const s=Math.min(cw/dw, ch/dh);
+      const cw=parent.clientWidth||dw, ch=parent.clientHeight||realH;
+      const s=Math.min(cw/dw, ch/realH);
       ifr.style.transform="scale("+s+")";
       box.style.width=Math.round(dw*s)+"px";
-      box.style.height=Math.round(dh*s)+"px";
+      box.style.height=Math.round(realH*s)+"px";
     };
     fit();
     try{ const ro=new ResizeObserver(fit); ro.observe(parent); }
     catch(e){ window.addEventListener("resize",fit); }
     setTimeout(fit,60);
+    measureRealHeight(h=>{ realH=h; ifr.style.height=realH+"px"; fit(); });
   }else if(mode==="none"){
     box.style.overflowX="auto";
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px";
+    measureRealHeight(h=>{ ifr.style.height=h+"px"; });
   }else{
+    let realH=dh;
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px"; ifr.style.transformOrigin="top left";
     const fit=()=>{
       const cw=box.clientWidth||dw, s=Math.min(1,cw/dw);
       ifr.style.transform="scale("+s+")";
-      box.style.height=Math.round(dh*s)+"px";
+      box.style.height=Math.round(realH*s)+"px";
     };
     fit();
     try{ const ro=new ResizeObserver(fit); ro.observe(box); }
     catch(e){ window.addEventListener("resize",fit); }
     setTimeout(fit,60);
+    measureRealHeight(h=>{ realH=h; ifr.style.height=realH+"px"; fit(); });
   }
 
   if(opts.expand!==false){
