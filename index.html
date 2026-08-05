@@ -441,6 +441,41 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .mdpin span{font-size:12.5px;color:var(--ink-2);font-weight:550;letter-spacing:-.02em}
 .mdpin b{font-weight:750;color:var(--ink)}
 .noticelist{display:flex;flex-direction:column;gap:2px}
+.freehead{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--ink-4);padding:8px 8px 4px;text-transform:uppercase}
+.uhead[aria-current="true"]{background:var(--selbg,var(--bg-2))}
+.uhead[aria-current="true"] .t{color:var(--selc,var(--ink));font-weight:800}
+.freerow[aria-current="true"]{background:#7C859C14}
+.freerow[aria-current="true"] .t{color:#5A6274;font-weight:800}
+
+.boardtoc{border:1px solid var(--line);border-radius:13px;background:var(--paper);overflow:hidden;margin-bottom:18px;box-shadow:var(--sh-s)}
+.tocrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 13px;border-bottom:1px solid var(--line-2);transition:.12s}
+.tocrow:last-child{border-bottom:none}
+.tocrow:hover{background:var(--bg)}
+.tocnum{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);font-weight:600;width:16px;flex:none;text-align:right}
+.toctool{font-size:10px;font-weight:800;color:#fff;padding:2px 7px;border-radius:6px;flex:none;width:70px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toctitle{flex:1;min-width:0;font-size:13.5px;font-weight:700;letter-spacing:-.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tocmeta{font-size:10.5px;color:var(--ink-4);font-weight:650;flex:none}
+@media (max-width:640px){.tocmeta{display:none}}
+
+.cstds{display:flex;gap:5px;flex-wrap:wrap;align-items:center;padding:0 18px 12px}
+.cstdlbl{font-size:10px;font-weight:800;color:var(--ink-4);letter-spacing:.05em}
+.cstd{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--ink);color:#fff;padding:2px 7px;border-radius:6px}
+
+.stdpick{display:flex;flex-direction:column;gap:5px;max-height:250px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg)}
+.stdchip{display:flex;align-items:flex-start;gap:8px;text-align:left;padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--paper);transition:.12s}
+.stdchip:hover{border-color:#C9D3E6}
+.stdchip[aria-pressed="true"]{border-color:#0C9B87;background:#F2FBF9}
+.stdchip .sc{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--ink);color:#fff;padding:2px 6px;border-radius:5px;flex:none;margin-top:1px}
+.stdchip[aria-pressed="true"] .sc{background:#0C9B87}
+.stdchip .sd{font-size:12px;color:var(--ink-2);font-weight:500;line-height:1.5;letter-spacing:-.02em}
+
+.upfree{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.upfreelbl{font-size:11px;font-weight:700;color:var(--ink-3);margin:4px 0 6px}
+.etcwrap{margin-top:8px}
+.tsel.etc{display:inline-flex;align-items:center;gap:5px}
+.etcx{font-size:10px;color:inherit;opacity:.75;padding:0 2px}
+.etcx:hover{opacity:1}
+.unit{cursor:pointer}
 .recentrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 6px;border-radius:9px;border-bottom:1px solid var(--line-2);transition:.12s}
 .recentrow:hover{background:var(--bg)}
 .rtool{font-size:10.5px;font-weight:800;color:#fff;padding:3px 6px;border-radius:7px;flex:none;width:72px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5}
@@ -661,7 +696,27 @@ const SDK="https://www.gstatic.com/firebasejs/10.12.5/";
 /* 아이디 로그인을 Firebase 이메일 인증에 얹기 위한 내부 도메인입니다.
    메일이 오가지는 않습니다. Firebase가 이 형식을 거부하면 다른 값으로 바꾸세요. */
 const LOGIN_DOMAIN="@mathcase.local";
-const TAGS=["학습관리","협력·의사소통","진단·맞춤학습","평가·피드백","흥미·동기유발","개념이해·시각화","탐구·추측 형성","문제해결·모델링","반복 연습","계산·절차 수행 대행"];
+const TAGS=["시각화","평가/피드백","반복 학습","탐구 및 실험","흥미•동기유발"];
+const isEtcTag=t=>!TAGS.includes(t);        // 목록에 없으면 직접 입력한 유형
+/* 예전에 쓰던 활동 유형을 새 유형으로 옮겨 줍니다. 목록에 없는 값은 '기타'로 그대로 남습니다. */
+const TAG_ALIAS={
+  "개념이해·시각화":"시각화",
+  "평가·피드백":"평가/피드백",
+  "반복 연습":"반복 학습",
+  "탐구·추측 형성":"탐구 및 실험",
+  "흥미·동기유발":"흥미•동기유발",
+  "문제해결·모델링":"탐구 및 실험",
+  "진단·맞춤학습":"평가/피드백",
+  "계산·절차 수행 대행":"반복 학습"
+};
+function migrateTags(list){
+  const out=[];
+  (list||[]).forEach(t=>{
+    const v=TAG_ALIAS[t]||t;
+    if(v&&!out.includes(v)) out.push(v);
+  });
+  return out;
+}
 const BLOCK_LABEL={h2:"제목",h3:"소제목",p:"본문",ul:"목록",quote:"인용",img:"이미지",embed:"HTML 임베드",hr:"구분선"};
 const LS_DATA="mathedu.local.data", LS_ME="mathedu.me";
 
@@ -1082,6 +1137,36 @@ const UMAP = Object.fromEntries(UNITS.map(x=>[x.id,x]));
 const SUBMAP = {};
 UNITS.forEach(x=>x.subs.forEach(s=>SUBMAP[s.id]={sub:s,unit:x}));
 
+/* 단원과 무관한 활동을 담는 게시판입니다. 대단원 게시판과 같은 지위로 다룹니다. */
+const FREE_BOARDS=[
+  {id:"free-term", title:"학기말 활동", desc:"단원에 매이지 않는 학기말 프로젝트·정리 활동"},
+  {id:"free-etc",  title:"기타 활동",   desc:"그 밖에 여러 단원에 걸치거나 분류하기 어려운 활동"}
+];
+const FREEMAP=Object.fromEntries(FREE_BOARDS.map(b=>[b.id,b]));
+const isFreeBoard=id=>!!FREEMAP[id];
+
+/* 게시판(대단원 또는 자유 게시판) 정보를 한 번에 얻습니다. */
+function boardInfo(id){
+  if(FREEMAP[id]) return {kind:"free", id, title:FREEMAP[id].title, desc:FREEMAP[id].desc, hex:"#7C859C"};
+  const u=UMAP[id];
+  if(!u) return null;
+  return {kind:"unit", id, unit:u, title:u.title, no:u.no, grade:u.grade, area:u.area, hex:AREAS[u.area].hex};
+}
+/* 대단원이 가진 성취기준 코드 목록 (글 작성 시 선택지로 씁니다) */
+function unitStandards(unitId){
+  const u=UMAP[unitId];
+  if(!u) return [];
+  return [...new Set(u.subs.flatMap(s=>s.c))];
+}
+/* 예전 소단원 ID(m1-1-s3)를 대단원 ID(m1-1)로 바꿉니다. 기존 글을 그대로 살리기 위한 장치입니다. */
+function normalizeBoardId(id){
+  if(!id) return id;
+  if(FREEMAP[id]||UMAP[id]) return id;
+  const m=String(id).match(/^(.+)-s\d+$/);
+  if(m&&UMAP[m[1]]) return m[1];
+  return id;
+}
+
 /* 연결선: prev/next를 양방향으로 합쳐 중복 없는 edge 목록 만들기 */
 const EDGES = (()=>{
   const set = new Set(), out=[];
@@ -1206,31 +1291,36 @@ const DB={
   },
 
   /* 본문 ─ 소단원 단위로 필요할 때 */
-  async loadBodies(subId){
-    const ids=(IDX[subId]||[]).map(s=>s.id).filter(i=>!BODY[i]);
+  async loadBodies(boardId){
+    const ids=(IDX[boardId]||[]).map(s=>s.id).filter(i=>!BODY[i]);
     if(!ids.length) return;
     if(this.mode==="firebase"){
       const {fs,db}=this.fb;
-      const q=fs.query(fs.collection(db,"caseBodies"),fs.where("subId","==",subId));
-      const snap=await fs.getDocs(q);
-      snap.forEach(d=>{
-        let parsed=[];
-        try{ parsed=JSON.parse(d.data().blocksJson||"[]"); }catch(e){ parsed=[]; }
-        BODY[d.id]=Array.isArray(parsed)?parsed:[];
-      });
-      ids.forEach(i=>{ if(!BODY[i]) BODY[i]=[]; });
+      /* 본문은 사례 ID로 직접 가져옵니다. 예전 소단원 단위로 저장된 글도 빠짐없이 읽힙니다. */
+      await Promise.all(ids.map(async id=>{
+        try{
+          const d=await fs.getDoc(fs.doc(db,"caseBodies",id));
+          let parsed=[];
+          if(d.exists()){ try{ parsed=JSON.parse(d.data().blocksJson||"[]"); }catch(e){ parsed=[]; } }
+          BODY[id]=Array.isArray(parsed)?parsed:[];
+        }catch(e){ console.warn(e); BODY[id]=[]; }
+      }));
       return;
     }
-    const bank=((lsGet(LS_DATA)||{}).bodies||{})[subId]||{};
-    Object.keys(bank).forEach(cid=>{
-      const raw=(bank[cid]&&bank[cid].blocks)||bank[cid]||[];
-      BODY[cid]=Array.isArray(raw)?raw:[];
+    const bodies=(lsGet(LS_DATA)||{}).bodies||{};
+    Object.keys(bodies).forEach(bk=>{
+      const bank=bodies[bk]||{};
+      Object.keys(bank).forEach(cid=>{
+        if(BODY[cid]) return;
+        const raw=(bank[cid]&&bank[cid].blocks)||bank[cid]||[];
+        BODY[cid]=Array.isArray(raw)?raw:[];
+      });
     });
     ids.forEach(i=>{ if(!BODY[i]) BODY[i]=[]; });
   },
 
   async saveCase(rec){
-    const sum={id:rec.id,subId:rec.subId,tool:rec.tool,title:rec.title,tags:rec.tags,author:rec.author,uid:rec.uid,updatedAt:rec.updatedAt};
+    const sum={id:rec.id,subId:rec.subId,tool:rec.tool,title:rec.title,tags:rec.tags,stds:rec.stds||[],author:rec.author,uid:rec.uid,updatedAt:rec.updatedAt};
     if(this.mode==="firebase"){
       const {fs,db}=this.fb;
       await fs.setDoc(fs.doc(db,"caseSummaries",rec.id),sum);
@@ -1467,30 +1557,44 @@ const DB={
 
 function rebuildIndex(){
   IDX={};
-  Object.values(SUMS).forEach(s=>{ if(!SUBMAP[s.subId])return; (IDX[s.subId]=IDX[s.subId]||[]).push(s); });
+  Object.values(SUMS).forEach(s=>{
+    /* 예전 소단원 글도 해당 대단원 게시판으로 들어오게 합니다 */
+    const bid=normalizeBoardId(s.subId);
+    if(!boardInfo(bid)) return;
+    s.boardId=bid;
+    s.tags=migrateTags(s.tags);
+    (IDX[bid]=IDX[bid]||[]).push(s);
+  });
   Object.keys(IDX).forEach(k=>IDX[k].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)));
 }
 const cnt=sid=>(IDX[sid]||[]).length;
-const unitCnt=u2=>u2.subs.reduce((a,s)=>a+cnt(s.id),0);
+const unitCnt=u2=>cnt(u2.id);
 
 /* ═══ 화면 상태 ═══ */
-const S={ view:"archive", q:"", areas:new Set(), types:new Set(), typeOpen:false, sub:null, unit:null,
-          openG:new Set(["m1"]), openU:new Set(), mapSel:null, editor:null, folds:new Set(), noticesPage:false };
+const S={ view:"archive", q:"", areas:new Set(), types:new Set(), typeOpen:false, board:null,
+          openG:new Set(["m1"]), mapHover:null, editor:null, folds:new Set(), noticesPage:false };
 
 /* ═══ 검색 ═══ */
-function subMatch(sb,un){
-  if(S.areas.size&&!S.areas.has(un.area)) return false;
+function boardMatch(bid){
+  const info=boardInfo(bid); if(!info) return false;
+  if(info.kind==="unit"){
+    if(S.areas.size&&!S.areas.has(info.area)) return false;
+  }else if(S.areas.size) return false;      // 영역 필터를 걸면 자유 게시판은 제외
   if(S.types.size){
-    const list=IDX[sb.id]||[];
+    const list=IDX[bid]||[];
     if(!list.some(k=>(k.tags||[]).some(t=>S.types.has(t)))) return false;
   }
   const q=S.q.trim().toLowerCase(); if(!q) return true;
-  const pool=[un.title,un.no,un.theme,GMAP[un.grade].label,AREAS[un.area].name,sb.t,sb.mid||"",
-    ...un.terms,...sb.c,...sb.c.map(c=>STD[c]||""),
-    ...(IDX[sb.id]||[]).flatMap(k=>[k.tool,k.title,(k.tags||[]).join(" ")])].join(" ").toLowerCase();
-  return pool.includes(q);
+  const parts=[info.title];
+  if(info.kind==="unit"){
+    const u=info.unit;
+    parts.push(u.no,u.theme,GMAP[u.grade].label,AREAS[u.area].name,
+      ...u.terms, ...u.subs.map(s=>s.t), ...unitStandards(bid), ...unitStandards(bid).map(c=>STD[c]||""));
+  }else parts.push(info.desc);
+  (IDX[bid]||[]).forEach(k=>parts.push(k.tool,k.title,(k.tags||[]).join(" ")));
+  return parts.join(" ").toLowerCase().includes(q);
 }
-const unitMatch=un=>un.subs.some(sb=>subMatch(sb,un));
+const unitMatch=un=>boardMatch(un.id);
 
 /* ═══ 사이드바 ═══ */
 function renderChips(){
@@ -1529,37 +1633,43 @@ function renderTypeFilter(){
 }
 function renderTree(){
   const t=$("#tree"); t.innerHTML=""; let any=false;
+
+  /* 학기말 활동처럼 단원과 무관한 게시판을 맨 위에 둡니다 */
+  const freeShown=FREE_BOARDS.filter(b=>boardMatch(b.id));
+  if(freeShown.length){
+    any=true;
+    const fs=el("div","gsec open");
+    fs.appendChild(el("div","freehead","단원 밖 활동"));
+    const fl=el("div","glist");
+    freeShown.forEach(b=>{
+      const n=cnt(b.id), r=el("button","uhead freerow");
+      r.setAttribute("aria-current",S.board===b.id?"true":"false");
+      r.innerHTML='<span class="bar" style="background:#7C859C"></span><span class="t">'+esc(b.title)+'</span>'+
+        (n?'<span class="badge" style="background:#7C859C1a;color:#7C859C">'+n+'</span>':'');
+      r.onclick=()=>go(b.id);
+      fl.appendChild(r);
+    });
+    fs.appendChild(fl); t.appendChild(fs);
+  }
+
   GRADES.forEach(g=>{
-    const units=UNITS.filter(x=>x.grade===g.id&&unitMatch(x));
+    const units=UNITS.filter(x=>x.grade===g.id&&boardMatch(x.id));
     if(!units.length) return; any=true;
     const gs=el("div","gsec"+(S.openG.has(g.id)?" open":""));
     const gh=el("button","ghead");
-    gh.innerHTML='<svg class="cv" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><b>'+esc(g.label)+'</b><span class="n">'+units.reduce((a,x)=>a+unitCnt(x),0)+'</span>';
+    gh.innerHTML='<svg class="cv" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg><b>'+esc(g.label)+'</b><span class="n">'+units.reduce((a,x)=>a+cnt(x.id),0)+'</span>';
     gh.onclick=()=>{S.openG.has(g.id)?S.openG.delete(g.id):S.openG.add(g.id);renderTree();};
     gs.appendChild(gh);
     const gl=el("div","glist");
     units.forEach(un=>{
-      const uo=S.openU.has(un.id)||un.subs.some(s=>s.id===S.sub);
-      const us=el("div","usec"+(uo?" open":""));
-      const n=unitCnt(un), hex=A(un.area).hex;
+      const n=cnt(un.id), hex=A(un.area).hex;
       const uh=el("button","uhead");
+      uh.setAttribute("aria-current",S.board===un.id?"true":"false");
+      uh.style.setProperty("--selbg",hex+"14"); uh.style.setProperty("--selc",hex);
       uh.innerHTML='<span class="bar" style="background:'+hex+'"></span><span class="rn">'+esc(un.no)+'</span><span class="t">'+esc(un.title)+'</span>'+
-        (n?'<span class="badge" style="background:'+hex+'1a;color:'+hex+'">'+n+'</span>':'')+
-        '<svg class="cv" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
-      uh.onclick=()=>{S.openU.has(un.id)?S.openU.delete(un.id):S.openU.add(un.id);renderTree();};
-      us.appendChild(uh);
-      const ul=el("div","ulist"); let lastMid=null;
-      un.subs.forEach(sb=>{
-        if(!subMatch(sb,un)) return;
-        if(sb.mid&&sb.mid!==lastMid){ ul.appendChild(el("div","midlbl",esc(sb.mid))); lastMid=sb.mid; }
-        const c=cnt(sb.id), r=el("button","srow");
-        r.setAttribute("aria-current",S.sub===sb.id?"true":"false");
-        r.style.setProperty("--selbg",hex+"14"); r.style.setProperty("--selc",hex);
-        r.innerHTML='<span class="t">'+esc(sb.t)+'</span>'+(c?'<span class="c has" style="background:'+hex+'">'+c+'</span>':'<span class="c">0</span>');
-        r.onclick=()=>go(sb.id);
-        ul.appendChild(r);
-      });
-      us.appendChild(ul); gl.appendChild(us);
+        (n?'<span class="badge" style="background:'+hex+'1a;color:'+hex+'">'+n+'</span>':'');
+      uh.onclick=()=>go(un.id);
+      gl.appendChild(uh);
     });
     gs.appendChild(gl); t.appendChild(gs);
   });
@@ -1567,7 +1677,6 @@ function renderTree(){
 }
 
 /* ═══ 이동 ═══ */
-/* 브라우저 뒤로 가기로 이전 화면에 돌아갈 수 있도록 상태를 기록합니다 */
 let HISTORY_READY=false;
 function pushHist(state,replace){
   if(!window.history||!window.history.pushState) return;
@@ -1579,42 +1688,39 @@ function pushHist(state,replace){
 function applyHist(st){
   const s=st||{v:"home"};
   S.editor=null;
-  if(s.v==="sub"&&SUBMAP[s.sub]){
-    S.sub=s.sub; S.noticesPage=false;
-    const rec=SUBMAP[s.sub];
-    S.unit=rec.unit.id; S.openG.add(rec.unit.grade); S.openU.add(rec.unit.id);
+  if(s.v==="board"&&boardInfo(s.board)){
+    S.board=s.board; S.noticesPage=false;
+    const info=boardInfo(s.board);
+    if(info.kind==="unit") S.openG.add(info.grade);
     setView("archive"); renderTree(); renderPage();
-    DB.loadBodies(s.sub).then(()=>{ if(S.sub===s.sub) renderPage(); }).catch(()=>{});
+    DB.loadBodies(s.board).then(()=>{ if(S.board===s.board) renderPage(); }).catch(()=>{});
   }else if(s.v==="notices"){
-    S.sub=null; S.noticesPage=true;
+    S.board=null; S.noticesPage=true;
     setView("archive"); renderTree(); renderPage();
   }else{
-    S.sub=null; S.unit=null; S.noticesPage=false;
+    S.board=null; S.noticesPage=false;
     setView("archive"); renderTree(); renderPage();
   }
   $("#content").scrollTop=0;
 }
 
-async function go(subId,focusCaseId){
-  pushHist({v:"sub",sub:subId});
-  S.sub=subId; S.editor=null; S.noticesPage=false;
-  const rec=SUBMAP[subId];
-  if(rec){ S.unit=rec.unit.id; S.openG.add(rec.unit.grade); S.openU.add(rec.unit.id); }
+async function go(boardId,focusCaseId){
+  if(!boardInfo(boardId)) return;
+  pushHist({v:"board",board:boardId});
+  S.board=boardId; S.editor=null; S.noticesPage=false;
+  const info=boardInfo(boardId);
+  if(info.kind==="unit") S.openG.add(info.grade);
   setView("archive");
   $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
   renderTree(); renderPage(); $("#content").scrollTop=0;
-  try{ await DB.loadBodies(subId); }catch(e){ console.warn(e); }
+  try{ await DB.loadBodies(boardId); }catch(e){ console.warn(e); }
   renderPage();
   if(focusCaseId) scrollToCase(focusCaseId);
 }
-/* 특정 사례가 화면에 보이도록 스크롤하고 잠깐 강조합니다 */
 function scrollToCase(caseId){
   const content=$("#content");
   if(!content) return;
   let tries=0, settled=0, lastTop=null, timer=null, stop=false;
-
-  /* 브라우저가 직접 계산하도록 맡깁니다. 카드에 지정한 scroll-margin-top 덕분에
-     카드 위쪽에 여백이 남아 제목이 잘리지 않습니다. */
   const bring=(smooth)=>{
     const node=document.getElementById("case-"+caseId);
     if(!node) return null;
@@ -1624,36 +1730,25 @@ function scrollToCase(caseId){
     }
     return node;
   };
-
   const settle=()=>{
     if(stop) return;
     const node=document.getElementById("case-"+caseId);
     if(!node) return;
-    /* 카드가 콘텐츠 상단에서 얼마나 떨어져 있는지 확인해, 어긋났으면 다시 맞춥니다.
-       이미지·임베드가 늦게 로드되어 카드가 밀리는 경우에 대응합니다. */
     const gap=node.getBoundingClientRect().top-content.getBoundingClientRect().top;
-    if(gap<8||gap>56){
-      bring(false);
-      settled=0;
-    }else{
-      settled++;
-    }
+    if(gap<8||gap>56){ bring(false); settled=0; }
+    else settled++;
     const now=Math.round(content.scrollTop);
     if(lastTop!==null&&Math.abs(now-lastTop)<=1&&settled>=1) settled++;
     lastTop=now;
     if(settled<4 && ++tries<50) timer=setTimeout(settle,120);
   };
-
   const start=()=>{
     const node=bring(true);
-    if(!node){
-      if(++tries<20) setTimeout(start,80);
-      return;
-    }
+    if(!node){ if(++tries<20) setTimeout(start,80); return; }
     tries=0;
     node.classList.add("case-focus");
     setTimeout(()=>node.classList.remove("case-focus"),2200);
-    setTimeout(settle,320);   // 부드러운 이동이 끝난 뒤부터 보정합니다
+    setTimeout(settle,320);
     const onUser=()=>{ stop=true; clearTimeout(timer);
       content.removeEventListener("wheel",onUser);
       content.removeEventListener("touchstart",onUser); };
@@ -1666,7 +1761,7 @@ function scrollToCase(caseId){
 function goHome(){
   if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
   pushHist({v:"home"});
-  S.sub=null; S.unit=null; S.editor=null; S.noticesPage=false;
+  S.board=null; S.editor=null; S.noticesPage=false;
   setView("archive");
   $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
   renderTree(); renderPage(); $("#content").scrollTop=0;
@@ -1674,7 +1769,7 @@ function goHome(){
 function goNoticesPage(){
   if(S.editor && !confirm("쓰던 내용이 사라집니다. 나가시겠어요?")) return;
   pushHist({v:"notices"});
-  S.sub=null; S.editor=null; S.noticesPage=true;
+  S.board=null; S.editor=null; S.noticesPage=true;
   setView("archive");
   $("#side").classList.remove("on"); $("#scrim2").classList.remove("on");
   renderTree(); renderPage(); $("#content").scrollTop=0;
@@ -1694,8 +1789,10 @@ function renderPage(){
   const w=$("#wrap");
   if(S.editor && S.editor.pickerMode){ w.innerHTML=""; w.appendChild(composeView()); return; }
   if(S.noticesPage){ w.innerHTML=""; w.appendChild(noticesPageView()); return; }
-  if(!S.sub){ w.innerHTML=""; w.appendChild(homeView()); return; }
-  const {sub,unit}=SUBMAP[S.sub], hex=A(unit.area).hex, G=GMAP[unit.grade];
+  if(!S.board){ w.innerHTML=""; w.appendChild(homeView()); return; }
+  const info=boardInfo(S.board);
+  if(!info){ S.board=null; w.innerHTML=""; w.appendChild(homeView()); return; }
+  const hex=info.hex;
   w.innerHTML="";
 
   const home=el("button","homebtn");
@@ -1703,70 +1800,96 @@ function renderPage(){
   home.onclick=goHome;
   w.appendChild(home);
 
-  const cr=el("div","crumb");
-  cr.innerHTML='<span class="ac" style="background:'+hex+'18;color:'+hex+'">'+esc(A(unit.area).name)+'</span>'+
-    '<span>'+esc(G.label)+'</span><span class="sep">›</span><span>'+esc(unit.no)+'. '+esc(unit.title)+'</span>'+
-    (sub.mid?'<span class="sep">›</span><span>'+esc(sub.mid)+'</span>':'');
-  w.appendChild(cr);
-  w.appendChild(el("h2","page",esc(sub.t)+(sub.isNew?'<span class="newbadge">2022 신설</span>':'')));
-  w.appendChild(el("p","subttl",esc(G.book)+" · 소단원 "+sub.idx+"/"+unit.subs.length));
+  if(info.kind==="unit"){
+    const unit=info.unit, G=GMAP[unit.grade];
+    const cr=el("div","crumb");
+    cr.innerHTML='<span class="ac" style="background:'+hex+'18;color:'+hex+'">'+esc(A(unit.area).name)+'</span>'+
+      '<span>'+esc(G.label)+'</span>';
+    w.appendChild(cr);
+    w.appendChild(el("h2","page",esc(unit.no)+". "+esc(unit.title)));
+    w.appendChild(el("p","subttl",esc(unit.theme)+" · "+esc(G.book)));
+  }else{
+    w.appendChild(el("h2","page",esc(info.title)));
+    w.appendChild(el("p","subttl",esc(info.desc)));
+  }
 
-  const p1=panel("소단원 성취기준",sub.c.length,false);
-  sub.c.forEach(c=>{
-    const d=el("div","std"); d.innerHTML='<span class="code">'+esc(c)+'</span><p>'+esc(STD[c]||"")+'</p>';
-    p1.body.appendChild(d);
-  });
-  w.appendChild(p1.root);
-
-  const p2=panel("대단원 학습 요소와 계통",unit.terms.length,true);
-  const tw=el("div","terms"); unit.terms.forEach(t=>tw.appendChild(el("span","term"+(SYM.test(t)?" sym":""),esc(t))));
-  p2.body.appendChild(tw);
-  const mkrow=(lbl,ids)=>{
-    const r=el("div","linkrow"); r.style.marginTop="12px";
-    r.appendChild(el("span","lbl",lbl));
-    if(!ids.length) r.appendChild(el("span","nolink","이 지도 범위에는 없음"));
-    ids.forEach(i=>{
-      const t=UMAP[i]; if(!t)return;
-      const b=el("button","jump"), h2=A(t.area).hex;
-      b.innerHTML='<span class="sq" style="background:'+h2+'"></span><span class="gr">'+esc(shortG(t.grade))+'</span> '+esc(t.title);
-      b.onmouseenter=()=>{b.style.borderColor=h2;b.style.color=h2;};
-      b.onmouseleave=()=>{b.style.borderColor="";b.style.color="";};
-      b.onclick=()=>go(t.subs[0].id);
-      r.appendChild(b);
+  /* 단원 정보는 접어 두고, 사례 목록이 먼저 보이게 합니다 */
+  if(info.kind==="unit"){
+    const unit=info.unit;
+    const codes=unitStandards(S.board);
+    const p1=panel("성취기준과 학습 요소",codes.length,true);
+    codes.forEach(c=>{
+      const d=el("div","std"); d.innerHTML='<span class="code">'+esc(c)+'</span><p>'+esc(STD[c]||"")+'</p>';
+      p1.body.appendChild(d);
     });
-    return r;
-  };
-  p2.body.appendChild(mkrow("배운 내용 ←",unit.prevAll));
-  p2.body.appendChild(mkrow("배울 내용 →",unit.nextAll));
-  w.appendChild(p2.root);
+    if(unit.terms.length){
+      const tl=el("div"); tl.style.marginTop="14px";
+      tl.appendChild(el("div",null,'<div style="font-size:11.5px;font-weight:750;color:var(--ink-2);margin-bottom:7px">학습 요소 · 용어와 기호</div>'));
+      const tw=el("div","terms"); unit.terms.forEach(t=>tw.appendChild(el("span","term"+(SYM.test(t)?" sym":""),esc(t))));
+      tl.appendChild(tw); p1.body.appendChild(tl);
+    }
+    const mkrow=(lbl,ids)=>{
+      const r=el("div","linkrow"); r.style.marginTop="12px";
+      r.appendChild(el("span","lbl",lbl));
+      if(!ids.length) r.appendChild(el("span","nolink","이 지도 범위에는 없음"));
+      ids.forEach(i=>{
+        const t=UMAP[i]; if(!t)return;
+        const b=el("button","jump"), h2=A(t.area).hex;
+        b.innerHTML='<span class="sq" style="background:'+h2+'"></span><span class="gr">'+esc(shortG(t.grade))+'</span> '+esc(t.title);
+        b.onmouseenter=()=>{b.style.borderColor=h2;b.style.color=h2;};
+        b.onmouseleave=()=>{b.style.borderColor="";b.style.color="";};
+        b.onclick=()=>go(t.id);
+        r.appendChild(b);
+      });
+      return r;
+    };
+    p1.body.appendChild(mkrow("배운 내용 ←",unit.prevAll));
+    p1.body.appendChild(mkrow("배울 내용 →",unit.nextAll));
+    w.appendChild(p1.root);
+  }
 
-  const list=IDX[S.sub]||[];
+  const list=IDX[S.board]||[];
   const ch=el("div","casehead");
   ch.innerHTML='<h3>에듀테크 사례</h3><span class="n">'+list.length+'</span>';
   const sp=el("span","sp");
   if(list.length){
-    const h=el("button","btn sm","HTML로 저장");
-    h.title="이 소단원의 사례만 모아 낱개 HTML 파일로 내려받습니다";
-    h.onclick=()=>exportSubHTML(S.sub);
-    sp.appendChild(h);
+    const hb=el("button","btn sm","HTML로 저장");
+    hb.title="이 게시판의 사례를 모아 낱개 HTML 파일로 내려받습니다";
+    hb.onclick=()=>exportSubHTML(S.board);
+    sp.appendChild(hb);
   }
   if(isApproved()&&!S.editor){
     const b=el("button","btn live","＋ 사례 추가");
-    b.onclick=()=>startEditor(S.sub,null);
+    b.onclick=()=>startEditor(S.board,null);
     sp.appendChild(b);
   }
   ch.appendChild(sp); w.appendChild(ch);
 
-  if(S.editor&&S.editor.subId===S.sub&&!S.editor.caseId) w.appendChild(buildEditor());
+  /* 사례가 여러 건이면 제목만 모아 보여 주고, 누르면 해당 글로 내려갑니다 */
+  if(list.length>1){
+    const toc=el("div","boardtoc");
+    list.forEach((sum,i)=>{
+      const r=el("button","tocrow");
+      r.innerHTML='<span class="tocnum">'+(i+1)+'</span>'+
+        '<span class="toctool" style="background:'+hex+'">'+esc(sum.tool)+'</span>'+
+        '<span class="toctitle">'+esc(sum.title)+'</span>'+
+        '<span class="tocmeta">'+esc(honorific(sum.author))+' · '+fmtDate(sum.updatedAt)+'</span>';
+      r.onclick=()=>scrollToCase(sum.id);
+      toc.appendChild(r);
+    });
+    w.appendChild(toc);
+  }
+
+  if(S.editor&&S.editor.subId===S.board&&!S.editor.caseId) w.appendChild(buildEditor());
 
   if(!list.length&&!S.editor){
     const e=el("div","empty");
     const hint = isApproved() ? '수업에서 써 본 도구와 활동을 기록해 다른 선생님과 나눠 주세요.'
               : USER ? '관리자가 가입을 승인하면 사례를 쓸 수 있습니다.'
               : '로그인하면 첫 사례를 남길 수 있습니다.';
-    e.innerHTML='<div class="em">✎</div><p>이 소단원에는 아직 사례가 없습니다.</p><span>'+hint+'</span>';
+    e.innerHTML='<div class="em">✎</div><p>이 게시판에는 아직 사례가 없습니다.</p><span>'+hint+'</span>';
     if(isApproved()){
-      const b=el("button","btn live","＋ 첫 사례 쓰기"); b.onclick=()=>startEditor(S.sub,null); e.appendChild(b);
+      const b=el("button","btn live","＋ 첫 사례 쓰기"); b.onclick=()=>startEditor(S.board,null); e.appendChild(b);
     }else if(!USER){
       const b=el("button","btn primary","로그인"); b.onclick=()=>openAuth("login"); e.appendChild(b);
     }
@@ -1777,14 +1900,16 @@ function renderPage(){
     w.appendChild(caseCard(sum,hex));
   });
 
-  const flat=UNITS.flatMap(x=>x.subs.map(s=>s.id));
-  const i=flat.indexOf(S.sub);
+  /* 앞뒤 게시판으로 이동 */
+  const flat=FREE_BOARDS.map(b=>b.id).concat(UNITS.map(u=>u.id));
+  const i=flat.indexOf(S.board);
   const nav=el("div");
   nav.style.cssText="display:flex;gap:8px;justify-content:space-between;margin-top:30px;padding-top:18px;border-top:1px solid var(--line)";
   const mkn=(j,align)=>{
     if(j<0||j>=flat.length) return el("span");
-    const r=SUBMAP[flat[j]], b=el("button","btn");
-    b.innerHTML=(align==="left"?"← ":"")+esc(r.sub.t)+(align==="right"?" →":"");
+    const bi=boardInfo(flat[j]); if(!bi) return el("span");
+    const b=el("button","btn");
+    b.innerHTML=(align==="left"?"← ":"")+esc(bi.title)+(align==="right"?" →":"");
     b.onclick=()=>go(flat[j]); return b;
   };
   nav.appendChild(mkn(i-1,"left")); nav.appendChild(mkn(i+1,"right"));
@@ -2041,18 +2166,18 @@ function homeView(){
 
   const left=el("div","homegrid-main");
   const recent=[];
-  Object.values(SUMS).forEach(k=>{ if(SUBMAP[k.subId]) recent.push(k); });
+  Object.values(SUMS).forEach(k=>{ if(boardInfo(normalizeBoardId(k.subId))) recent.push(k); });
   recent.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
   const p=panel("최근 등록된 사례",recent.length,false);
   if(!recent.length) p.body.appendChild(el("div","nolink","아직 등록된 사례가 없습니다. 로그인한 뒤 첫 사례를 남겨 주세요."));
   recent.slice(0,12).forEach(k=>{
-    const {sub,unit}=SUBMAP[k.subId], hex=A(unit.area).hex;
+    const bid=normalizeBoardId(k.subId), info=boardInfo(bid), hex=info.hex;
     const b=el("button","recentrow");
     b.innerHTML='<span class="rtool" style="background:'+hex+'">'+esc(k.tool)+'</span>'+
       '<span class="rmain"><span class="rtitle">'+esc(k.title)+'</span>'+
-      '<span class="rpath">'+esc(shortG(unit.grade))+' · '+esc(unit.title)+' · '+esc(sub.t)+'</span></span>'+
+      '<span class="rpath">'+esc(info.kind==="unit"?(shortG(info.grade)+' · '+info.title):('단원 밖 활동 · '+info.title))+'</span></span>'+
       '<span class="rmeta">'+esc(honorific(k.author))+' · '+fmtDate(k.updatedAt)+'</span>';
-    b.onclick=()=>go(k.subId,k.id);
+    b.onclick=()=>go(bid,k.id);
     p.body.appendChild(b);
   });
   left.appendChild(p.root);
@@ -2129,13 +2254,17 @@ function caseCard(sum,hex){
   if(authBtn) authBtn.onclick=()=>authorClick(sum.uid);
   const acts=el("span","acts");
   if(canEdit){
-    const e=el("button","btn sm","수정"); e.onclick=()=>startEditor(sum.subId||S.sub,sum.id);
-    const d=el("button","btn sm danger","삭제"); d.onclick=()=>delCase(sum.subId||S.sub,sum.id);
+    const e=el("button","btn sm","수정"); e.onclick=()=>startEditor(normalizeBoardId(sum.subId)||S.board,sum.id);
+    const d=el("button","btn sm danger","삭제"); d.onclick=()=>delCase(normalizeBoardId(sum.subId)||S.board,sum.id);
     acts.appendChild(e); acts.appendChild(d);
     if(isAdmin()&&!mine){ const tagb=el("span"); tagb.style.cssText="font-size:9.5px;font-weight:700;color:#B4651A;align-self:center;margin-right:2px"; tagb.textContent="관리자 권한"; acts.prepend(tagb); }
   }
   ch.appendChild(acts); c.appendChild(ch);
   if(sum.tags&&sum.tags.length) c.appendChild(el("div","tags",sum.tags.map(t=>'<span class="tg">#'+esc(t)+'</span>').join("")));
+  if(sum.stds&&sum.stds.length){
+    c.appendChild(el("div","cstds",'<span class="cstdlbl">성취기준</span>'+
+      sum.stds.map(x=>'<span class="cstd" title="'+esc(STD[x]||"")+'">'+esc(x)+'</span>').join("")));
+  }
   const cb=el("div","cb"), rb=el("div","rb");
   rb.style.setProperty("--qc",hex);
   if(!blocks) rb.innerHTML='<p style="color:var(--ink-4)">내용을 불러오는 중…</p>';
@@ -2290,9 +2419,10 @@ function startEditor(subId,caseId){
   const sum=caseId?SUMS[caseId]:null;
   S.editor={ subId, caseId, draftId: caseId||uid(),
     uid: sum?sum.uid:(USER?USER.uid:null),
-    pickerMode: !subId && !caseId,   // 메인 화면에서 시작하면 단원을 먼저 고릅니다
+    pickerMode: !subId && !caseId,   // 메인 화면에서 시작하면 게시판을 먼저 고릅니다
     tool:sum?sum.tool:"", title:sum?sum.title:"",
     tags:new Set(sum?(sum.tags||[]):[]),
+    stds:new Set(sum&&sum.stds?sum.stds:[]),
     blocks: blocks&&blocks.length ? JSON.parse(JSON.stringify(blocks))
           : [{id:uid(),type:"h3",text:"수업 흐름"},{id:uid(),type:"p",text:""}] };
   renderPage();
@@ -2320,7 +2450,8 @@ const autoGrow=ta=>{ta.style.height="auto";ta.style.height=(ta.scrollHeight+2)+"
 function buildEditor(){
   const E=S.editor, root=el("div","editor");
   const eh=el("div","eh");
-  const subLabel = E.subId ? SUBMAP[E.subId].sub.t : (E.pickerMode ? "단원을 선택해 주세요" : "");
+  const bi = E.subId ? boardInfo(E.subId) : null;
+  const subLabel = bi ? bi.title : (E.pickerMode ? "게시판을 선택해 주세요" : "");
   eh.innerHTML='<b>'+(E.caseId?"사례 수정":"새 사례 쓰기")+'</b>'+(subLabel?'<span class="sp">'+esc(subLabel)+'</span>':'');
   root.appendChild(eh);
   const eb=el("div","eb");
@@ -2328,15 +2459,47 @@ function buildEditor(){
   eb.appendChild(field("도구 · 서비스 이름","tool",E.tool,"목록에서 고르거나 직접 적어 주세요",false,"edtechList"));
   eb.appendChild(field("사례 제목","title",E.title,"예: 슬라이더로 a의 부호에 따른 포물선 변화 관찰하기",true));
 
-  const tf=el("div","fld"); tf.appendChild(el("label","fl","활동 유형"));
+  const tf=el("div","fld"); tf.appendChild(el("label","fl",'활동 유형 <span class="opt">여러 개 선택 가능</span>'));
   const tp=el("div","tagpick");
   TAGS.forEach(t=>{
-    const b=el("button","tsel",esc(t));
+    const b=el("button","tsel",esc(t)); b.type="button";
     b.setAttribute("aria-pressed",E.tags.has(t)?"true":"false");
     b.onclick=()=>{E.tags.has(t)?E.tags.delete(t):E.tags.add(t);b.setAttribute("aria-pressed",E.tags.has(t)?"true":"false");};
     tp.appendChild(b);
   });
-  tf.appendChild(tp); eb.appendChild(tf);
+  tf.appendChild(tp);
+
+  /* 목록에 없는 유형은 직접 적어 추가합니다 */
+  const etcWrap=el("div","etcwrap");
+  const renderEtc=()=>{
+    etcWrap.innerHTML="";
+    const chips=el("div","tagpick");
+    [...E.tags].filter(isEtcTag).forEach(t=>{
+      const c=el("span","tsel etc"); c.setAttribute("aria-pressed","true");
+      c.innerHTML=esc(t)+'<button class="etcx" type="button" title="빼기">✕</button>';
+      c.querySelector(".etcx").onclick=()=>{ E.tags.delete(t); renderEtc(); };
+      chips.appendChild(c);
+    });
+    etcWrap.appendChild(chips);
+    const row=el("div","row2");
+    const inp=el("input","miniinp"); inp.type="text"; inp.placeholder="기타 유형을 직접 적어 주세요";
+    const add=el("button","addb","＋ 추가"); add.type="button";
+    const doAdd=()=>{
+      const v=inp.value.trim();
+      if(!v) return;
+      if(v.length>20){ toast("활동 유형은 20자 안으로 적어 주세요",true); return; }
+      E.tags.add(v); inp.value=""; renderEtc();
+    };
+    add.onclick=doAdd;
+    inp.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); doAdd(); } };
+    row.appendChild(inp); row.appendChild(add);
+    etcWrap.appendChild(row);
+  };
+  renderEtc();
+  tf.appendChild(etcWrap);
+  eb.appendChild(tf);
+
+  eb.appendChild(standardsField());
 
   const bf=el("div","fld"); bf.appendChild(el("label","fl","내용"));
   const bw=el("div","blocks");
@@ -2363,23 +2526,36 @@ function buildEditor(){
 function unitPickerField(){
   const E=S.editor;
   const wrap=el("div","fld unitpick");
-  wrap.appendChild(el("label","fl","등록할 단원"));
+  wrap.appendChild(el("label","fl","등록할 게시판"));
 
   if(E.subId){
-    const {sub,unit}=SUBMAP[E.subId], hex=A(unit.area).hex;
+    const info=boardInfo(E.subId);
     const row=el("div","upchip");
-    row.style.setProperty("--c",hex);
+    row.style.setProperty("--c",info.hex);
     row.innerHTML =
       '<span class="updot"></span>'+
-      '<span class="uptxt"><b>'+esc(GMAP[unit.grade].label)+'</b>'+
-      '<span class="sep">·</span>'+esc(unit.title)+
-      '<span class="sep">·</span>'+esc(sub.t)+'</span>';
+      '<span class="uptxt">'+
+      (info.kind==="unit"
+        ? '<b>'+esc(GMAP[info.grade].label)+'</b><span class="sep">·</span>'+esc(info.no)+'. '+esc(info.title)
+        : '<b>단원 밖 활동</b><span class="sep">·</span>'+esc(info.title))+
+      '</span>';
     const chg=el("button","btn sm ghost","변경"); chg.type="button";
-    chg.onclick=()=>{ syncEditor(); E.subId=null; renderPage(); };
+    chg.onclick=()=>{ syncEditor(); E.subId=null; E.stds=new Set(); renderPage(); };
     row.appendChild(chg);
     wrap.appendChild(row);
     return wrap;
   }
+
+  /* 단원 밖 활동 게시판을 먼저 고를 수 있게 합니다 */
+  const freeRow=el("div","upfree");
+  FREE_BOARDS.forEach(b=>{
+    const btn=el("button","btn sm",esc(b.title)); btn.type="button";
+    btn.onclick=()=>{ syncEditor(); E.subId=b.id; E.stds=new Set(); renderPage(); };
+    freeRow.appendChild(btn);
+  });
+  wrap.appendChild(el("div","upfreelbl","단원과 무관한 활동이라면"));
+  wrap.appendChild(freeRow);
+  wrap.appendChild(el("div","upfreelbl","또는 단원을 고르세요"));
 
   const row=el("div","upsel");
   const gSel=el("select","miniinp");
@@ -2387,13 +2563,11 @@ function unitPickerField(){
     GRADES.map(g=>'<option value="'+g.id+'">'+esc(g.label)+'</option>').join("");
   const uSel=el("select","miniinp"); uSel.disabled=true;
   uSel.innerHTML='<option value="">먼저 학년을 골라 주세요</option>';
-  const sSel=el("select","miniinp"); sSel.disabled=true;
-  sSel.innerHTML='<option value="">먼저 대단원을 골라 주세요</option>';
-  row.appendChild(gSel); row.appendChild(uSel); row.appendChild(sSel);
+  row.appendChild(gSel); row.appendChild(uSel);
   wrap.appendChild(row);
 
   const foot=el("div","upfoot");
-  const okBtn=el("button","btn sm live","이 소단원으로 정하기"); okBtn.type="button"; okBtn.disabled=true;
+  const okBtn=el("button","btn sm live","이 단원으로 정하기"); okBtn.type="button"; okBtn.disabled=true;
   foot.appendChild(okBtn);
   wrap.appendChild(foot);
 
@@ -2403,20 +2577,33 @@ function unitPickerField(){
     uSel.innerHTML = gSel.value
       ? '<option value="">대단원 선택</option>'+list.map(u=>'<option value="'+u.id+'">'+esc(u.no)+'. '+esc(u.title)+'</option>').join("")
       : '<option value="">먼저 학년을 골라 주세요</option>';
-    sSel.disabled=true; sSel.innerHTML='<option value="">먼저 대단원을 골라 주세요</option>';
     okBtn.disabled=true;
   };
-  uSel.onchange=()=>{
-    const un=UMAP[uSel.value];
-    sSel.disabled=!un;
-    sSel.innerHTML = un
-      ? '<option value="">소단원 선택</option>'+un.subs.map(s=>'<option value="'+s.id+'">'+s.idx+'. '+esc(s.t)+'</option>').join("")
-      : '<option value="">먼저 대단원을 골라 주세요</option>';
-    okBtn.disabled=true;
-  };
-  sSel.onchange=()=>{ okBtn.disabled=!sSel.value; };
-  okBtn.onclick=()=>{ if(!sSel.value) return; syncEditor(); E.subId=sSel.value; renderPage(); };
+  uSel.onchange=()=>{ okBtn.disabled=!uSel.value; };
+  okBtn.onclick=()=>{ if(!uSel.value) return; syncEditor(); E.subId=uSel.value; E.stds=new Set(); renderPage(); };
 
+  return wrap;
+}
+
+/* 성취기준 직접 선택 (여러 개 또는 아예 고르지 않아도 됩니다) */
+function standardsField(){
+  const E=S.editor;
+  const codes=E.subId?unitStandards(E.subId):[];
+  const wrap=el("div","fld");
+  wrap.appendChild(el("label","fl",'관련 성취기준 <span class="opt">여러 개 선택 가능 · 고르지 않아도 됩니다</span>'));
+  if(!E.subId){ wrap.appendChild(el("div","nolink","게시판을 먼저 고르면 성취기준이 나타납니다.")); return wrap; }
+  if(!codes.length){ wrap.appendChild(el("div","nolink","이 게시판에는 연결된 성취기준이 없습니다.")); return wrap; }
+  const box=el("div","stdpick");
+  codes.forEach(c=>{
+    const on=E.stds.has(c);
+    const b=el("button","stdchip"); b.type="button";
+    b.setAttribute("aria-pressed",on?"true":"false");
+    b.innerHTML='<span class="sc">'+esc(c)+'</span><span class="sd">'+esc(STD[c]||"")+'</span>';
+    b.onclick=()=>{ E.stds.has(c)?E.stds.delete(c):E.stds.add(c);
+      b.setAttribute("aria-pressed",E.stds.has(c)?"true":"false"); };
+    box.appendChild(b);
+  });
+  wrap.appendChild(box);
   return wrap;
 }
 function field(label,f,val,ph,big,list){
@@ -2590,6 +2777,7 @@ async function saveCase(btn,warnEl){
     toast("저장 용량을 넘었습니다. 사진을 줄여 주세요.",true); return;
   }
   const rec={ id:E.draftId, subId:E.subId, tool:E.tool, title:E.title, tags:[...E.tags],
+              stds:[...(E.stds||[])],
               author:(USER?USER.name:"익명"), uid:E.uid||(USER?USER.uid:null), updatedAt:Date.now(), blocks };
   const isEdit=!!E.caseId;
   const wasCompose=E.pickerMode && !isEdit;
@@ -2646,17 +2834,21 @@ function renderMap(){
         const vis=unitMatch(un), n=unitCnt(un), b=el("button","unit"+(vis?"":" dim"));
         b.dataset.id=un.id;
         b.style.setProperty("--c",a.hex); b.style.setProperty("--csoft",a.hex+"22");
-        if(S.mapSel===un.id) b.setAttribute("aria-current","true");
         b.innerHTML='<span class="rn">'+esc(un.no)+'</span><span class="tt">'+esc(un.title)+'</span>'+
           '<span class="mt"><span class="cn">소단원 '+un.subs.length+'</span>'+
           '<span class="cs" style="background:'+(n?a.hex:"#EFF2F8")+';color:'+(n?"#fff":"#A6AEC2")+'">사례 '+n+'</span></span>';
-        b.onclick=e=>{e.stopPropagation();S.mapSel=S.mapSel===un.id?null:un.id;renderMap();};
+        b.onclick=e=>{ e.stopPropagation(); go(un.id); };
+        b.onmouseenter=()=>{ S.mapHover=un.id; drawLinks(); };
+        b.onmouseleave=()=>{ S.mapHover=null; drawLinks(); };
+        b.onfocus=()=>{ S.mapHover=un.id; drawLinks(); };
+        b.onblur=()=>{ S.mapHover=null; drawLinks(); };
+        b.title="이 단원의 사례 게시판 열기";
         cell.appendChild(b);
       });
       map.appendChild(cell);
     });
   });
-  requestAnimationFrame(()=>{ drawLinks(); if(S.mapSel) showPop(S.mapSel); });
+  requestAnimationFrame(drawLinks);
 }
 function drawLinks(){
   const map=$("#map"), svg=$("#links"); if(!map||!svg) return;
@@ -2668,7 +2860,7 @@ function drawLinks(){
     const r=n.getBoundingClientRect();
     pos[n.dataset.id]={x1:r.left-mr.left,x2:r.right-mr.left,y:r.top-mr.top+r.height/2,dim:n.classList.contains("dim")};
   });
-  const sel=S.mapSel;
+  const sel=S.mapHover;
   EDGES.forEach(e=>{
     const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;
     if(UMAP[e.from].grade===UMAP[e.to].grade) return;
@@ -2690,32 +2882,6 @@ function drawLinks(){
     svg.appendChild(p);
   });
 }
-function showPop(unitId){
-  const map=$("#map"), card=map.querySelector('.unit[data-id="'+unitId+'"]'); if(!card) return;
-  const un=UMAP[unitId], hex=A(un.area).hex;
-  const mr=map.getBoundingClientRect(), cr=card.getBoundingClientRect();
-  const pop=el("div","pop");
-  pop.innerHTML='<button class="close" aria-label="닫기"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'+
-    '<div class="pt">'+esc(un.no)+'. '+esc(un.title)+'</div><div class="ps">'+esc(un.theme)+'</div>';
-  const sl=el("div","sl");
-  un.subs.forEach(sb=>{
-    const c=cnt(sb.id), b=el("button");
-    b.innerHTML='<span class="i">'+sb.idx+'</span><span class="t">'+esc(sb.t)+'</span>'+
-      (c?'<span class="c" style="background:'+hex+';color:#fff">'+c+'</span>':'<span class="c" style="background:#EFF2F8;color:#A6AEC2">0</span>');
-    b.onclick=()=>go(sb.id);
-    sl.appendChild(b);
-  });
-  pop.appendChild(sl);
-  const gob=el("button","btn live sm","이 단원 사례집 열기");
-  gob.style.width="100%"; gob.style.justifyContent="center";
-  gob.onclick=()=>go(un.subs[0].id);
-  pop.appendChild(gob);
-  pop.querySelector(".close").onclick=e=>{e.stopPropagation();S.mapSel=null;renderMap();};
-  let left=Math.max(0,Math.min(cr.left-mr.left,map.scrollWidth-272));
-  pop.style.left=left+"px"; pop.style.top=(cr.bottom-mr.top+8)+"px";
-  map.appendChild(pop);
-}
-
 /* ═══ 계정 ═══ */
 function setAccountUI(){
   const b=$("#btnAccount");
@@ -3163,9 +3329,10 @@ function memberRow(u,list){
 }
 
 /* ═══ 내보내기 ═══ */
-async function exportSubHTML(subId){
-  await DB.loadBodies(subId);
-  const {sub,unit}=SUBMAP[subId], hex=A(unit.area).hex, G=GMAP[unit.grade];
+async function exportSubHTML(boardId){
+  await DB.loadBodies(boardId);
+  const info=boardInfo(boardId); if(!info) return;
+  const hex=info.hex;
   const parts=(IDX[subId]||[]).map(sum=>{
     const blocks=BODY[sum.id]; if(!blocks) return "";
     const rb=el("div","rb"); rb.style.setProperty("--qc",hex); renderBlocks(rb,blocks,{forExport:true});
@@ -3174,9 +3341,9 @@ async function exportSubHTML(subId){
       ((sum.tags&&sum.tags.length)?'<p class="tags">'+sum.tags.map(t=>'<span>#'+esc(t)+'</span>').join("")+'</p>':'')+
       '<div class="rb">'+rb.innerHTML+'</div></article>';
   }).join("\n");
-  const stds=sub.c.map(c=>'<li><code>'+esc(c)+'</code> '+esc(STD[c]||"")+'</li>').join("");
+  const stds=(info.kind==="unit"?unitStandards(boardId):[]).map(c=>'<li><code>'+esc(c)+'</code> '+esc(STD[c]||"")+'</li>').join("");
   const doc='<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">'+
-   '<meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(sub.t)+' · 에듀테크 사례</title><style>'+
+   '<meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(info.title)+' · 에듀테크 사례</title><style>'+
    ':root{--c:'+hex+';--qc:'+hex+'}*{box-sizing:border-box}body{margin:0;padding:34px 20px 70px;background:#F7F9FC;color:#151A2B;'+
    "font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;line-height:1.6}"+
    '.sheet{max-width:780px;margin:0 auto}.crumb{font-size:12px;font-weight:650;color:#7C859C;margin-bottom:8px}'+
@@ -3204,9 +3371,12 @@ async function exportSubHTML(subId){
    '.rb figcaption{margin-top:6px;font-size:11.5px;color:#7C859C;font-weight:600;text-align:center}'+
    'footer{margin-top:26px;font-size:11px;color:#A6AEC2;font-weight:600;text-align:center}'+
    '</style></head><body><div class="sheet">'+
-   '<p class="crumb"><b>'+esc(A(unit.area).name)+'</b> · '+esc(G.label)+' · '+esc(unit.no)+'. '+esc(unit.title)+'</p>'+
-   '<h1>'+esc(sub.t)+'</h1><p class="sub">'+esc(G.book)+' · 에듀테크 사례 '+(IDX[subId]||[]).length+'건</p>'+
-   '<section class="std"><h3>소단원 성취기준</h3><ul>'+stds+'</ul></section>'+parts+
+   (info.kind==="unit"
+     ? '<p class="crumb"><b>'+esc(A(info.area).name)+'</b> · '+esc(GMAP[info.grade].label)+'</p>'
+     : '<p class="crumb"><b>단원 밖 활동</b></p>')+
+   '<h1>'+esc(info.kind==="unit"?(info.no+". "+info.title):info.title)+'</h1>'+
+   '<p class="sub">에듀테크 사례 '+(IDX[boardId]||[]).length+'건</p>'+
+   (stds?'<section class="std"><h3>성취기준</h3><ul>'+stds+'</ul></section>':'')+parts+
    '<footer>수학 에듀테크 사례집에서 내보냄 · '+new Date().toLocaleDateString("ko-KR")+'</footer></div>'+
    '<scr'+'ipt>'+
    'document.querySelectorAll(\'.embedbox[data-fit="scale"]\').forEach(function(box){'+
@@ -3216,7 +3386,7 @@ async function exportSubHTML(subId){
    '  f.style.width=dw+"px";f.style.height=dh+"px";box.style.height=Math.round(dh*s)+"px";}'+
    ' fit();window.addEventListener("resize",fit);setTimeout(fit,80);});'+
    '</scr'+'ipt></body></html>';
-  download(doc,"text/html;charset=utf-8",shortG(unit.grade)+"_"+unit.title+"_"+sub.t+".html");
+  download(doc,"text/html;charset=utf-8",(info.kind==="unit"?shortG(info.grade)+"_"+info.title:info.title)+".html");
   toast("이 소단원 사례를 HTML 파일로 저장했습니다");
 }
 function download(text,type,name){
@@ -3264,7 +3434,6 @@ document.addEventListener("keydown",e=>{
   else if($("#membersModal").classList.contains("on")) closeMembers();
   else if($("#peekModal").classList.contains("on")) closePeek();
 });
-$("#map").addEventListener("click",e=>{ if(e.target===e.currentTarget&&S.mapSel){S.mapSel=null;renderMap();} });
 let rt; window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(S.view==="map")renderMap();},150);});
 window.addEventListener("beforeunload",e=>{ if(S.editor){e.preventDefault();e.returnValue="";} });
 window.addEventListener("popstate",e=>{
@@ -3290,7 +3459,7 @@ function openOverlay(id){
 }
 function historyStateNow(){
   if(S.noticesPage) return {v:"notices"};
-  if(S.sub) return {v:"sub",sub:S.sub};
+  if(S.board) return {v:"board",board:S.board};
   return {v:"home"};
 }
 
@@ -3310,7 +3479,7 @@ function historyStateNow(){
   });
 
   DB.watchNotices(()=>{
-    if(!S.sub && S.view==="archive" && !S.editor) renderPage();
+    if(!S.board && S.view==="archive" && !S.editor) renderPage();
   });
 
   let first=true;
@@ -3319,7 +3488,7 @@ function historyStateNow(){
     if(S.view==="map") renderMap();
     if(first||!S.editor){
       renderPage();
-      if(S.sub){ try{ await DB.loadBodies(S.sub); renderPage(); }catch(e){} }
+      if(S.board){ try{ await DB.loadBodies(S.board); renderPage(); }catch(e){} }
     }
     first=false;
   });
