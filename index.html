@@ -572,7 +572,7 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
     </div>
     <div class="top-r">
       <div class="stat"><b id="statCases">0</b><span>사례</span></div>
-      <div class="stat"><b id="statCover">0%</b><span>소단원 등록률</span></div>
+      <div class="stat"><b id="statCover">0%</b><span>게시판 등록률</span></div>
       <button class="btn ghost" id="btnMembers" title="회원 관리" hidden>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span class="btnlabel" id="membersLabel">회원 관리</span>
@@ -646,6 +646,9 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
   <div class="embed-frame">
     <div class="embed-frame-head">
       <span id="embedFrameTitle"></span>
+      <button class="btn sm" id="embedFrameFull" title="새 탭에서 전체화면으로 열기">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:-2px"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>전체화면
+      </button>
       <button class="embed-frame-close" id="embedFrameClose" aria-label="닫기">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
@@ -2379,7 +2382,9 @@ function mountEmbed(parent,b,opts){
 }
 
 /* 임베드를 큰 모달로 띄워 넉넉한 화면에서 보게 합니다 */
+let VIEWING_EMBED=null;   // 지금 크게 보기 모달에 떠 있는 임베드 블록
 function openEmbedModal(b){
+  VIEWING_EMBED=b;
   const body=$("#embedFrameBody"); body.innerHTML="";
   $("#embedFrameTitle").textContent = b.cap||"임베드 콘텐츠";
   mountEmbed(body,b,{big:true,expand:false});
@@ -2388,6 +2393,48 @@ function openEmbedModal(b){
 function closeEmbedModal(){
   $("#embedOverlay").classList.remove("on");
   $("#embedFrameBody").innerHTML="";   // 닫으면 안의 스크립트·오디오도 함께 멈춥니다
+  VIEWING_EMBED=null;
+}
+/* 임베드를 새 탭에 통째로 열어, 브라우저 자체 전체화면으로 볼 수 있게 합니다 */
+function buildFullscreenDoc(b){
+  const mode=embedMode(b);
+  return '<!doctype html><meta charset="utf-8">'+
+    '<meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<title>'+esc(b.cap||"임베드 콘텐츠")+'</title>'+
+    '<style>html,body{margin:0;padding:0;height:100%;background:#111;overflow:'+(mode==="none"?"auto":"hidden")+'}'+
+    '*{box-sizing:border-box}iframe{border:0;display:block}'+
+    (mode==="stretch"?'iframe{width:100vw;height:100vh}':'')+
+    '.fs-btn{position:fixed;top:14px;right:14px;z-index:99999;padding:9px 15px;border-radius:10px;'+
+    'background:rgba(21,26,43,.6);color:#fff;font:600 12.5px -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;'+
+    'border:1px solid rgba(255,255,255,.28);cursor:pointer;backdrop-filter:blur(4px);letter-spacing:-.01em}'+
+    '.fs-btn:hover{background:rgba(21,26,43,.8)}'+
+    '.fs-wrap{display:flex;align-items:center;justify-content:center;width:100vw;height:100vh}'+
+    '</style>'+
+    '<button class="fs-btn" id="__fsBtn">⛶ 전체화면으로 보기</button>'+
+    (mode==="stretch"
+      ? '<iframe sandbox="'+EMBED_SANDBOX+'" referrerpolicy="no-referrer" allowfullscreen srcdoc="'+esc(embedDoc(b.html,mode))+'"></iframe>'
+      : '<div class="fs-wrap"><iframe id="__fsFrame" sandbox="'+EMBED_SANDBOX+'" referrerpolicy="no-referrer" allowfullscreen '+
+        'style="width:'+(embedDims(b).w)+'px;height:'+(embedDims(b).h)+'px" srcdoc="'+esc(embedDoc(b.html,mode))+'"></iframe></div>')+
+    '<script>'+
+    'var b=document.getElementById("__fsBtn");'+
+    'b.onclick=function(){ var el=document.documentElement;'+
+    ' (el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el); };'+
+    (mode!=="stretch"?
+    'var f=document.getElementById("__fsFrame");'+
+    'function fit(){ try{ var doc=f.contentDocument, h=doc?Math.max(doc.documentElement.scrollHeight,doc.body?doc.body.scrollHeight:0):0;'+
+    ' if(h>40) f.style.height=h+"px"; }catch(e){} }'+
+    'f.addEventListener("load",fit); setTimeout(fit,200); setTimeout(fit,700);'
+    :'')+
+    '<\\/script>';
+}
+function openEmbedFullscreen(b){
+  if(!b) return;
+  const doc=buildFullscreenDoc(b);
+  const blob=new Blob([doc],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  const w2=window.open(url,"_blank","noopener");
+  if(!w2){ toast("팝업이 차단되었습니다. 브라우저의 팝업 차단을 해제해 주세요.",true); URL.revokeObjectURL(url); return; }
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 function renderBlocks(root,blocks,opt){
   const forExport=!!(opt&&opt.forExport);
@@ -2842,8 +2889,10 @@ async function delCase(subId,caseId){
 }
 function refresh(){ stats(); renderTree(); renderPage(); if(S.view==="map") renderMap(); }
 function stats(){
-  let total=0,filled=0,all=0;
-  UNITS.forEach(u2=>u2.subs.forEach(s=>{all++;const n=cnt(s.id);total+=n;if(n)filled++;}));
+  let total=0,filled=0;
+  const all=UNITS.length+FREE_BOARDS.length;
+  UNITS.forEach(u2=>{ const n=cnt(u2.id); total+=n; if(n) filled++; });
+  FREE_BOARDS.forEach(b=>{ const n=cnt(b.id); total+=n; if(n) filled++; });
   $("#statCases").textContent=total;
   $("#statCover").textContent=(all?Math.round(filled/all*100):0)+"%";
 }
@@ -3371,10 +3420,14 @@ async function exportSubHTML(boardId){
   await DB.loadBodies(boardId);
   const info=boardInfo(boardId); if(!info) return;
   const hex=info.hex;
-  const parts=(IDX[subId]||[]).map(sum=>{
+  const list=IDX[boardId]||[];
+  const toc = list.length>1 ? '<nav class="toc"><b>목차</b><ol>'+
+    list.map(sum=>'<li><a href="#case-'+esc(sum.id)+'">'+esc(sum.title)+'</a></li>').join("")+
+    '</ol></nav>' : '';
+  const parts=list.map(sum=>{
     const blocks=BODY[sum.id]; if(!blocks) return "";
     const rb=el("div","rb"); rb.style.setProperty("--qc",hex); renderBlocks(rb,blocks,{forExport:true});
-    return '<article class="case"><header><span class="tool">'+esc(sum.tool)+'</span><h2>'+esc(sum.title)+'</h2>'+
+    return '<article class="case" id="case-'+esc(sum.id)+'"><header><span class="tool">'+esc(sum.tool)+'</span><h2>'+esc(sum.title)+'</h2>'+
       '<p class="who">'+esc(honorific(sum.author))+' · '+fmtDate(sum.updatedAt)+'</p></header>'+
       ((sum.tags&&sum.tags.length)?'<p class="tags">'+sum.tags.map(t=>'<span>#'+esc(t)+'</span>').join("")+'</p>':'')+
       '<div class="rb">'+rb.innerHTML+'</div></article>';
@@ -3390,6 +3443,10 @@ async function exportSubHTML(boardId){
    '.std{background:#fff;border:1px solid #E3E8F1;border-radius:13px;padding:14px 18px;margin-bottom:22px}'+
    '.std h3{margin:0 0 8px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7C859C}'+
    '.std ul{margin:0;padding-left:18px;font-size:13.5px;color:#4A5268}.std li{margin-bottom:5px}'+
+   '.toc{background:#fff;border:1px solid #E3E8F1;border-radius:13px;padding:14px 18px;margin-bottom:16px}'+
+   '.toc b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7C859C;margin-bottom:8px}'+
+   '.toc ol{margin:0;padding-left:18px;font-size:13.5px}.toc li{margin-bottom:5px}'+
+   '.toc a{color:var(--c);font-weight:650;text-decoration:none}.toc a:hover{text-decoration:underline}'+
    'code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#151A2B;color:#fff;padding:2px 6px;border-radius:5px}'+
    '.case{background:#fff;border:1px solid #E3E8F1;border-radius:14px;padding:18px;margin-bottom:16px}'+
    '.case header{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}'+
@@ -3414,15 +3471,19 @@ async function exportSubHTML(boardId){
      : '<p class="crumb"><b>단원 밖 활동</b></p>')+
    '<h1>'+esc(info.kind==="unit"?(info.no+". "+info.title):info.title)+'</h1>'+
    '<p class="sub">에듀테크 사례 '+(IDX[boardId]||[]).length+'건</p>'+
-   (stds?'<section class="std"><h3>성취기준</h3><ul>'+stds+'</ul></section>':'')+parts+
+   (stds?'<section class="std"><h3>성취기준</h3><ul>'+stds+'</ul></section>':'')+toc+parts+
    '<footer>AIM 수학 에듀테크 사례집에서 내보냄 · '+new Date().toLocaleDateString("ko-KR")+'</footer></div>'+
    '<scr'+'ipt>'+
-   'document.querySelectorAll(\'.embedbox[data-fit="scale"]\').forEach(function(box){'+
-   ' var f=box.querySelector("iframe"),dw=+box.dataset.w||1000,dh=+box.dataset.h||420;'+
-   ' function fit(){var s=Math.min(1,(box.clientWidth||dw)/dw);'+
+   'document.querySelectorAll(\'.embedbox[data-fit="scale"],.embedbox[data-fit="none"]\').forEach(function(box){'+
+   ' var f=box.querySelector("iframe"),dw=+box.dataset.w||1000,realH=+box.dataset.h||420,scaleMode=box.dataset.fit==="scale";'+
+   ' function fit(){ if(!scaleMode) return; var s=Math.min(1,(box.clientWidth||dw)/dw);'+
    '  f.style.transformOrigin="top left";f.style.transform="scale("+s+")";'+
-   '  f.style.width=dw+"px";f.style.height=dh+"px";box.style.height=Math.round(dh*s)+"px";}'+
-   ' fit();window.addEventListener("resize",fit);setTimeout(fit,80);});'+
+   '  f.style.width=dw+"px";box.style.height=Math.round(realH*s)+"px";}'+
+   ' function remeasure(){ try{ var doc=f.contentDocument, h=doc?Math.max(doc.documentElement.scrollHeight,doc.body?doc.body.scrollHeight:0):0;'+
+   '  if(h>40&&h<20000&&Math.abs(h-realH)>3){ realH=h; f.style.height=realH+"px"; fit(); } }catch(e){} }'+
+   ' f.style.height=realH+"px"; fit();'+
+   ' f.addEventListener("load",remeasure); setTimeout(remeasure,150); setTimeout(remeasure,500);'+
+   ' window.addEventListener("resize",fit); });'+
    '</scr'+'ipt></body></html>';
   download(doc,"text/html;charset=utf-8",(info.kind==="unit"?shortG(info.grade)+"_"+info.title:info.title)+".html");
   toast("이 소단원 사례를 HTML 파일로 저장했습니다");
@@ -3445,6 +3506,7 @@ $("#brandHome").onclick=goHome;
 $("#btnMembers").onclick=openMembers;
 $("#btnProfile").onclick=openProfile;
 $("#embedFrameClose").onclick=closeEmbedModal;
+$("#embedFrameFull").onclick=()=>openEmbedFullscreen(VIEWING_EMBED);
 function bindBackdropClose(id,fn){
   const m=document.getElementById(id);
   if(m) m.addEventListener("click",e=>{ if(e.target===m) fn(); });
