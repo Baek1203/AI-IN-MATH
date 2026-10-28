@@ -2236,11 +2236,6 @@ function openNoticeUpload(editing){
       if(isEdit){ rec.id=editing.id; rec.editedAt=Date.now(); rec.editedBy=USER?USER.name:"관리자"; }
       await DB.createNotice(rec);
       closeNoticeUpload();
-      /* 읽기 모달을 열어 둔 채 수정했다면 그 내용도 바로 새로 고칩니다 */
-      if(isEdit && READING_NOTICE && READING_NOTICE.id===rec.id
-         && $("#noticeOverlay").classList.contains("on")){
-        openNoticeRead(rec);
-      }
       toast(isEdit?"수정했습니다":"게시했습니다");
     }catch(e){
       console.warn(e);
@@ -3823,7 +3818,13 @@ bindBackdropClose("embedOverlay",closeEmbedModal);
 bindBackdropClose("noticeOverlay",closeNoticeRead);
 bindBackdropClose("noticeUpModal",closeNoticeUpload);
 $("#noticeFrameClose").onclick=closeNoticeRead;
-$("#noticeFrameEdit").onclick=()=>{ if(READING_NOTICE) openNoticeUpload(READING_NOTICE); };
+/* 읽기 창에서 '수정'을 누르면 읽기 창은 닫고 수정 창만 띄웁니다(두 창이 겹쳐 남지 않게) */
+$("#noticeFrameEdit").onclick=()=>{
+  if(!READING_NOTICE) return;
+  const n=READING_NOTICE;
+  closeNoticeRead();
+  openNoticeUpload(n);
+};
 $("#noticeFrameDel").onclick=()=>{
   if(!READING_NOTICE) return;
   const n=READING_NOTICE;
