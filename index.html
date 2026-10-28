@@ -308,7 +308,7 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .mbox p{margin:0 0 16px;font-size:12.5px;color:var(--ink-2);line-height:1.6;font-weight:500}
 .mbox .fld{margin-bottom:11px}
 .mbox .err{font-size:11.5px;color:#C2333B;font-weight:650;min-height:16px}
-.mbox .frow{display:flex;gap:7px;justify-content:flex-end;margin-top:12px}
+.mbox .frow{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;margin-top:12px}
 .toasts{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast{background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-size:12.5px;font-weight:650;box-shadow:var(--sh-l);animation:pop .3s cubic-bezier(.2,.8,.3,1)}
 .toast.bad{background:#C2333B}
@@ -387,6 +387,11 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 .tftoggle[aria-expanded="true"] .tfcv{transform:rotate(180deg)}
 .tfcount{font-family:var(--mono);font-size:9.5px;font-weight:700;background:var(--num);color:#fff;padding:1px 6px;border-radius:99px}
 .tfpanel{display:flex;flex-wrap:wrap;gap:5px;padding:9px 2px 3px}
+.afrow{display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding:8px 2px 2px}
+.aflbl{font-size:11px;font-weight:700;color:var(--ink-3);margin-right:2px}
+.afchip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;padding:4px 8px 4px 10px;border-radius:99px;background:var(--num);color:#fff;letter-spacing:-.01em;transition:.14s}
+.afchip:hover{background:#1F4FC4}
+.afchip svg{opacity:.85}
 .tchip{font-size:10.5px;font-weight:650;padding:4px 9px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2);transition:.14s;letter-spacing:-.01em}
 .tchip:hover{border-color:#C9D3E6}
 .tchip[aria-pressed="true"]{background:var(--num);border-color:var(--num);color:#fff}
@@ -639,6 +644,8 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
         </button>
         <div class="tfpanel" id="tfPanel" hidden></div>
       </div>
+      <!-- 작성자 필터: 로그인한 선생님이 프로필 카드에서 켰을 때만 나타납니다 -->
+      <div class="afrow" id="afRow" hidden></div>
     </div>
     <nav class="tree" id="tree" aria-label="단원 목록"></nav>
   </aside>
@@ -1635,7 +1642,7 @@ const cnt=sid=>(IDX[sid]||[]).length;
 const unitCnt=u2=>cnt(u2.id);
 
 /* ═══ 화면 상태 ═══ */
-const S={ view:"archive", q:"", areas:new Set(), types:new Set(), typeOpen:false, board:null,
+const S={ view:"archive", q:"", areas:new Set(), types:new Set(), authors:new Map(), typeOpen:false, board:null,
           openG:new Set(["m1"]), mapHover:null, editor:null, folds:new Set(), noticesPage:false };
 
 /* ═══ 검색·필터 ═══
@@ -1643,7 +1650,9 @@ const S={ view:"archive", q:"", areas:new Set(), types:new Set(), typeOpen:false
    그래서 필터를 건 채 단원에 들어가면 그 필터에 맞는 글만 보입니다. */
 const ETC_TAG="기타";      // 직접 입력한 유형(목록에 없는 유형)을 한데 묶어 거르는 칩
 const qNow=()=>S.q.trim().toLowerCase();
-const caseFilterOn=()=>S.types.size>0||!!qNow();
+/* 작성자 필터는 로그인한 선생님만 쓸 수 있습니다. 로그아웃 상태에서는 걸려 있어도 무시합니다. */
+const authorFilterOn=()=>!!USER&&S.authors.size>0;
+const caseFilterOn=()=>S.types.size>0||!!qNow()||authorFilterOn();
 const anyFilterOn=()=>caseFilterOn()||S.areas.size>0;
 function tagPass(k){
   if(!S.types.size) return true;
@@ -1664,8 +1673,12 @@ function postText(k){
   const stds=k.stds||[];
   return [k.tool,k.title,(k.tags||[]).join(" "),k.author||"",...stds,...stds.map(c=>STD[c]||"")].join(" ").toLowerCase();
 }
+function authorPass(k){
+  if(!authorFilterOn()) return true;
+  return !!k.uid&&S.authors.has(k.uid);
+}
 function casePasses(k,bid){
-  if(!tagPass(k)) return false;
+  if(!tagPass(k)||!authorPass(k)) return false;
   const q=qNow(); if(!q) return true;
   return boardText(bid).includes(q)||postText(k).includes(q);
 }
@@ -1681,7 +1694,7 @@ function boardMatch(bid){
     if(S.areas.size&&!S.areas.has(info.area)) return false;
   }else if(S.areas.size) return false;      // 영역 필터를 걸면 자유 게시판은 제외
   const q=qNow();
-  if(!S.types.size){
+  if(!S.types.size&&!authorFilterOn()){
     if(!q) return true;
     /* 검색어만 있을 때는 아직 글이 없는 단원도 단원 정보로 찾을 수 있게 남겨 둡니다 */
     return boardText(bid).includes(q)||(IDX[bid]||[]).some(k=>postText(k).includes(q));
@@ -1694,6 +1707,7 @@ function filterDesc(withArea){
   const parts=[];
   if(withArea&&S.areas.size) parts.push("영역 "+[...S.areas].map(k=>"‘"+A(k).name+"’").join(" 또는 "));
   if(S.types.size) parts.push("활동 유형 "+[...S.types].map(t=>"‘"+t+"’").join(" 또는 "));
+  if(authorFilterOn()) parts.push("작성자 "+[...S.authors.values()].map(n=>"‘"+honorific(n)+"’").join(" 또는 "));
   const q=S.q.trim(); if(q) parts.push("검색어 ‘"+q+"’");
   return parts.join(" · ");
 }
@@ -1703,9 +1717,48 @@ function filtersChanged(){
   if(!S.editor) renderPage();          // 글을 쓰는 중에는 화면을 다시 그리지 않습니다(쓰던 내용 보호)
 }
 function clearFilters(){
-  S.types.clear(); S.areas.clear(); S.q="";
+  S.types.clear(); S.areas.clear(); S.authors.clear(); S.q="";
   const qi=$("#q"); if(qi) qi.value="";
-  renderChips(); renderTypeFilter(); filtersChanged();
+  renderChips(); renderTypeFilter(); renderAuthorFilter(); filtersChanged();
+}
+/* ── 작성자 필터 (드러나지 않는 기능) ──
+   작성자 이름을 눌러 여는 프로필 카드에서만 켤 수 있고, 켜져 있을 때만 왼쪽에 칩으로 보입니다. */
+function authorNameOf(uid){
+  let best=null;
+  Object.values(SUMS).forEach(s=>{ if(s.uid===uid&&(!best||(s.updatedAt||0)>(best.updatedAt||0))) best=s; });
+  return best?best.author:"";
+}
+const authorPostCount=uid=>Object.values(SUMS).filter(s=>s.uid===uid&&boardInfo(normalizeBoardId(s.subId))).length;
+function renderAuthorFilter(){
+  const row=$("#afRow"); if(!row) return;
+  row.innerHTML="";
+  if(!authorFilterOn()){ row.hidden=true; return; }
+  row.hidden=false;
+  row.appendChild(el("span","aflbl","작성자"));
+  S.authors.forEach((name,uid)=>{
+    const b=el("button","afchip");
+    b.type="button"; b.title="작성자 필터 빼기"; b.setAttribute("aria-label",honorific(name)+" 작성자 필터 빼기");
+    b.innerHTML=esc(honorific(name))+'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+    b.onclick=()=>{ S.authors.delete(uid); renderAuthorFilter(); filtersChanged(); };
+    row.appendChild(b);
+  });
+}
+function filterByAuthor(uid,name){
+  if(!USER||!uid) return;
+  const nm=(name||authorNameOf(uid)||"이름 없음").trim();
+  S.authors.set(uid,nm);
+  renderAuthorFilter();
+  closePeek(); closeAuth();
+  /* 모든 단원에 흩어진 그 선생님의 글을 한눈에 보도록 첫 화면 결과 목록으로 갑니다 */
+  if(!S.editor&&(S.board||S.noticesPage||S.view!=="archive")) goHome();
+  else filtersChanged();
+  toast(honorific(nm)+"의 사례만 보고 있습니다");
+}
+/* 로그아웃하면 작성자 필터를 지웁니다 */
+function dropAuthorFilterIfSignedOut(){
+  if(USER||!S.authors.size) return false;
+  S.authors.clear(); renderAuthorFilter();
+  return true;
 }
 function filterBar(html,btnLabel){
   const bar=el("div","filterbar");
@@ -2366,13 +2419,15 @@ function openPeek(uid){
   DB.getPublicProfile(uid).then(u=>{
     if(!u){
       box.innerHTML='<h3>아직 공개된 프로필이 없습니다</h3><p>이 선생님이 다시 로그인하거나 정보를 저장하면 여기서 볼 수 있게 됩니다.</p>'+
-        '<div class="frow"><button class="btn ghost" id="pkCancel">닫기</button></div>';
+        '<div class="frow">'+authorFilterBtnHTML(uid,"이 선생님 사례만 보기")+'<button class="btn ghost" id="pkCancel">닫기</button></div>';
       box.querySelector("#pkCancel").onclick=closePeek;
+      bindAuthorFilterBtn(box,uid,"");
       return;
     }
     box.innerHTML=profileCardHTML(u,{showId:false})+
-      '<div class="frow"><button class="btn ghost" id="pkCancel">닫기</button></div>';
+      '<div class="frow">'+authorFilterBtnHTML(uid,"이 선생님 사례만 보기")+'<button class="btn ghost" id="pkCancel">닫기</button></div>';
     box.querySelector("#pkCancel").onclick=closePeek;
+    bindAuthorFilterBtn(box,uid,u.name);
   }).catch(e=>{
     console.warn(e);
     box.innerHTML='<h3>불러오지 못했습니다</h3><p>'+esc(authError(e))+'</p>'+
@@ -2381,6 +2436,16 @@ function openPeek(uid){
   });
 }
 const closePeek=()=>$("#peekModal").classList.remove("on");
+/* 프로필 카드의 '사례만 보기' 버튼 ─ 로그인한 선생님에게만, 그리고 쓴 사례가 있을 때만 보입니다 */
+function authorFilterBtnHTML(uid,label){
+  if(!USER||!uid) return "";
+  const n=authorPostCount(uid); if(!n) return "";
+  return '<button class="btn" id="afBtn">'+esc(label)+' · '+n+'건</button>';
+}
+function bindAuthorFilterBtn(box,uid,name){
+  const b=box.querySelector("#afBtn");
+  if(b) b.onclick=()=>filterByAuthor(uid,name);
+}
 
 function caseCard(sum,hex){
   const blocks=BODY[sum.id];
@@ -3434,13 +3499,16 @@ function openAccount(){
     profileCardHTML(USER,{showId:true})+
     (isApproved()?'':'<div class="notice warn">관리자가 승인하면 사례를 쓸 수 있습니다. 그때까지는 다른 선생님의 사례를 읽어 보실 수 있습니다.</div>')+
     '<div class="frow"><button class="btn danger" id="acOut">로그아웃</button>'+
+    authorFilterBtnHTML(USER.uid,"내 사례만 보기")+
     '<button class="btn" id="acEdit">내 정보 수정</button>'+
     '<button class="btn ghost" id="acCancel">닫기</button></div>';
   box.querySelector("#acCancel").onclick=closeAuth;
+  bindAuthorFilterBtn(box,USER.uid,USER.name);
   box.querySelector("#acEdit").onclick=openProfile;
   box.querySelector("#acOut").onclick=async ()=>{
     await DB.signOut();
     USER=null; PENDING=[]; S.editor=null;
+    dropAuthorFilterIfSignedOut();
     setAccountUI(); closeAuth(); toast("로그아웃했습니다"); refresh();
   };
   openOverlay("authModal");
@@ -3882,6 +3950,7 @@ function historyStateNow(){
   DB.watchAuth(async u=>{
     USER=u||null;
     if(USER) lsSet(LS_ME,USER.name);
+    if(dropAuthorFilterIfSignedOut()) renderTree();
     await loadPending();
     setAccountUI();
     if(!S.editor) renderPage();
