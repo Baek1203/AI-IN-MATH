@@ -413,6 +413,31 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
   .embed-frame{width:100vw;height:100dvh;border-radius:0}
   .embed-frame-body{padding:10px}
 }
+.embed-frame{position:relative}
+.embed-frame-head .btn.sm.icon-only{padding:6px 8px}
+.embed-frame-head .btn.sm.icon-only svg{display:block}
+
+/* 전체화면: 모달 틀을 화면 전체로 넓히고, 안의 HTML을 원래 크기 그대로(축소 없이) 화면에 꽉 채웁니다.
+   브라우저 전체화면을 쓸 수 없는 기기(아이폰 등)에서는 같은 모양으로 페이지 전체를 덮습니다. */
+.fs-exit,.fs-hot{display:none}
+.embed-frame.fs{position:fixed;inset:0;z-index:20;width:100%;height:100%;max-width:none;max-height:none;border-radius:0;box-shadow:none;background:#0E1220}
+.embed-frame.fs .embed-frame-head{display:none}
+.embed-frame.fs .embed-frame-body{padding:0;background:#0E1220}
+.embed-frame.fs .embedbox,
+.embed-frame.fs .embedbox.wfill{width:100%!important;height:100%!important;max-width:none;max-height:none;border-radius:0}
+.embed-frame.fs .fs-exit{display:inline-flex;align-items:center;gap:6px;position:absolute;top:12px;right:12px;z-index:6;
+  padding:8px 13px;border-radius:10px;background:rgba(14,18,32,.72);color:#fff;font-size:12.5px;font-weight:650;letter-spacing:-.01em;
+  border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(4px);transition:opacity .25s ease}
+.embed-frame.fs .fs-exit:hover{background:rgba(14,18,32,.9)}
+.embed-frame.fs .fs-exit:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.embed-frame.fs.idle .fs-exit{opacity:0;pointer-events:none}
+.embed-frame.fs.idle .fs-hot{display:block;position:absolute;left:0;right:0;top:0;height:8px;z-index:5}
+@media (pointer:coarse){
+  /* 터치 화면은 Esc 키가 없으니 끝내기 버튼을 흐리게라도 늘 남겨 둡니다 */
+  .embed-frame.fs.idle .fs-exit{opacity:.5;pointer-events:auto}
+  .embed-frame.fs.idle .fs-hot{display:none}
+}
+@media (prefers-reduced-motion:reduce){ .embed-frame.fs .fs-exit{transition:none} }
 @media (max-width:1000px){
   .side{position:fixed;left:0;top:60px;bottom:0;z-index:70;transform:translateX(-101%);transition:transform .26s cubic-bezier(.22,.75,.28,1);box-shadow:var(--sh-l);width:300px}
   .side.on{transform:none}
@@ -643,10 +668,13 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
 </div>
 
 <div class="embed-overlay" id="embedOverlay">
-  <div class="embed-frame">
+  <div class="embed-frame" id="embedFrame">
     <div class="embed-frame-head">
       <span id="embedFrameTitle"></span>
-      <button class="btn sm" id="embedFrameFull" title="새 탭에서 전체화면으로 열기">
+      <button class="btn sm icon-only" id="embedFrameTab" title="새 탭에서 열기" aria-label="새 탭에서 열기">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+      </button>
+      <button class="btn sm" id="embedFrameFull" title="화면 전체로 보기 (Esc로 끝내기)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:-2px"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>전체화면
       </button>
       <button class="embed-frame-close" id="embedFrameClose" aria-label="닫기">
@@ -654,6 +682,12 @@ h2.page{margin:0;font-size:29px;font-weight:800;letter-spacing:-.05em;line-heigh
       </button>
     </div>
     <div class="embed-frame-body" id="embedFrameBody"></div>
+    <!-- 전체화면일 때만 보이는 요소: 위쪽 가장자리에 마우스를 대면 끝내기 버튼이 다시 나타납니다 -->
+    <div class="fs-hot" id="embedFsHot" aria-hidden="true"></div>
+    <button class="fs-exit" id="embedFsExit" type="button" title="전체화면 끝내기 (Esc)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
+      전체화면 끝내기
+    </button>
   </div>
 </div>
 
@@ -1518,6 +1552,25 @@ const DB={
     return true;
   },
 
+  /* 작성자 이름 바로잡기 ─ [{id,name}] 목록대로 사례의 작성자 표기만 고칩니다(날짜·내용은 그대로) */
+  async fixCaseAuthors(items){
+    let n=0;
+    if(this.mode!=="firebase"){
+      const subs=new Set();
+      items.forEach(({id,name})=>{ const s=SUMS[id]; if(s){ SUMS[id]={...s,author:name}; subs.add(s.subId); n++; } });
+      rebuildIndex();
+      for(const sid of subs) await this._flush(sid);
+      return n;
+    }
+    const {fs,db}=this.fb;
+    for(const {id,name} of items){
+      try{ await fs.updateDoc(fs.doc(db,"caseSummaries",id),{author:name}); if(SUMS[id]) SUMS[id]={...SUMS[id],author:name}; n++; }
+      catch(e){ console.warn(e); }
+    }
+    rebuildIndex();
+    return n;
+  },
+
   /* 이름을 바꾸면 이미 쓴 사례의 작성자 표기도 함께 고칩니다 */
   async renameAuthor(uid,name){
     const mine=Object.values(SUMS).filter(s=>s.uid===uid);
@@ -2308,6 +2361,11 @@ function mountEmbed(parent,b,opts){
   const box=el("div","embedbox"), ifr=el("iframe");
   ifr.setAttribute("sandbox",EMBED_SANDBOX);
   ifr.setAttribute("referrerpolicy","no-referrer");
+  /* 임베드한 HTML이나 지오지브라·데스모스 안의 '전체화면' 버튼이 모달 안에서만 커지지 않고
+     실제 화면 전체로 나가도록 전체화면 권한을 넘겨 줍니다. */
+  ifr.setAttribute("allow","fullscreen *");
+  ifr.setAttribute("allowfullscreen","");
+  ifr.setAttribute("webkitallowfullscreen","");
   if(!opts.big) ifr.setAttribute("loading","lazy");
   ifr.srcdoc=embedDoc(b.html,mode);
   box.appendChild(ifr); parent.appendChild(box);
@@ -2341,17 +2399,29 @@ function mountEmbed(parent,b,opts){
     let realH=dh;
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px"; ifr.style.transformOrigin="top left";
     const fit=()=>{
+      /* 전체화면(.full)에서는 줄이거나 키우지 않고 HTML을 화면 크기 그대로 펼칩니다.
+         iframe을 다시 불러오지 않으므로 하던 조작 상태가 그대로 이어집니다. */
+      if(box.classList.contains("full")){
+        ifr.style.transform="none"; ifr.style.width="100%"; ifr.style.height="100%";
+        box.style.width=""; box.style.height="";
+        return;
+      }
+      ifr.style.width=dw+"px"; ifr.style.height=realH+"px";
       const cw=parent.clientWidth||dw, ch=parent.clientHeight||realH;
       const s=Math.min(cw/dw, ch/realH);
       ifr.style.transform="scale("+s+")";
       box.style.width=Math.round(dw*s)+"px";
       box.style.height=Math.round(realH*s)+"px";
     };
+    box._refit=fit;
     fit();
     try{ const ro=new ResizeObserver(fit); ro.observe(parent); }
     catch(e){ window.addEventListener("resize",fit); }
     setTimeout(fit,60);
-    measureRealHeight(h=>{ realH=h; ifr.style.height=realH+"px"; fit(); });
+    measureRealHeight(h=>{
+      if(box.classList.contains("full")) return;   // 전체화면 중에 잰 높이는 화면 높이라서 쓰지 않습니다
+      realH=h; fit();
+    });
   }else if(mode==="none"){
     box.style.overflowX="auto";
     ifr.style.width=dw+"px"; ifr.style.height=dh+"px";
@@ -2391,11 +2461,103 @@ function openEmbedModal(b){
   openOverlay("embedOverlay");
 }
 function closeEmbedModal(){
+  exitEmbedFullscreen();
   $("#embedOverlay").classList.remove("on");
   $("#embedFrameBody").innerHTML="";   // 닫으면 안의 스크립트·오디오도 함께 멈춥니다
   VIEWING_EMBED=null;
 }
-/* 임베드를 새 탭에 통째로 열어, 브라우저 자체 전체화면으로 볼 수 있게 합니다 */
+
+/* ── 크게 보기 → 전체화면 ──
+   모달 틀 자체를 브라우저 전체화면으로 올려, 임베드한 HTML이 화면 전체를 덮게 합니다.
+   새 탭을 열거나 iframe을 다시 불러오지 않으므로 모달에서 하던 조작이 그대로 이어집니다.
+   전체화면을 지원하지 않는 브라우저(아이폰 사파리 등)에서는 페이지 전체를 덮는 방식으로 대신합니다. */
+let EMBED_FS=null;        // null | "native"(브라우저 전체화면) | "pseudo"(페이지 전체 덮기)
+let EMBED_FS_LEFT=0;      // 전체화면이 끝난 시각 ─ 같은 Esc로 모달까지 닫히지 않게 합니다
+let fsIdleT=null, fsInnerDoc=null;
+const fsElement=()=>document.fullscreenElement||document.webkitFullscreenElement||null;
+
+function pokeFsUi(){
+  const f=$("#embedFrame"); if(!EMBED_FS||!f) return;
+  f.classList.remove("idle");
+  clearTimeout(fsIdleT);
+  fsIdleT=setTimeout(()=>{ if(EMBED_FS) f.classList.add("idle"); },2600);
+}
+/* 마우스가 임베드 안에 있으면 이벤트가 iframe 문서로 가므로, 같은 출처일 때 그 문서에도 귀를 기울입니다 */
+function fsInnerMove(e){ if(e.clientY<90) pokeFsUi(); }
+function fsInnerTouch(){ pokeFsUi(); }
+function fsInnerKey(e){ if(e.key==="Escape"){ e.preventDefault(); exitEmbedFullscreen(); } }
+function bindFsInner(on){
+  if(fsInnerDoc){
+    try{
+      fsInnerDoc.removeEventListener("mousemove",fsInnerMove);
+      fsInnerDoc.removeEventListener("touchstart",fsInnerTouch);
+      fsInnerDoc.removeEventListener("keydown",fsInnerKey);
+    }catch(e){}
+    fsInnerDoc=null;
+  }
+  if(!on) return;
+  const ifr=$("#embedFrameBody").querySelector("iframe");
+  try{
+    const d=ifr&&ifr.contentDocument;
+    if(d){
+      d.addEventListener("mousemove",fsInnerMove,{passive:true});
+      d.addEventListener("touchstart",fsInnerTouch,{passive:true});
+      d.addEventListener("keydown",fsInnerKey);
+      fsInnerDoc=d;
+    }
+  }catch(e){}
+}
+function setEmbedFull(on,kind){
+  const f=$("#embedFrame");
+  EMBED_FS=on?kind:null;
+  f.classList.toggle("fs",on);
+  f.classList.toggle("pseudo",on&&kind==="pseudo");
+  f.classList.remove("idle");
+  clearTimeout(fsIdleT);
+  $("#embedFrameBody").querySelectorAll(".embedbox").forEach(bx=>{
+    bx.classList.toggle("full",on);
+    if(bx._refit) bx._refit();
+  });
+  bindFsInner(on);
+  if(on) pokeFsUi(); else EMBED_FS_LEFT=Date.now();
+}
+async function enterEmbedFullscreen(){
+  if(!VIEWING_EMBED||EMBED_FS) return;
+  const f=$("#embedFrame");
+  if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+  const req=f.requestFullscreen||f.webkitRequestFullscreen;
+  const enabled=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+  if(req&&enabled){
+    /* 화면 모양을 먼저 바꿔 두면, 브라우저 전체화면이 거절되더라도 페이지 전체 덮기로 남습니다 */
+    setEmbedFull(true,"native");
+    try{
+      const r=req.call(f,{navigationUI:"hide"});
+      if(r&&typeof r.then==="function") await r;
+      return;
+    }catch(e){
+      EMBED_FS="pseudo"; f.classList.add("pseudo");
+      return;
+    }
+  }
+  setEmbedFull(true,"pseudo");
+}
+function exitEmbedFullscreen(){
+  if(!EMBED_FS) return;
+  const wasNative=EMBED_FS==="native";
+  setEmbedFull(false);
+  if(wasNative&&fsElement()){
+    const ex=document.exitFullscreen||document.webkitExitFullscreen;
+    try{ const r=ex&&ex.call(document); if(r&&r.catch) r.catch(()=>{}); }catch(e){}
+  }
+}
+function onFsChange(){
+  /* Esc나 브라우저 버튼으로 전체화면이 끝났을 때 화면 모양도 원래 모달로 돌립니다.
+     (임베드 안의 HTML이 스스로 전체화면을 켠 경우는 fsElement가 남아 있으므로 건드리지 않습니다) */
+  if(EMBED_FS==="native"&&!fsElement()) setEmbedFull(false);
+}
+document.addEventListener("fullscreenchange",onFsChange);
+document.addEventListener("webkitfullscreenchange",onFsChange);
+/* 임베드를 새 탭에 통째로 엽니다(크게 보기 모달의 '새 탭에서 열기' 아이콘). 다른 화면에 띄워 둘 때 씁니다. */
 function buildFullscreenDoc(b){
   const mode=embedMode(b);
   return '<!doctype html><meta charset="utf-8">'+
@@ -2469,7 +2631,7 @@ function renderBlocks(root,blocks,opt){
       if(forExport){
         const mode=embedMode(b), {w:dw,h:dh}=embedDims(b);
         f.innerHTML='<div class="embedbox" data-fit="'+mode+'" data-w="'+dw+'" data-h="'+dh+'">'+
-          '<iframe sandbox="'+EMBED_SANDBOX+'" referrerpolicy="no-referrer" loading="lazy" '+
+          '<iframe sandbox="'+EMBED_SANDBOX+'" referrerpolicy="no-referrer" loading="lazy" allow="fullscreen *" allowfullscreen '+
           'style="'+(mode==="stretch"?"width:100%;height:"+dh+"px":"width:"+dw+"px;height:"+dh+"px")+'" '+
           'srcdoc="'+esc(embedDoc(b.html,mode))+'"></iframe></div>';
       }else{
@@ -2503,7 +2665,10 @@ function startEditor(subId,caseId){
   const blocks=caseId?(BODY[caseId]||[]):null;
   const sum=caseId?SUMS[caseId]:null;
   S.editor={ subId, caseId, draftId: caseId||uid(),
-    uid: sum?sum.uid:(USER?USER.uid:null),
+    /* 고치는 글이면 처음 쓴 선생님(이름·계정)을 그대로 이어 갑니다.
+       관리자가 다른 선생님 글을 고쳐도 작성자가 관리자로 바뀌지 않습니다. */
+    uid: sum?(sum.uid||null):(USER?USER.uid:null),
+    author: sum?(sum.author||""):"",
     pickerMode: !subId && !caseId,   // 메인 화면에서 시작하면 게시판을 먼저 고릅니다
     tool:sum?sum.tool:"", title:sum?sum.title:"",
     tags:new Set(sum?(sum.tags||[]):[]),
@@ -2861,10 +3026,15 @@ async function saveCase(btn,warnEl){
     if(warnEl) warnEl.textContent="내용이 너무 큽니다. 사진을 줄이거나 주소로 넣어 주세요.";
     toast("저장 용량을 넘었습니다. 사진을 줄여 주세요.",true); return;
   }
+  const isEdit=!!E.caseId;
+  const prev=isEdit?SUMS[E.caseId]:null;
+  const me=USER?USER.name:"익명";
+  /* 새 글은 지금 로그인한 선생님이 작성자, 고치는 글은 원래 작성자를 그대로 둡니다 */
+  const author = isEdit ? (E.author || (prev&&prev.author) || me) : me;
+  const ownerUid = isEdit ? ((prev?prev.uid:E.uid)||null) : (USER?USER.uid:null);
   const rec={ id:E.draftId, subId:E.subId, tool:E.tool, title:E.title, tags:[...E.tags],
               stds:[...(E.stds||[])],
-              author:(USER?USER.name:"익명"), uid:E.uid||(USER?USER.uid:null), updatedAt:Date.now(), blocks };
-  const isEdit=!!E.caseId;
+              author, uid:ownerUid, updatedAt:Date.now(), blocks };
   const wasCompose=E.pickerMode && !isEdit;
   if(btn){ btn.disabled=true; btn.textContent="저장 중…"; }
   try{
@@ -3323,6 +3493,7 @@ async function renderMembers(list){
   const pend=list.filter(u=>u.status==="pending");
   const rest=list.filter(u=>u.status!=="pending");
   box.innerHTML='<h3>회원 관리</h3><p>가입 신청을 승인하면 그 선생님이 사례를 쓸 수 있습니다.</p>'+
+    '<div id="mbAuthorFix"></div>'+
     '<div id="mbBackfill"></div>'+
     '<div id="mbPend"></div><div id="mbRest"></div>'+
     '<div class="frow"><button class="btn ghost" id="mbClose">닫기</button></div>';
@@ -3337,6 +3508,11 @@ async function renderMembers(list){
   const rw=box.querySelector("#mbRest");
   rw.appendChild(sec("회원",rest.length));
   rest.forEach(u=>rw.appendChild(memberRow(u,list)));
+
+  /* 작성자 이름이 글 주인의 계정 이름과 다른 사례가 있을 때만 보이는 배너입니다.
+     (예전에는 관리자가 다른 선생님 글을 고치면 작성자가 관리자 이름으로 바뀌었습니다.)
+     글마다 주인 계정(uid)은 그대로 남아 있으므로, 그 계정의 이름으로 되돌립니다. */
+  renderAuthorFix(list);
 
   /* 공개 프로필이 없는 회원이 있을 때만 보이는 배너입니다. 모두 채워지면 다음에 열 때 저절로 사라집니다. */
   try{
@@ -3359,6 +3535,33 @@ async function renderMembers(list){
       renderMembers(await DB.listUsers());   // 다시 그리면 조건에 따라 배너가 사라집니다
     };
   }catch(e){ console.warn(e); }
+}
+function renderAuthorFix(list){
+  const box=$("#mbAuthorFix"); if(!box) return;
+  const nameOf={};
+  (list||[]).forEach(u=>{ if(u&&u.uid&&(u.name||"").trim()) nameOf[u.uid]=u.name.trim(); });
+  const wrong=Object.values(SUMS)
+    .filter(s=>s&&s.uid&&nameOf[s.uid]&&(s.author||"").trim()!==nameOf[s.uid])
+    .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  if(!wrong.length){ box.innerHTML=""; return; }
+  const sample=wrong.slice(0,5).map(s=>
+    '<li><b>'+esc(s.title||"(제목 없음)")+'</b> — 지금 '+esc(honorific(s.author||"이름 없음"))+
+    ' → <b>'+esc(honorific(nameOf[s.uid]))+'</b></li>').join("");
+  box.innerHTML=
+    '<div class="notice warn" style="display:flex;flex-direction:column;gap:8px">'+
+      '<span>작성자 이름이 실제 글쓴이와 다르게 적힌 사례가 <b>'+wrong.length+'건</b> 있습니다. '+
+      '관리자가 다른 선생님 글을 고치면서 작성자 이름이 바뀐 경우입니다.</span>'+
+      '<ul style="margin:0;padding-left:18px;font-size:12px;line-height:1.6">'+sample+
+        (wrong.length>5?'<li>외 '+(wrong.length-5)+'건</li>':'')+'</ul>'+
+      '<div><button class="btn sm live" id="mbAuthorFixBtn">원래 작성자로 되돌리기</button></div>'+
+    '</div>';
+  box.querySelector("#mbAuthorFixBtn").onclick=async (e)=>{
+    const btn=e.currentTarget; btn.disabled=true; btn.textContent="되돌리는 중…";
+    const n=await DB.fixCaseAuthors(wrong.map(s=>({id:s.id,name:nameOf[s.uid]})));
+    toast(n+"건의 작성자를 원래 선생님으로 되돌렸습니다");
+    renderAuthorFix(list);
+    if(!S.editor) renderPage();
+  };
 }
 function memberRow(u,list){
   const row=el("div","mbrow");
@@ -3506,7 +3709,12 @@ $("#brandHome").onclick=goHome;
 $("#btnMembers").onclick=openMembers;
 $("#btnProfile").onclick=openProfile;
 $("#embedFrameClose").onclick=closeEmbedModal;
-$("#embedFrameFull").onclick=()=>openEmbedFullscreen(VIEWING_EMBED);
+$("#embedFrameFull").onclick=enterEmbedFullscreen;
+$("#embedFrameTab").onclick=()=>openEmbedFullscreen(VIEWING_EMBED);
+$("#embedFsExit").onclick=exitEmbedFullscreen;
+$("#embedFsHot").addEventListener("mouseenter",pokeFsUi);
+$("#embedFrame").addEventListener("mousemove",pokeFsUi,{passive:true});
+$("#embedFrame").addEventListener("touchstart",pokeFsUi,{passive:true});
 function bindBackdropClose(id,fn){
   const m=document.getElementById(id);
   if(m) m.addEventListener("click",e=>{ if(e.target===m) fn(); });
@@ -3527,6 +3735,9 @@ $("#noticeFrameDel").onclick=()=>{
 };
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape") return;
+  /* 전체화면 중의 Esc는 전체화면만 끝냅니다. 브라우저가 먼저 전체화면을 끝낸 직후에 들어온 Esc도 모달은 닫지 않습니다. */
+  if(EMBED_FS){ e.preventDefault(); exitEmbedFullscreen(); return; }
+  if(Date.now()-EMBED_FS_LEFT<500) return;
   if($("#embedOverlay").classList.contains("on")) closeEmbedModal();
   else if($("#noticeOverlay").classList.contains("on")) closeNoticeRead();
   else if($("#noticeUpModal").classList.contains("on")) closeNoticeUpload();
