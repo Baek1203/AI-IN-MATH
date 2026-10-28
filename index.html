@@ -1291,6 +1291,7 @@ async function sha(s){
 let SUMS={}, BODY={}, IDX={}, NOTICES=[];
 let USER=null;                          // 로그인한 회원 { uid, loginId, name, school, level, grades, subjects, interested, used, role, status }
 let PENDING=[];                         // 승인 대기 회원 (관리자용)
+let MEMBERS=[];                         // 전체 회원 목록 (관리자만 불러옵니다)
 const IMG_LIMIT_STORAGE=3*1024*1024;    // Firebase Storage 보안 규칙과 맞춘 값 (3MB)
 const IMG_LIMIT_INLINE=350*1024;        // Firestore 문서 안에 그대로 담을 때의 한도
 const isApproved=()=>!!USER&&USER.status==="approved";
@@ -2821,6 +2822,7 @@ function startEditor(subId,caseId){
        관리자가 다른 선생님 글을 고쳐도 작성자가 관리자로 바뀌지 않습니다. */
     uid: sum?(sum.uid||null):(USER?USER.uid:null),
     author: sum?(sum.author||""):"",
+    origUid: sum?(sum.uid||null):null, origAuthor: sum?(sum.author||""):"",
     pickerMode: !subId && !caseId,   // 메인 화면에서 시작하면 게시판을 먼저 고릅니다
     tool:sum?sum.tool:"", title:sum?sum.title:"",
     tags:new Set(sum?(sum.tags||[]):[]),
@@ -2849,6 +2851,32 @@ function syncEditor(){
 }
 const autoGrow=ta=>{ta.style.height="auto";ta.style.height=(ta.scrollHeight+2)+"px";};
 
+/* 관리자 전용 '작성자' 칸 ─ 고치는 글의 작성자를 회원 가운데서 직접 고를 수 있습니다.
+   로그인 기능 이전의 옛 글처럼 주인 계정이 관리자로 바뀌어 버린 글을 바로잡을 때 씁니다. */
+function ownerField(E){
+  const f=el("div","fld");
+  f.appendChild(el("label","fl",'작성자 <span class="opt">관리자에게만 보이는 칸 · 그대로 두면 원래 작성자가 유지됩니다</span>'));
+  const sel=el("select","inp ownersel");
+  sel.setAttribute("aria-label","작성자");
+  const members=MEMBERS.filter(u=>u&&u.uid&&(u.status==="approved"||u.uid===E.uid))
+    .sort((a,b)=>(a.name||"").localeCompare(b.name||"","ko"));
+  let html="";
+  if(!members.some(u=>u.uid===E.uid))
+    html+='<option value="__keep">'+esc(honorific(E.origAuthor||"이름 없음"))+' (연결된 계정 없음)</option>';
+  members.forEach(u=>{
+    html+='<option value="'+esc(u.uid)+'"'+(u.uid===E.uid?' selected':'')+'>'+
+      esc(honorific(u.name||"이름 없음"))+(u.school?' · '+esc(u.school):'')+(u.loginId?' ('+esc(u.loginId)+')':'')+'</option>';
+  });
+  sel.innerHTML=html;
+  if(!members.some(u=>u.uid===E.uid)) sel.value="__keep";
+  sel.onchange=()=>{
+    if(sel.value==="__keep"){ E.uid=E.origUid; E.author=E.origAuthor; return; }
+    const m=MEMBERS.find(u=>u.uid===sel.value);
+    if(m){ E.uid=m.uid; E.author=m.name||E.author; }
+  };
+  f.appendChild(sel);
+  return f;
+}
 function buildEditor(){
   const E=S.editor, root=el("div","editor");
   const eh=el("div","eh");
@@ -2860,6 +2888,7 @@ function buildEditor(){
   if(E.pickerMode) eb.appendChild(unitPickerField());
   eb.appendChild(field("도구 · 서비스 이름","tool",E.tool,"목록에서 고르거나 직접 적어 주세요",false,"edtechList"));
   eb.appendChild(field("사례 제목","title",E.title,"예: 슬라이더로 a의 부호에 따른 포물선 변화 관찰하기",true));
+  if(isAdmin()&&E.caseId&&MEMBERS.length) eb.appendChild(ownerField(E));
 
   const tf=el("div","fld"); tf.appendChild(el("label","fl",'활동 유형 <span class="opt">여러 개 선택 가능</span>'));
   const tp=el("div","tagpick");
@@ -3181,9 +3210,15 @@ async function saveCase(btn,warnEl){
   const isEdit=!!E.caseId;
   const prev=isEdit?SUMS[E.caseId]:null;
   const me=USER?USER.name:"익명";
-  /* 새 글은 지금 로그인한 선생님이 작성자, 고치는 글은 원래 작성자를 그대로 둡니다 */
-  const author = isEdit ? (E.author || (prev&&prev.author) || me) : me;
-  const ownerUid = isEdit ? ((prev?prev.uid:E.uid)||null) : (USER?USER.uid:null);
+  /* 새 글은 지금 로그인한 선생님이 작성자, 고치는 글은 원래 작성자(글 주인 계정)를 그대로 둡니다.
+     글 주인 계정의 지금 이름을 알 수 있으면 그 이름으로 적어, 예전에 잘못 바뀐 이름도 저장할 때 바로잡힙니다. */
+  const memberName=uid=>{
+    if(!uid) return "";
+    if(USER&&uid===USER.uid) return USER.name||"";
+    const m=MEMBERS.find(u=>u.uid===uid); return m?(m.name||""):"";
+  };
+  const ownerUid = isEdit ? (E.uid||null) : (USER?USER.uid:null);
+  const author = isEdit ? (memberName(ownerUid) || E.author || (prev&&prev.author) || me) : me;
   const rec={ id:E.draftId, subId:E.subId, tool:E.tool, title:E.title, tags:[...E.tags],
               stds:[...(E.stds||[])],
               author, uid:ownerUid, updatedAt:Date.now(), blocks };
@@ -3507,7 +3542,7 @@ function openAccount(){
   box.querySelector("#acEdit").onclick=openProfile;
   box.querySelector("#acOut").onclick=async ()=>{
     await DB.signOut();
-    USER=null; PENDING=[]; S.editor=null;
+    USER=null; PENDING=[]; MEMBERS=[]; S.editor=null;
     dropAuthorFilterIfSignedOut();
     setAccountUI(); closeAuth(); toast("로그아웃했습니다"); refresh();
   };
@@ -3626,10 +3661,37 @@ function openProfile(){
 
 /* ── 회원 관리 (관리자) ── */
 async function loadPending(){
-  if(!isAdmin()){ PENDING=[]; return; }
-  try{ PENDING=(await DB.listUsers()).filter(u=>u.status==="pending"); }
-  catch(e){ PENDING=[]; }
+  if(!isAdmin()){ PENDING=[]; MEMBERS=[]; return; }
+  try{ MEMBERS=await DB.listUsers(); PENDING=MEMBERS.filter(u=>u.status==="pending"); }
+  catch(e){ PENDING=[]; MEMBERS=[]; }
   setAccountUI();
+  autoFixAuthors();
+}
+/* 작성자 이름이 글 주인 계정의 이름과 다른 사례를 찾습니다.
+   (예전에는 관리자가 다른 선생님 글을 고치면 작성자가 관리자 이름으로 바뀌었습니다.
+    글마다 주인 계정은 그대로 남아 있으므로 그 계정의 이름이 진짜 작성자입니다.) */
+function findWrongAuthors(list){
+  const nameOf={};
+  (list||[]).forEach(u=>{ if(u&&u.uid&&(u.name||"").trim()) nameOf[u.uid]=u.name.trim(); });
+  return Object.values(SUMS)
+    .filter(s=>s&&s.uid&&nameOf[s.uid]&&(s.author||"").trim()!==nameOf[s.uid])
+    .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0))
+    .map(s=>({s,name:nameOf[s.uid]}));
+}
+/* 관리자가 로그인하면 따로 버튼을 누르지 않아도 한 번 저절로 바로잡습니다 */
+let AUTHOR_AUTOFIX_RUN=false;
+async function autoFixAuthors(){
+  if(AUTHOR_AUTOFIX_RUN||!isAdmin()||!MEMBERS.length||!Object.keys(SUMS).length) return;
+  AUTHOR_AUTOFIX_RUN=true;
+  const wrong=findWrongAuthors(MEMBERS);
+  if(!wrong.length) return;
+  try{
+    const n=await DB.fixCaseAuthors(wrong.map(w=>({id:w.s.id,name:w.name})));
+    if(n){
+      toast("작성자 이름이 바뀌어 있던 사례 "+n+"건을 원래 선생님 이름으로 되돌렸습니다");
+      if(DB.mode!=="firebase"&&!S.editor) refresh();
+    }
+  }catch(e){ console.warn(e); }
 }
 async function openMembers(){
   if(!isAdmin()) return;
@@ -3693,11 +3755,9 @@ async function renderMembers(list){
 }
 function renderAuthorFix(list){
   const box=$("#mbAuthorFix"); if(!box) return;
-  const nameOf={};
-  (list||[]).forEach(u=>{ if(u&&u.uid&&(u.name||"").trim()) nameOf[u.uid]=u.name.trim(); });
-  const wrong=Object.values(SUMS)
-    .filter(s=>s&&s.uid&&nameOf[s.uid]&&(s.author||"").trim()!==nameOf[s.uid])
-    .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  const found=findWrongAuthors(list);
+  const wrong=found.map(w=>w.s), nameOf={};
+  found.forEach(w=>{ nameOf[w.s.uid]=w.name; });
   if(!wrong.length){ box.innerHTML=""; return; }
   const sample=wrong.slice(0,5).map(s=>
     '<li><b>'+esc(s.title||"(제목 없음)")+'</b> — 지금 '+esc(honorific(s.author||"이름 없음"))+
@@ -3962,6 +4022,7 @@ function historyStateNow(){
 
   let first=true;
   await DB.watchIndex(async ()=>{
+    autoFixAuthors();
     stats(); renderTree();
     if(S.view==="map") renderMap();
     if(first||!S.editor){
